@@ -5,6 +5,72 @@ Building a reusable CMS starter on Laravel 13 + Vue 3 + Inertia.js v2. The proje
 
 ---
 
+## GitHub Issues Index
+
+### Pre-flight (do before Phase 1)
+| # | Issue |
+|---|-------|
+| [#5](https://github.com/Three-Hoops/Hoops-CMS/issues/5) | Add shadcn-vue component library |
+| [#7](https://github.com/Three-Hoops/Hoops-CMS/issues/7) | Set up Ziggy for Laravel route helpers in Vue |
+| [#8](https://github.com/Three-Hoops/Hoops-CMS/issues/8) | Configure ESLint for TypeScript + Vue |
+| [#9](https://github.com/Three-Hoops/Hoops-CMS/issues/9) | Set up GitHub Actions CI pipeline |
+| [#10](https://github.com/Three-Hoops/Hoops-CMS/issues/10) | Configure Laravel Pint code style |
+| [#11](https://github.com/Three-Hoops/Hoops-CMS/issues/11) | Set up Git branching strategy |
+
+### CMS Phases
+| # | Issue |
+|---|-------|
+| [#1](https://github.com/Three-Hoops/Hoops-CMS/issues/1) | Phase 1: Auth + Admin Shell |
+| [#2](https://github.com/Three-Hoops/Hoops-CMS/issues/2) | Phase 2: Core Content (Pages, Posts, Categories, Tags) |
+| [#3](https://github.com/Three-Hoops/Hoops-CMS/issues/3) | Phase 3: Media Library |
+| [#4](https://github.com/Three-Hoops/Hoops-CMS/issues/4) | Phase 4: User Management + Settings |
+
+### Security
+| # | Issue |
+|---|-------|
+| [#14](https://github.com/Three-Hoops/Hoops-CMS/issues/14) | Configure rate limiting on the login endpoint |
+| [#15](https://github.com/Three-Hoops/Hoops-CMS/issues/15) | Add two-factor authentication (2FA) for admin users |
+| [#16](https://github.com/Three-Hoops/Hoops-CMS/issues/16) | Add security headers middleware |
+
+### Data Integrity
+| # | Issue |
+|---|-------|
+| [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models |
+| [#18](https://github.com/Three-Hoops/Hoops-CMS/issues/18) | Add audit log with spatie/laravel-activitylog |
+| [#19](https://github.com/Three-Hoops/Hoops-CMS/issues/19) | Set up automated database backups with spatie/laravel-backup |
+
+### Performance
+| # | Issue |
+|---|-------|
+| [#20](https://github.com/Three-Hoops/Hoops-CMS/issues/20) | Configure Redis for cache, sessions, and queues |
+| [#21](https://github.com/Three-Hoops/Hoops-CMS/issues/21) | Add image optimisation on upload with Intervention Image |
+| [#22](https://github.com/Three-Hoops/Hoops-CMS/issues/22) | Install Laravel Debugbar for local development |
+
+### Content Features
+| # | Issue |
+|---|-------|
+| [#23](https://github.com/Three-Hoops/Hoops-CMS/issues/23) | Implement scheduled content publishing |
+| [#24](https://github.com/Three-Hoops/Hoops-CMS/issues/24) | Add content revision history for posts and pages |
+| [#25](https://github.com/Three-Hoops/Hoops-CMS/issues/25) | Add full-text search with Laravel Scout and Meilisearch |
+
+### Testing
+| # | Issue |
+|---|-------|
+| [#26](https://github.com/Three-Hoops/Hoops-CMS/issues/26) | Write PHP feature tests for all admin controllers |
+| [#27](https://github.com/Three-Hoops/Hoops-CMS/issues/27) | Write Cypress E2E tests for critical user flows |
+
+### Infrastructure & Operations
+| # | Issue |
+|---|-------|
+| [#6](https://github.com/Three-Hoops/Hoops-CMS/issues/6) | Set up production database connection |
+| [#12](https://github.com/Three-Hoops/Hoops-CMS/issues/12) | Set up local email with Mailtrap |
+| [#13](https://github.com/Three-Hoops/Hoops-CMS/issues/13) | Set up error tracking with Flare |
+| [#28](https://github.com/Three-Hoops/Hoops-CMS/issues/28) | Set up queue worker for background jobs |
+| [#29](https://github.com/Three-Hoops/Hoops-CMS/issues/29) | Set up Laravel Horizon for queue monitoring |
+| [#30](https://github.com/Three-Hoops/Hoops-CMS/issues/30) | Configure and document Laravel task scheduler |
+
+---
+
 ## Architectural Decisions
 
 - **All CMS routes** live under `/admin/*`, protected by `auth` middleware
@@ -18,6 +84,7 @@ Building a reusable CMS starter on Laravel 13 + Vue 3 + Inertia.js v2. The proje
 ---
 
 ## Phase 1 — Auth + Admin Shell
+> GitHub issue: [#1](https://github.com/Three-Hoops/Hoops-CMS/issues/1)
 
 **Goal:** Working login/logout and a persistent admin layout with sidebar. Every later phase builds inside this shell.
 
@@ -51,6 +118,7 @@ Building a reusable CMS starter on Laravel 13 + Vue 3 + Inertia.js v2. The proje
 ---
 
 ## Phase 2 — Core Content (Pages, Posts, Categories, Tags)
+> GitHub issue: [#2](https://github.com/Three-Hoops/Hoops-CMS/issues/2)
 
 **Goal:** Full CRUD for all four content types. Dashboard stats live.
 
@@ -107,6 +175,7 @@ Building a reusable CMS starter on Laravel 13 + Vue 3 + Inertia.js v2. The proje
 ---
 
 ## Phase 3 — Media Library
+> GitHub issue: [#3](https://github.com/Three-Hoops/Hoops-CMS/issues/3)
 
 **Goal:** Upload + browse files; attach to posts (featured image); TipTap inline image uploads.
 
@@ -133,6 +202,7 @@ Building a reusable CMS starter on Laravel 13 + Vue 3 + Inertia.js v2. The proje
 ---
 
 ## Phase 4 — Users + Settings
+> GitHub issue: [#4](https://github.com/Three-Hoops/Hoops-CMS/issues/4)
 
 **Goal:** Super-admin manages users; site settings stored in DB, grouped by tab, cached in shared props.
 
