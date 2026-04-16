@@ -68,6 +68,16 @@ Building a reusable CMS starter on Laravel 13 + Vue 3 + Inertia.js v2. The proje
 | [#28](https://github.com/Three-Hoops/Hoops-CMS/issues/28) | Set up queue worker for background jobs |
 | [#29](https://github.com/Three-Hoops/Hoops-CMS/issues/29) | Set up Laravel Horizon for queue monitoring |
 | [#30](https://github.com/Three-Hoops/Hoops-CMS/issues/30) | Configure and document Laravel task scheduler |
+| [#31](https://github.com/Three-Hoops/Hoops-CMS/issues/31) | Write deployment guide |
+| [#33](https://github.com/Three-Hoops/Hoops-CMS/issues/33) | Document and automate php artisan storage:link |
+| [#34](https://github.com/Three-Hoops/Hoops-CMS/issues/34) | Set up Dependabot for automated dependency updates |
+
+### Content Features (additional)
+| # | Issue |
+|---|-------|
+| [#32](https://github.com/Three-Hoops/Hoops-CMS/issues/32) | Add draft preview for posts and pages |
+| [#35](https://github.com/Three-Hoops/Hoops-CMS/issues/35) | Add sitemap and robots.txt generation |
+| [#36](https://github.com/Three-Hoops/Hoops-CMS/issues/36) | Add content import and export (JSON/CSV) |
 
 ---
 
