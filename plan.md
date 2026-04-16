@@ -7,77 +7,189 @@ Building a reusable CMS starter on Laravel 13 + Vue 3 + Inertia.js v2. The proje
 
 ## GitHub Issues Index
 
-### Pre-flight (do before Phase 1)
-| # | Issue |
-|---|-------|
-| [#5](https://github.com/Three-Hoops/Hoops-CMS/issues/5) | Add shadcn-vue component library |
-| [#7](https://github.com/Three-Hoops/Hoops-CMS/issues/7) | Set up Ziggy for Laravel route helpers in Vue |
-| [#8](https://github.com/Three-Hoops/Hoops-CMS/issues/8) | Configure ESLint for TypeScript + Vue |
-| [#9](https://github.com/Three-Hoops/Hoops-CMS/issues/9) | Set up GitHub Actions CI pipeline |
-| [#10](https://github.com/Three-Hoops/Hoops-CMS/issues/10) | Configure Laravel Pint code style |
-| [#11](https://github.com/Three-Hoops/Hoops-CMS/issues/11) | Set up Git branching strategy |
+Issues are ordered by implementation sequence. Complete each stage before moving to the next.
 
-### CMS Phases
-| # | Issue |
-|---|-------|
-| [#1](https://github.com/Three-Hoops/Hoops-CMS/issues/1) | Phase 1: Auth + Admin Shell |
-| [#2](https://github.com/Three-Hoops/Hoops-CMS/issues/2) | Phase 2: Core Content (Pages, Posts, Categories, Tags) |
-| [#3](https://github.com/Three-Hoops/Hoops-CMS/issues/3) | Phase 3: Media Library |
-| [#4](https://github.com/Three-Hoops/Hoops-CMS/issues/4) | Phase 4: User Management + Settings |
+---
 
-### Security
-| # | Issue |
-|---|-------|
-| [#14](https://github.com/Three-Hoops/Hoops-CMS/issues/14) | Configure rate limiting on the login endpoint |
-| [#15](https://github.com/Three-Hoops/Hoops-CMS/issues/15) | Add two-factor authentication (2FA) for admin users |
-| [#16](https://github.com/Three-Hoops/Hoops-CMS/issues/16) | Add security headers middleware |
+### Stage 0 — Pre-flight `pre-flight`
+> Set up tooling and conventions before writing any domain code.
 
-### Data Integrity
-| # | Issue |
-|---|-------|
-| [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models |
-| [#18](https://github.com/Three-Hoops/Hoops-CMS/issues/18) | Add audit log with spatie/laravel-activitylog |
-| [#19](https://github.com/Three-Hoops/Hoops-CMS/issues/19) | Set up automated database backups with spatie/laravel-backup |
+| # | Issue | Labels |
+|---|-------|--------|
+| [#11](https://github.com/Three-Hoops/Hoops-CMS/issues/11) | Set up Git branching strategy | `documentation` |
+| [#10](https://github.com/Three-Hoops/Hoops-CMS/issues/10) | Configure Laravel Pint code style | `developer-experience` |
+| [#8](https://github.com/Three-Hoops/Hoops-CMS/issues/8) | Configure ESLint for TypeScript + Vue | `developer-experience` |
+| [#83](https://github.com/Three-Hoops/Hoops-CMS/issues/83) | Add commit hooks with Husky and lint-staged | `developer-experience` |
+| [#94](https://github.com/Three-Hoops/Hoops-CMS/issues/94) | Add demo content seeder for new project onboarding | `developer-experience`, `testing` |
+| [#95](https://github.com/Three-Hoops/Hoops-CMS/issues/95) | Enable Model::preventLazyLoading() to catch N+1 queries | `performance`, `developer-experience` |
+| [#102](https://github.com/Three-Hoops/Hoops-CMS/issues/102) | Add Vite bundle analyser | `performance`, `developer-experience` |
+| [#104](https://github.com/Three-Hoops/Hoops-CMS/issues/104) | Add Larastan (PHPStan) for PHP static analysis | `developer-experience` |
+| [#59](https://github.com/Three-Hoops/Hoops-CMS/issues/59) | Add laravel-ide-helper for IDE autocompletion | `developer-experience` |
+| [#5](https://github.com/Three-Hoops/Hoops-CMS/issues/5) | Add shadcn-vue component library | `developer-experience` |
+| [#7](https://github.com/Three-Hoops/Hoops-CMS/issues/7) | Set up Ziggy for Laravel route helpers in Vue | `developer-experience` |
+| [#67](https://github.com/Three-Hoops/Hoops-CMS/issues/67) | Add Docker Compose for local development (PHP, MySQL, Redis) | `infrastructure`, `developer-experience` |
+| [#9](https://github.com/Three-Hoops/Hoops-CMS/issues/9) | Set up GitHub Actions CI pipeline | `infrastructure` |
+| [#90](https://github.com/Three-Hoops/Hoops-CMS/issues/90) | Add dependency vulnerability scanning to CI pipeline | `security`, `infrastructure` |
+| [#34](https://github.com/Three-Hoops/Hoops-CMS/issues/34) | Set up Dependabot for automated dependency updates | `infrastructure` |
+| [#48](https://github.com/Three-Hoops/Hoops-CMS/issues/48) | Add .env.testing for the test environment | `testing` |
+| [#52](https://github.com/Three-Hoops/Hoops-CMS/issues/52) | Create model factories for all custom models | `testing`, `developer-experience` |
+| [#22](https://github.com/Three-Hoops/Hoops-CMS/issues/22) | Install Laravel Debugbar for local development | `infrastructure`, `developer-experience` |
+| [#12](https://github.com/Three-Hoops/Hoops-CMS/issues/12) | Set up local email with Mailtrap | `infrastructure` |
 
-### Performance
-| # | Issue |
-|---|-------|
-| [#20](https://github.com/Three-Hoops/Hoops-CMS/issues/20) | Configure Redis for cache, sessions, and queues |
-| [#21](https://github.com/Three-Hoops/Hoops-CMS/issues/21) | Add image optimisation on upload with Intervention Image |
-| [#22](https://github.com/Three-Hoops/Hoops-CMS/issues/22) | Install Laravel Debugbar for local development |
+---
 
-### Content Features
-| # | Issue |
-|---|-------|
-| [#23](https://github.com/Three-Hoops/Hoops-CMS/issues/23) | Implement scheduled content publishing |
-| [#24](https://github.com/Three-Hoops/Hoops-CMS/issues/24) | Add content revision history for posts and pages |
-| [#25](https://github.com/Three-Hoops/Hoops-CMS/issues/25) | Add full-text search with Laravel Scout and Meilisearch |
+### Stage 1 — Auth + Admin Shell `phase-1`
+> Working login/logout and the persistent admin layout. Everything else builds inside this shell.
 
-### Testing
-| # | Issue |
-|---|-------|
-| [#26](https://github.com/Three-Hoops/Hoops-CMS/issues/26) | Write PHP feature tests for all admin controllers |
-| [#27](https://github.com/Three-Hoops/Hoops-CMS/issues/27) | Write Cypress E2E tests for critical user flows |
+| # | Issue | Labels |
+|---|-------|--------|
+| [#1](https://github.com/Three-Hoops/Hoops-CMS/issues/1) | Phase 1: Auth + Admin Shell | `auth`, `enhancement` |
+| [#71](https://github.com/Three-Hoops/Hoops-CMS/issues/71) | Add locale column to users table for editor language preference | `auth`, `enhancement` |
+| [#103](https://github.com/Three-Hoops/Hoops-CMS/issues/103) | Add timezone preference to users for correct scheduled publishing | `auth`, `enhancement` |
+| [#77](https://github.com/Three-Hoops/Hoops-CMS/issues/77) | Track last_login_at on users | `auth`, `security` |
+| [#85](https://github.com/Three-Hoops/Hoops-CMS/issues/85) | Add is_active flag to users for account suspension | `auth`, `security` |
+| [#106](https://github.com/Three-Hoops/Hoops-CMS/issues/106) | Define and enforce viewer role capabilities | `auth`, `security` |
+| [#84](https://github.com/Three-Hoops/Hoops-CMS/issues/84) | Add remember me to login form | `auth`, `enhancement` |
+| [#109](https://github.com/Three-Hoops/Hoops-CMS/issues/109) | Add branded transactional email templates | `auth`, `enhancement` |
+| [#89](https://github.com/Three-Hoops/Hoops-CMS/issues/89) | Implement Content Security Policy (CSP) for admin panel | `security` |
+| [#82](https://github.com/Three-Hoops/Hoops-CMS/issues/82) | Make admin layout mobile-responsive | `enhancement` |
+| [#14](https://github.com/Three-Hoops/Hoops-CMS/issues/14) | Configure rate limiting on the login endpoint | `security` |
+| [#16](https://github.com/Three-Hoops/Hoops-CMS/issues/16) | Add security headers middleware | `security` |
+| [#42](https://github.com/Three-Hoops/Hoops-CMS/issues/42) | Configure session security and timeout | `security` |
+| [#46](https://github.com/Three-Hoops/Hoops-CMS/issues/46) | Add noindex meta tag to all admin pages | `security` |
+| [#49](https://github.com/Three-Hoops/Hoops-CMS/issues/49) | Enforce password complexity policy for admin accounts | `security`, `auth` |
+| [#37](https://github.com/Three-Hoops/Hoops-CMS/issues/37) | Add password reset (forgot password) flow | `auth`, `enhancement` |
+| [#41](https://github.com/Three-Hoops/Hoops-CMS/issues/41) | Add custom Inertia error pages (404, 419, 500) | `enhancement` |
+| [#60](https://github.com/Three-Hoops/Hoops-CMS/issues/60) | Admin dark/light mode toggle (per-user preference) | `theming`, `enhancement` |
 
-### Infrastructure & Operations
-| # | Issue |
-|---|-------|
-| [#6](https://github.com/Three-Hoops/Hoops-CMS/issues/6) | Set up production database connection |
-| [#12](https://github.com/Three-Hoops/Hoops-CMS/issues/12) | Set up local email with Mailtrap |
-| [#13](https://github.com/Three-Hoops/Hoops-CMS/issues/13) | Set up error tracking with Flare |
-| [#28](https://github.com/Three-Hoops/Hoops-CMS/issues/28) | Set up queue worker for background jobs |
-| [#29](https://github.com/Three-Hoops/Hoops-CMS/issues/29) | Set up Laravel Horizon for queue monitoring |
-| [#30](https://github.com/Three-Hoops/Hoops-CMS/issues/30) | Configure and document Laravel task scheduler |
-| [#31](https://github.com/Three-Hoops/Hoops-CMS/issues/31) | Write deployment guide |
-| [#33](https://github.com/Three-Hoops/Hoops-CMS/issues/33) | Document and automate php artisan storage:link |
-| [#34](https://github.com/Three-Hoops/Hoops-CMS/issues/34) | Set up Dependabot for automated dependency updates |
+---
 
-### Content Features (additional)
-| # | Issue |
-|---|-------|
-| [#32](https://github.com/Three-Hoops/Hoops-CMS/issues/32) | Add draft preview for posts and pages |
-| [#35](https://github.com/Three-Hoops/Hoops-CMS/issues/35) | Add sitemap and robots.txt generation |
-| [#36](https://github.com/Three-Hoops/Hoops-CMS/issues/36) | Add content import and export (JSON/CSV) |
+### Stage 2 — Core Content `phase-2`
+> Full CRUD for pages, posts, categories, and tags.
+
+| # | Issue | Labels |
+|---|-------|--------|
+| [#70](https://github.com/Three-Hoops/Hoops-CMS/issues/70) | Add multilingual content support with spatie/laravel-translatable | `content`, `enhancement` |
+| [#2](https://github.com/Three-Hoops/Hoops-CMS/issues/2) | Phase 2: Core Content (Pages, Posts, Categories, Tags) | `content`, `enhancement` |
+| [#76](https://github.com/Three-Hoops/Hoops-CMS/issues/76) | Add parent_id to pages table for hierarchical page structure | `content`, `enhancement` |
+| [#86](https://github.com/Three-Hoops/Hoops-CMS/issues/86) | Add duplicate action for posts and pages | `content`, `enhancement` |
+| [#65](https://github.com/Three-Hoops/Hoops-CMS/issues/65) | Add per-post and per-page Open Graph / social meta fields | `content`, `enhancement` |
+| [#69](https://github.com/Three-Hoops/Hoops-CMS/issues/69) | Add featured/pinned flag to posts | `content`, `enhancement` |
+| [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models | `content` |
+| [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40) | Add database indexes to content migrations | `performance` |
+| [#43](https://github.com/Three-Hoops/Hoops-CMS/issues/43) | Handle slug collisions with auto-increment | `content` |
+| [#45](https://github.com/Three-Hoops/Hoops-CMS/issues/45) | Wrap multi-step writes in database transactions | `content` |
+| [#38](https://github.com/Three-Hoops/Hoops-CMS/issues/38) | Sanitise TipTap HTML output to prevent XSS | `security`, `content` |
+| [#68](https://github.com/Three-Hoops/Hoops-CMS/issues/68) | Add autosave for rich text editor to prevent data loss | `content`, `enhancement` |
+| [#110](https://github.com/Three-Hoops/Hoops-CMS/issues/110) | Warn users about unsaved changes before navigating away | `content`, `enhancement` |
+| [#58](https://github.com/Three-Hoops/Hoops-CMS/issues/58) | Bulk actions on content lists (publish, draft, delete) | `content`, `enhancement` |
+| [#75](https://github.com/Three-Hoops/Hoops-CMS/issues/75) | Add trash view and restore for soft-deleted content | `content`, `enhancement` |
+| [#32](https://github.com/Three-Hoops/Hoops-CMS/issues/32) | Add draft preview for posts and pages | `content`, `enhancement` |
+| [#72](https://github.com/Three-Hoops/Hoops-CMS/issues/72) | Add language switcher UI to post and page edit forms | `content`, `enhancement` |
+| [#66](https://github.com/Three-Hoops/Hoops-CMS/issues/66) | Write Vue component tests for admin UI components | `testing` |
+
+---
+
+### Stage 3 — Media Library `phase-3`
+> Upload, browse, and attach files; TipTap inline image uploads.
+
+| # | Issue | Labels |
+|---|-------|--------|
+| [#3](https://github.com/Three-Hoops/Hoops-CMS/issues/3) | Phase 3: Media Library | `content`, `enhancement` |
+| [#107](https://github.com/Three-Hoops/Hoops-CMS/issues/107) | Add soft deletes to media table | `content`, `enhancement` |
+| [#73](https://github.com/Three-Hoops/Hoops-CMS/issues/73) | Make media alt text translatable (json column) | `content`, `enhancement` |
+| [#87](https://github.com/Three-Hoops/Hoops-CMS/issues/87) | Track media usage and warn before deletion | `content`, `enhancement` |
+| [#78](https://github.com/Three-Hoops/Hoops-CMS/issues/78) | Add media folder organisation | `content`, `enhancement` |
+| [#79](https://github.com/Three-Hoops/Hoops-CMS/issues/79) | Handle non-image file types in media library UI | `content`, `enhancement` |
+| [#21](https://github.com/Three-Hoops/Hoops-CMS/issues/21) | Add image optimisation on upload with Intervention Image | `content`, `performance` |
+| [#56](https://github.com/Three-Hoops/Hoops-CMS/issues/56) | Configure PHP upload limits for media library | `infrastructure` |
+| [#33](https://github.com/Three-Hoops/Hoops-CMS/issues/33) | Document and automate php artisan storage:link | `infrastructure`, `documentation` |
+
+---
+
+### Stage 4 — Users, Settings & Theming `phase-4`
+> Super-admin manages users; site settings + public theme stored in DB.
+
+| # | Issue | Labels |
+|---|-------|--------|
+| [#4](https://github.com/Three-Hoops/Hoops-CMS/issues/4) | Phase 4: User Management + Settings | `auth`, `enhancement` |
+| [#108](https://github.com/Three-Hoops/Hoops-CMS/issues/108) | Make settings values translatable for multilingual sites | `content`, `enhancement` |
+| [#39](https://github.com/Three-Hoops/Hoops-CMS/issues/39) | Add user profile page for all authenticated users | `enhancement` |
+| [#96](https://github.com/Three-Hoops/Hoops-CMS/issues/96) | Add user avatar via media library | `auth`, `enhancement` |
+| [#93](https://github.com/Three-Hoops/Hoops-CMS/issues/93) | Add API token management UI for Sanctum personal access tokens | `auth`, `enhancement` |
+| [#97](https://github.com/Three-Hoops/Hoops-CMS/issues/97) | Add global search / command palette (Cmd+K) | `content`, `enhancement` |
+| [#98](https://github.com/Three-Hoops/Hoops-CMS/issues/98) | Schedule periodic cleanup tasks | `infrastructure` |
+| [#53](https://github.com/Three-Hoops/Hoops-CMS/issues/53) | Implement user invitation flow | `auth`, `enhancement` |
+| [#15](https://github.com/Three-Hoops/Hoops-CMS/issues/15) | Add two-factor authentication (2FA) for admin users | `security`, `auth` |
+| [#61](https://github.com/Three-Hoops/Hoops-CMS/issues/61) | Public theme CSS variables stored in settings (colors, fonts, border radius) | `theming` |
+| [#62](https://github.com/Three-Hoops/Hoops-CMS/issues/62) | Theme presets with visual preset picker in Settings | `theming`, `enhancement` |
+| [#63](https://github.com/Three-Hoops/Hoops-CMS/issues/63) | Live theme preview before saving | `theming`, `enhancement` |
+
+---
+
+### Stage 5 — Testing & Quality `testing`
+> Cover all controllers and critical flows with tests.
+
+| # | Issue | Labels |
+|---|-------|--------|
+| [#26](https://github.com/Three-Hoops/Hoops-CMS/issues/26) | Write PHP feature tests for all admin controllers | `testing` |
+| [#27](https://github.com/Three-Hoops/Hoops-CMS/issues/27) | Write Cypress E2E tests for critical user flows | `testing` |
+| [#92](https://github.com/Three-Hoops/Hoops-CMS/issues/92) | Accessibility (a11y) audit and remediation for admin panel | `testing`, `enhancement` |
+
+---
+
+### Stage 6 — Infrastructure & Ops `infrastructure`
+> Queues, scheduler, deployment, monitoring. Can be parallelised with Stage 5.
+
+| # | Issue | Labels |
+|---|-------|--------|
+| [#20](https://github.com/Three-Hoops/Hoops-CMS/issues/20) | Configure Redis for cache, sessions, and queues | `infrastructure`, `performance` |
+| [#28](https://github.com/Three-Hoops/Hoops-CMS/issues/28) | Set up queue worker for background jobs | `infrastructure` |
+| [#29](https://github.com/Three-Hoops/Hoops-CMS/issues/29) | Set up Laravel Horizon for queue monitoring | `infrastructure` |
+| [#30](https://github.com/Three-Hoops/Hoops-CMS/issues/30) | Configure and document Laravel task scheduler | `infrastructure` |
+| [#44](https://github.com/Three-Hoops/Hoops-CMS/issues/44) | Define and implement cache invalidation strategy | `performance` |
+| [#6](https://github.com/Three-Hoops/Hoops-CMS/issues/6) | Set up production database connection | `infrastructure` |
+| [#47](https://github.com/Three-Hoops/Hoops-CMS/issues/47) | Enforce HTTPS in production | `infrastructure`, `security` |
+| [#54](https://github.com/Three-Hoops/Hoops-CMS/issues/54) | Configure log management and rotation | `infrastructure` |
+| [#55](https://github.com/Three-Hoops/Hoops-CMS/issues/55) | Add maintenance mode to deployment script | `infrastructure` |
+| [#57](https://github.com/Three-Hoops/Hoops-CMS/issues/57) | Extend health check endpoint with system diagnostics | `infrastructure` |
+| [#19](https://github.com/Three-Hoops/Hoops-CMS/issues/19) | Set up automated database backups with spatie/laravel-backup | `infrastructure` |
+| [#101](https://github.com/Three-Hoops/Hoops-CMS/issues/101) | Add automated backup restore verification | `infrastructure` |
+| [#13](https://github.com/Three-Hoops/Hoops-CMS/issues/13) | Set up error tracking with Flare | `infrastructure` |
+| [#31](https://github.com/Three-Hoops/Hoops-CMS/issues/31) | Write deployment guide | `infrastructure`, `documentation` |
+| [#91](https://github.com/Three-Hoops/Hoops-CMS/issues/91) | Document and implement zero-downtime deployment strategy | `infrastructure`, `documentation` |
+
+---
+
+### Stage 7 — Content Enhancements `content`
+> Advanced content features built on top of the core. Implement in priority order.
+
+| # | Issue | Labels |
+|---|-------|--------|
+| [#99](https://github.com/Three-Hoops/Hoops-CMS/issues/99) | Add custom URL redirect management | `content`, `enhancement`, `performance` |
+| [#100](https://github.com/Three-Hoops/Hoops-CMS/issues/100) | Add RSS/Atom feed for published posts | `content`, `enhancement` |
+| [#105](https://github.com/Three-Hoops/Hoops-CMS/issues/105) | Add JSON-LD / Schema.org structured data for posts and pages | `content`, `enhancement` |
+| [#51](https://github.com/Three-Hoops/Hoops-CMS/issues/51) | Add navigation and menu management | `content`, `enhancement` |
+| [#18](https://github.com/Three-Hoops/Hoops-CMS/issues/18) | Add audit log with spatie/laravel-activitylog | `content`, `security` |
+| [#23](https://github.com/Three-Hoops/Hoops-CMS/issues/23) | Implement scheduled content publishing | `content`, `enhancement` |
+| [#24](https://github.com/Three-Hoops/Hoops-CMS/issues/24) | Add content revision history for posts and pages | `content`, `enhancement` |
+| [#35](https://github.com/Three-Hoops/Hoops-CMS/issues/35) | Add sitemap and robots.txt generation | `content`, `enhancement` |
+| [#25](https://github.com/Three-Hoops/Hoops-CMS/issues/25) | Add full-text search with Laravel Scout and Meilisearch | `content`, `performance`, `enhancement` |
+| [#36](https://github.com/Three-Hoops/Hoops-CMS/issues/36) | Add content import and export (JSON/CSV) | `content`, `enhancement` |
+| [#50](https://github.com/Three-Hoops/Hoops-CMS/issues/50) | Add GDPR data retention policy for audit log | `security` |
+
+---
+
+### Stage 8 — Headless / Public API `infrastructure` `content`
+> Expose published content for consumption by external frontends.
+
+| # | Issue | Labels |
+|---|-------|--------|
+| [#64](https://github.com/Three-Hoops/Hoops-CMS/issues/64) | Add public read-only API for headless content consumption | `infrastructure`, `content`, `enhancement` |
+| [#74](https://github.com/Three-Hoops/Hoops-CMS/issues/74) | Add locale parameter handling to the public API | `infrastructure`, `content`, `enhancement` |
+| [#80](https://github.com/Three-Hoops/Hoops-CMS/issues/80) | Add rate limiting to public API endpoints | `security`, `infrastructure` |
+| [#88](https://github.com/Three-Hoops/Hoops-CMS/issues/88) | Add HTTP cache headers to public API responses | `performance`, `infrastructure` |
+| [#81](https://github.com/Three-Hoops/Hoops-CMS/issues/81) | Configure queue failure handling and alerting | `infrastructure` |
 
 ---
 
@@ -90,6 +202,8 @@ Building a reusable CMS starter on Laravel 13 + Vue 3 + Inertia.js v2. The proje
 - **Inertia shared props**: `auth.user`, `flash.success/error`, `app.name`, `settings` (public only, cached)
 - **Page naming**: all Vue pages under `resources/js/Pages/Admin/`
 - **Forms**: use `useForm()` from `@inertiajs/vue3` directly — stores hold filter/UI state only
+- **Multi-tenancy**: explicitly out of scope — each deployment is a single-site installation. No `site_id` columns needed.
+- **i18n**: supported via `spatie/laravel-translatable` — translatable fields stored as JSON columns, no separate translation tables. See [#70](https://github.com/Three-Hoops/Hoops-CMS/issues/70). Slug remains a plain string; locale-prefixed routing is a per-project concern.
 
 ---
 
