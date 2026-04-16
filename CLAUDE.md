@@ -4,78 +4,79 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Hoops-CMS is a reusable CMS system built with a **Laravel** (PHP) backend and a **Vue.js** frontend, bridged via **Inertia.js**. Package management on the JS side uses **pnpm**.
+Hoops-CMS is a reusable CMS system built with a **Laravel 13** backend and a **Vue 3** frontend, bridged via **Inertia.js v2**. The Laravel application lives in the `laravel/` subdirectory. All frontend tooling is managed with **pnpm** from within `laravel/`.
 
 ## Development Commands
 
-### Frontend (JS/Vue)
+All frontend commands must be run from the `laravel/` directory.
+
+### Frontend (run from `laravel/`)
 
 ```bash
-pnpm install              # Install dependencies
-pnpm dev                  # Start Vite dev server
-pnpm build                # Production build
-pnpm test                 # Run Vitest unit tests
-pnpm test:ui              # Run Vitest with browser UI
-pnpm test:e2e             # Run Cypress e2e tests (headless)
+pnpm install              # Install JS dependencies
+pnpm dev                  # Start Vite dev server (HMR)
+pnpm build                # Production asset build
+pnpm test                 # Run Vitest unit/component tests
+pnpm test:ui              # Vitest with browser UI
+pnpm test:e2e             # Cypress e2e tests (headless, needs Laravel running)
 pnpm test:e2e:open        # Open Cypress interactive runner
-pnpm lint                 # Lint TS/Vue files
 ```
 
-### Backend (Laravel)
+### Backend (run from `laravel/`)
 
 ```bash
 composer install          # Install PHP dependencies
 php artisan migrate       # Run database migrations
 php artisan db:seed       # Seed the database
-php artisan serve         # Start Laravel dev server (http://localhost:8000)
-php artisan test          # Run PHP test suite
+php artisan serve         # Start dev server at http://localhost:8000
+php artisan test          # Run PHP/Pest tests
 php artisan test --filter TestName  # Run a single test
 ```
 
 ### Environment Setup
 
-1. Install PHP and Composer (`brew install php composer` or use [Laravel Herd](https://herd.laravel.com))
-2. Scaffold Laravel: `composer create-project laravel/laravel .` (run in project root)
-3. Install the Inertia Laravel adapter: `composer require inertiajs/inertia-laravel`
-4. Add `\App\Http\Middleware\HandleInertiaRequests::class` to the `web` middleware group in `bootstrap/app.php`
-5. Create the root Blade view at `resources/views/app.blade.php` with the `@inertia` directive
-6. Copy `.env.example` to `.env` and configure database, then run `php artisan key:generate`
-7. Run `pnpm install` for JS dependencies
+```bash
+cp laravel/.env.example laravel/.env
+cd laravel && php artisan key:generate
+cd laravel && php artisan migrate
+cd laravel && pnpm install
+```
+
+Node.js 22.12+ is required (Vite 8 requirement). With nvm: `nvm install 22 && nvm use 22`.
 
 ## Architecture
 
+### Project Layout
+
+```
+laravel/                        # Laravel application (work here)
+  app/Http/
+    Controllers/                # Inertia controllers
+    Middleware/
+      HandleInertiaRequests.php # Shares global props to all pages
+  bootstrap/app.php             # Middleware registration (Laravel 13 style)
+  resources/
+    js/
+      app.ts                    # Entry: bootstraps Inertia + Pinia + Vue
+      Pages/                    # Inertia page components (1-to-1 with routes)
+      stores/                   # Pinia stores (feature-based)
+    css/app.css                 # Global styles (Tailwind v4)
+    views/app.blade.php         # Single Blade shell loaded by Inertia
+  routes/web.php                # Laravel routes returning Inertia::render()
+  vite.config.ts                # Vite + laravel-vite-plugin + Vue + Vitest
+  tsconfig.json                 # TypeScript, @/* alias → resources/js/
+  cypress.config.ts             # Cypress e2e, baseUrl = localhost:8000
+  cypress/e2e/                  # Cypress specs
+```
+
 ### Request Flow
 
-Browser → Laravel router → Controller returns `Inertia::render('PageName', $props)` → Inertia serves the Vue component as a full page (first load) or XHR response (subsequent navigation) → Vue renders the page component with props.
+Browser → Laravel `routes/web.php` → Controller calls `Inertia::render('Folder/Page', $props)` → First visit: Blade shell + full Vue app is served → Subsequent navigation: XHR JSON response → Vue page component renders with props.
 
-### Frontend Structure
+### Key Conventions
 
-```
-resources/
-  js/
-    app.ts          # Entry point — bootstraps Inertia + Pinia + Vue
-    Pages/          # Inertia page components (one per route)
-    stores/         # Pinia stores (feature-based)
-  css/
-    app.css         # Global styles
-```
-
-- **Routing** is handled by Laravel; Vue Router is not used.
-- **State management** uses Pinia. Stores live in `resources/js/stores/`.
-- **Page components** in `resources/js/Pages/` map 1-to-1 with Laravel routes via `Inertia::render('Folder/Page', $props)`.
-- **Path alias**: `@/` resolves to `resources/js/`.
-
-### Testing
-
-- **Unit/component tests**: Vitest + `@vue/test-utils`, co-located with source or in `resources/js/**/*.spec.ts`
-- **E2E tests**: Cypress, specs in `cypress/e2e/`. Targets `http://localhost:8000` (Laravel dev server).
-- Config: `vite.config.ts` contains the Vitest config under the `test` key; Cypress config is in `cypress.config.ts`.
-
-### Key Config Files
-
-| File | Purpose |
-|------|---------|
-| `vite.config.ts` | Vite + laravel-vite-plugin + Vue + Vitest config |
-| `tsconfig.json` | TypeScript, includes `@/*` path alias |
-| `cypress.config.ts` | Cypress e2e config, baseUrl = localhost:8000 |
-| `package.json` | pnpm scripts and JS dependencies |
+- **Routing**: Laravel-only. Vue Router is not used; Inertia handles SPA navigation.
+- **State**: Pinia stores in `resources/js/stores/`. Global shared state (auth user, flash messages) goes through `HandleInertiaRequests::share()`.
+- **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin.
+- **Path alias**: `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.ts`).
+- **Testing**: Vitest + `@vue/test-utils` for unit/component tests (co-located as `*.spec.ts`); Cypress for e2e (requires `php artisan serve` running).
