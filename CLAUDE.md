@@ -80,6 +80,7 @@ Browser → Laravel `routes/web.php` → Controller calls `Inertia::render('Fold
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin.
 - **Path alias**: `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.ts`).
 - **Testing**: Vitest + `@vue/test-utils` for unit/component tests (co-located as `*.spec.ts`); Cypress for e2e (requires `php artisan serve` running).
+- **Lazy loading**: `Model::preventLazyLoading()` is active in all non-production environments. If you see a `LazyLoadingViolationException`, fix it by eager-loading the relationship in the controller: `Post::with(['category', 'tags'])->paginate()`.
 
 ## Tracking Progress
 
