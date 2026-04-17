@@ -29,7 +29,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅ | [#7](https://github.com/Three-Hoops/Hoops-CMS/issues/7) | Set up Ziggy for Laravel route helpers in Vue | `developer-experience` |
 | ✅ | [#59](https://github.com/Three-Hoops/Hoops-CMS/issues/59) | Add laravel-ide-helper for IDE autocompletion | `developer-experience` |
 | ✅ | [#96](https://github.com/Three-Hoops/Hoops-CMS/issues/96) | Enable Model::preventLazyLoading() to catch N+1 queries | `performance`, `developer-experience` |
-| ⬜ | [#102](https://github.com/Three-Hoops/Hoops-CMS/issues/102) | Add Vite bundle analyser | `performance`, `developer-experience` |
+| ✅ | [#102](https://github.com/Three-Hoops/Hoops-CMS/issues/102) | Add Vite bundle analyser | `performance`, `developer-experience` |
 | ⬜ | [#52](https://github.com/Three-Hoops/Hoops-CMS/issues/52) | Create model factories for all custom models *(deferred — implement alongside each model in phase 1+)* | `testing`, `developer-experience` |
 | ⬜ | [#94](https://github.com/Three-Hoops/Hoops-CMS/issues/94) | Add demo content seeder for new project onboarding *(deferred — needs models from phase 2)* | `developer-experience`, `testing` |
 | ⬜ | [#67](https://github.com/Three-Hoops/Hoops-CMS/issues/67) | Add Docker Compose for local development (PHP, MySQL, Redis) | `infrastructure`, `developer-experience` |
