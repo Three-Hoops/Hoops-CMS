@@ -202,7 +202,7 @@ docker compose exec app php artisan storage:link
 
 ## Setup
 
-Requirements: PHP 8.3+, Composer, Node.js 22.12+, pnpm.
+Requirements: PHP 8.4+, Composer, Node.js 22.12+, pnpm.
 
 ```bash
 cd laravel
