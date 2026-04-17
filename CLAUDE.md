@@ -80,3 +80,21 @@ Browser → Laravel `routes/web.php` → Controller calls `Inertia::render('Fold
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin.
 - **Path alias**: `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.ts`).
 - **Testing**: Vitest + `@vue/test-utils` for unit/component tests (co-located as `*.spec.ts`); Cypress for e2e (requires `php artisan serve` running).
+
+## Git Workflow
+
+This project follows **GitHub Flow**: one branch per feature/fix, PR into `main`, merge after CI passes.
+
+### Branch naming
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Feature / phase | `feature/<issue>-description` | `feature/1-auth-shell` |
+| Bug fix | `fix/<issue>-description` | `fix/12-login-redirect` |
+| Chore / config | `chore/description` | `chore/eslint-setup` |
+
+### Rules
+
+- `main` is always deployable — never commit directly to it.
+- Open a PR for every change; CI must pass before merging.
+- Branch protection on `main` is enabled: PR + 1 approval required, force pushes blocked. Required status checks will be added once CI is configured (issue #9).
