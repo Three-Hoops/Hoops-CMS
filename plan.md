@@ -14,27 +14,27 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 ### Stage 0 — Pre-flight `pre-flight`
 > Set up tooling and conventions before writing any domain code.
 
-| # | Issue | Labels |
-|---|-------|--------|
-| [#11](https://github.com/Three-Hoops/Hoops-CMS/issues/11) | Set up Git branching strategy | `documentation` |
-| [#10](https://github.com/Three-Hoops/Hoops-CMS/issues/10) | Configure Laravel Pint code style | `developer-experience` |
-| [#8](https://github.com/Three-Hoops/Hoops-CMS/issues/8) | Configure ESLint for TypeScript + Vue | `developer-experience` |
-| [#83](https://github.com/Three-Hoops/Hoops-CMS/issues/83) | Add commit hooks with Husky and lint-staged | `developer-experience` |
-| [#94](https://github.com/Three-Hoops/Hoops-CMS/issues/94) | Add demo content seeder for new project onboarding | `developer-experience`, `testing` |
-| [#95](https://github.com/Three-Hoops/Hoops-CMS/issues/95) | Enable Model::preventLazyLoading() to catch N+1 queries | `performance`, `developer-experience` |
-| [#102](https://github.com/Three-Hoops/Hoops-CMS/issues/102) | Add Vite bundle analyser | `performance`, `developer-experience` |
-| [#104](https://github.com/Three-Hoops/Hoops-CMS/issues/104) | Add Larastan (PHPStan) for PHP static analysis | `developer-experience` |
-| [#59](https://github.com/Three-Hoops/Hoops-CMS/issues/59) | Add laravel-ide-helper for IDE autocompletion | `developer-experience` |
-| [#5](https://github.com/Three-Hoops/Hoops-CMS/issues/5) | Add shadcn-vue component library | `developer-experience` |
-| [#7](https://github.com/Three-Hoops/Hoops-CMS/issues/7) | Set up Ziggy for Laravel route helpers in Vue | `developer-experience` |
-| [#67](https://github.com/Three-Hoops/Hoops-CMS/issues/67) | Add Docker Compose for local development (PHP, MySQL, Redis) | `infrastructure`, `developer-experience` |
-| [#9](https://github.com/Three-Hoops/Hoops-CMS/issues/9) | Set up GitHub Actions CI pipeline | `infrastructure` |
-| [#90](https://github.com/Three-Hoops/Hoops-CMS/issues/90) | Add dependency vulnerability scanning to CI pipeline | `security`, `infrastructure` |
-| [#34](https://github.com/Three-Hoops/Hoops-CMS/issues/34) | Set up Dependabot for automated dependency updates | `infrastructure` |
-| [#48](https://github.com/Three-Hoops/Hoops-CMS/issues/48) | Add .env.testing for the test environment | `testing` |
-| [#52](https://github.com/Three-Hoops/Hoops-CMS/issues/52) | Create model factories for all custom models | `testing`, `developer-experience` |
-| [#22](https://github.com/Three-Hoops/Hoops-CMS/issues/22) | Install Laravel Debugbar for local development | `infrastructure`, `developer-experience` |
-| [#12](https://github.com/Three-Hoops/Hoops-CMS/issues/12) | Set up local email with Mailtrap | `infrastructure` |
+| Status | # | Issue | Labels |
+|--------|---|-------|--------|
+| ✅ | [#11](https://github.com/Three-Hoops/Hoops-CMS/issues/11) | Set up Git branching strategy | `documentation` |
+| ✅ | [#10](https://github.com/Three-Hoops/Hoops-CMS/issues/10) | Configure Laravel Pint code style | `developer-experience` |
+| ✅ | [#8](https://github.com/Three-Hoops/Hoops-CMS/issues/8) | Configure ESLint for TypeScript + Vue | `developer-experience` |
+| ✅ | [#83](https://github.com/Three-Hoops/Hoops-CMS/issues/83) | Add commit hooks with Husky and lint-staged | `developer-experience` |
+| ✅ | [#9](https://github.com/Three-Hoops/Hoops-CMS/issues/9) | Set up GitHub Actions CI pipeline | `infrastructure` |
+| ✅ | [#104](https://github.com/Three-Hoops/Hoops-CMS/issues/104) | Add Larastan (PHPStan) for PHP static analysis | `developer-experience` |
+| ✅ | [#90](https://github.com/Three-Hoops/Hoops-CMS/issues/90) | Add dependency vulnerability scanning to CI pipeline | `security`, `infrastructure` |
+| ✅ | [#34](https://github.com/Three-Hoops/Hoops-CMS/issues/34) | Set up Dependabot for automated dependency updates | `infrastructure` |
+| ✅ | [#48](https://github.com/Three-Hoops/Hoops-CMS/issues/48) | Add .env.testing for the test environment | `testing` |
+| ⬜ | [#5](https://github.com/Three-Hoops/Hoops-CMS/issues/5) | Add shadcn-vue component library | `developer-experience` |
+| ⬜ | [#7](https://github.com/Three-Hoops/Hoops-CMS/issues/7) | Set up Ziggy for Laravel route helpers in Vue | `developer-experience` |
+| ⬜ | [#59](https://github.com/Three-Hoops/Hoops-CMS/issues/59) | Add laravel-ide-helper for IDE autocompletion | `developer-experience` |
+| ⬜ | [#96](https://github.com/Three-Hoops/Hoops-CMS/issues/96) | Enable Model::preventLazyLoading() to catch N+1 queries | `performance`, `developer-experience` |
+| ⬜ | [#102](https://github.com/Three-Hoops/Hoops-CMS/issues/102) | Add Vite bundle analyser | `performance`, `developer-experience` |
+| ⬜ | [#52](https://github.com/Three-Hoops/Hoops-CMS/issues/52) | Create model factories for all custom models *(deferred — implement alongside each model in phase 1+)* | `testing`, `developer-experience` |
+| ⬜ | [#94](https://github.com/Three-Hoops/Hoops-CMS/issues/94) | Add demo content seeder for new project onboarding *(deferred — needs models from phase 2)* | `developer-experience`, `testing` |
+| ⬜ | [#67](https://github.com/Three-Hoops/Hoops-CMS/issues/67) | Add Docker Compose for local development (PHP, MySQL, Redis) | `infrastructure`, `developer-experience` |
+| ⬜ | [#22](https://github.com/Three-Hoops/Hoops-CMS/issues/22) | Install Laravel Debugbar for local development | `infrastructure`, `developer-experience` |
+| ⬜ | [#12](https://github.com/Three-Hoops/Hoops-CMS/issues/12) | Set up local email with Mailtrap | `infrastructure` |
 
 ---
 
@@ -115,7 +115,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | [#4](https://github.com/Three-Hoops/Hoops-CMS/issues/4) | Phase 4: User Management + Settings | `auth`, `enhancement` |
 | [#108](https://github.com/Three-Hoops/Hoops-CMS/issues/108) | Make settings values translatable for multilingual sites | `content`, `enhancement` |
 | [#39](https://github.com/Three-Hoops/Hoops-CMS/issues/39) | Add user profile page for all authenticated users | `enhancement` |
-| [#96](https://github.com/Three-Hoops/Hoops-CMS/issues/96) | Add user avatar via media library | `auth`, `enhancement` |
+| [#95](https://github.com/Three-Hoops/Hoops-CMS/issues/95) | Add user avatar via media library | `auth`, `enhancement` |
 | [#93](https://github.com/Three-Hoops/Hoops-CMS/issues/93) | Add API token management UI for Sanctum personal access tokens | `auth`, `enhancement` |
 | [#97](https://github.com/Three-Hoops/Hoops-CMS/issues/97) | Add global search / command palette (Cmd+K) | `content`, `enhancement` |
 | [#98](https://github.com/Three-Hoops/Hoops-CMS/issues/98) | Schedule periodic cleanup tasks | `infrastructure` |
