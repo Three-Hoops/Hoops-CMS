@@ -31,25 +31,16 @@ jobs:
       - name: PHP dependency audit
         run: composer audit
 
-      - name: Copy .env
-        run: cp .env.example .env && php artisan key:generate
-
-      - name: Create SQLite database
-        run: mkdir -p database && touch database/database.sqlite
+      - name: Generate app key for testing
+        run: php artisan key:generate --env=testing
 
       - name: Run migrations
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
         run: php artisan migrate --force
 
       - name: PHP static analysis
         run: composer analyse
 
       - name: Run PHP tests
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
         run: php artisan test
 
   frontend:
