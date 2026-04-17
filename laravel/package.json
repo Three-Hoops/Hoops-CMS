@@ -11,6 +11,7 @@
     "test:e2e:open": "cypress open",
     "lint": "eslint resources/js",
     "lint:fix": "eslint resources/js --fix",
+    "type-check": "vue-tsc --noEmit",
     "prepare": "cd .. && husky laravel/.husky"
   },
   "lint-staged": {
@@ -39,7 +40,8 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.0",
-    "vitest": "^3.1.0"
+    "vitest": "^3.1.0",
+    "vue-tsc": "^2.2.12"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
