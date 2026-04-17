@@ -1,5 +1,6 @@
 {
     "require": {
-        "inertiajs/inertia-laravel": "^3.0"
+        "inertiajs/inertia-laravel": "^3.0",
+        "tightenco/ziggy": "^2.6"
     }
 }

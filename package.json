@@ -14,10 +14,15 @@
   "dependencies": {
     "@inertiajs/vue3": "^2.0.0",
     "pinia": "^2.3.0",
-    "vue": "^3.5.0"
+    "vue": "^3.5.0",
+    "ziggy-js": "^2.6.2"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["cypress", "esbuild", "vue-demi"]
+    "onlyBuiltDependencies": [
+      "cypress",
+      "esbuild",
+      "vue-demi"
+    ]
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.0",

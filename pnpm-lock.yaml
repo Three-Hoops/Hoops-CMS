@@ -17,6 +17,9 @@ importers:
       vue:
         specifier: ^3.5.0
         version: 3.5.32(typescript@5.9.3)
+      ziggy-js:
+        specifier: ^2.6.2
+        version: 2.6.2
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^5.2.0
@@ -1250,6 +1253,10 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
+  qs-esm@7.0.3:
+    resolution: {integrity: sha512-8jbjCR0PPbqoQcv83C2K/zvVeytRPwPpt3WPDbq51qyLAxcWGtXVRjSe6GHtLCoVbg9+NEFkv7GyUxqjcDIJzw==}
+    engines: {node: '>=18'}
+
   qs@6.14.2:
     resolution: {integrity: sha512-V/yCWTTF7VJ9hIh18Ugr2zhJMP01MY7c5kh4J870L7imm6/DIzBsNLTXzMwUA3yZ5b/KBqLx8Kp3uRvd7xSe3Q==}
     engines: {node: '>=0.6'}
@@ -1642,6 +1649,9 @@ packages:
 
   yauzl@2.10.0:
     resolution: {integrity: sha512-p4a9I6X6nu6IhoGmBqAcbJy1mlC4j27vEPZX9F4L4/vZT3Lyq1VkFHw/V/PUcB9Buo+DG3iHkT0x3Qya58zc3g==}
+
+  ziggy-js@2.6.2:
+    resolution: {integrity: sha512-41xc9wRvv5Olh8pZjKSaL5vDAjw4BfTDMFoeLwRpDGc2B+uqcdwIKd81EHs6uwpqahdRrU7uMab0xWj0hBSDjg==}
 
 snapshots:
 
@@ -2806,6 +2816,8 @@ snapshots:
 
   punycode@2.3.1: {}
 
+  qs-esm@7.0.3: {}
+
   qs@6.14.2:
     dependencies:
       side-channel: 1.1.0
@@ -3196,3 +3208,7 @@ snapshots:
     dependencies:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
+
+  ziggy-js@2.6.2:
+    dependencies:
+      qs-esm: 7.0.3
