@@ -95,7 +95,7 @@ A fully-featured, reusable CMS starter built on **Laravel 13**, **Vue 3**, and *
 
 | Layer                     | Technology                  |
 | ------------------------- | --------------------------- |
-| Backend                   | Laravel 13 (PHP 8.3)        |
+| Backend                   | Laravel 13 (PHP 8.4)        |
 | Frontend                  | Vue 3 + TypeScript          |
 | Bridge                    | Inertia.js v2               |
 | State management          | Pinia                       |
@@ -242,6 +242,14 @@ pnpm test:e2e
 # PHP static analysis
 composer analyse
 ```
+
+## Analysing the bundle
+
+```bash
+pnpm build:analyse
+```
+
+Builds for production and opens an interactive treemap (`bundle-stats.html`) showing the composition and gzip/brotli sizes of every module in the JS bundle. Use this before releases to catch oversized dependencies or tree-shaking regressions.
 
 ---
 
