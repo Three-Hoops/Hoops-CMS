@@ -193,10 +193,26 @@ Always open **`localhost:8000`** in the browser. Vite runs in the background for
 ```bash
 docker compose up -d
 docker compose exec app composer install
+docker compose exec app php artisan key:generate
 docker compose exec app php artisan migrate --seed
 docker compose exec app php artisan storage:link
 # then run pnpm dev on the host for HMR
 ```
+
+Update your `laravel/.env` to use the Docker service hostnames:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=hoops
+DB_USERNAME=hoops
+DB_PASSWORD=secret
+
+REDIS_HOST=redis
+```
+
+The app is served at **`localhost:8000`** via Nginx. Vite still runs on the host for HMR.
 
 ---
 
