@@ -1,0 +1,8 @@
+laravel/vendor
+laravel/node_modules
+laravel/.env
+laravel/public/build
+laravel/public/hot
+laravel/storage/pail
+laravel/storage/debugbar
+.git
