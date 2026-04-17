@@ -38,6 +38,9 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: php artisan migrate --force
 
+      - name: PHP static analysis
+        run: composer analyse
+
       - name: Run PHP tests
         env:
           DB_CONNECTION: sqlite
