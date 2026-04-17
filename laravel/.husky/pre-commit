@@ -1,1 +1,2 @@
+cd laravel
 pnpm exec lint-staged
