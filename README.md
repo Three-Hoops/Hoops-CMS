@@ -1,5 +1,8 @@
 # Hoops-CMS
 
+[![CI](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/ci.yml/badge.svg)](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/codeql.yml/badge.svg)](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/codeql.yml)
+
 A fully-featured, reusable CMS starter built on **Laravel 13**, **Vue 3**, and **Inertia.js v2**. Drop it into a new project and get a production-ready admin panel with content management, media library, user management, multilingual support, theming, and a headless API — without writing any of the boilerplate yourself.
 
 ---
