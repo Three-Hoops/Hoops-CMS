@@ -74,6 +74,8 @@ jobs:
         run: pnpm type-check
 
       - name: Unit tests
+        env:
+          LARAVEL_BYPASS_ENV_CHECK: 1
         run: pnpm exec vitest run
 
       - name: Build
