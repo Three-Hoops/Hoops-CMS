@@ -15,3 +15,4 @@ createInertiaApp({
             .mount(el)
     },
 })
+

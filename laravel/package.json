@@ -1,45 +1,52 @@
 {
-    "$schema": "https://www.schemastore.org/package.json",
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "test": "vitest",
-        "test:ui": "vitest --ui",
-        "test:e2e": "cypress run",
-        "test:e2e:open": "cypress open",
-        "lint": "eslint resources/js",
-        "lint:fix": "eslint resources/js --fix"
-    },
-    "dependencies": {
-        "@inertiajs/vue3": "^3.0.3",
-        "pinia": "^3.0.4",
-        "vue": "^3.5.0"
-    },
-    "devDependencies": {
-        "@eslint/js": "^10.0.1",
-        "@tailwindcss/vite": "^4.0.0",
-        "@vitejs/plugin-vue": "^6.0.0",
-        "@vue/test-utils": "^2.4.0",
-        "concurrently": "^9.0.1",
-        "cypress": "^15.14.0",
-        "eslint": "^10.2.0",
-        "eslint-plugin-vue": "^10.8.0",
-        "jsdom": "^29.0.2",
-        "laravel-vite-plugin": "^3.0.0",
-        "tailwindcss": "^4.0.0",
-        "typescript": "^6.0.3",
-        "typescript-eslint": "^8.58.2",
-        "vite": "^8.0.0",
-        "vitest": "^3.1.0"
-    },
-    "pnpm": {
-        "onlyBuiltDependencies": [
-            "cypress",
-            "esbuild",
-            "rolldown",
-            "vue-demi"
-        ]
-    }
+  "$schema": "https://www.schemastore.org/package.json",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open",
+    "lint": "eslint resources/js",
+    "lint:fix": "eslint resources/js --fix",
+    "prepare": "cd .. && husky laravel/.husky"
+  },
+  "lint-staged": {
+    "resources/js/**/*.{ts,vue}": "eslint --fix",
+    "../**/*.php": "../vendor/bin/pint"
+  },
+  "dependencies": {
+    "@inertiajs/vue3": "^3.0.3",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.0.0",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/test-utils": "^2.4.0",
+    "concurrently": "^9.0.1",
+    "cypress": "^15.14.0",
+    "eslint": "^10.2.0",
+    "eslint-plugin-vue": "^10.8.0",
+    "husky": "^9.1.7",
+    "jsdom": "^29.0.2",
+    "laravel-vite-plugin": "^3.0.0",
+    "lint-staged": "^16.4.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2",
+    "vite": "^8.0.0",
+    "vitest": "^3.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "cypress",
+      "esbuild",
+      "rolldown",
+      "vue-demi"
+    ]
+  }
 }
