@@ -13,7 +13,7 @@
         "lint:fix": "eslint resources/js --fix"
     },
     "dependencies": {
-        "@inertiajs/vue3": "^2.0.0",
+        "@inertiajs/vue3": "^3.0.3",
         "pinia": "^2.3.0",
         "vue": "^3.5.0"
     },
