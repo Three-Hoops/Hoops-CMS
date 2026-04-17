@@ -79,7 +79,41 @@ Browser → Laravel `routes/web.php` → Controller calls `Inertia::render('Fold
 - **State**: Pinia stores in `resources/js/stores/`. Global shared state (auth user, flash messages) goes through `HandleInertiaRequests::share()`.
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin.
 - **Path alias**: `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.ts`).
-- **Testing**: Vitest + `@vue/test-utils` for unit/component tests (co-located as `*.spec.ts`); Cypress for e2e (requires `php artisan serve` running).
+- **Testing**: Vitest + `@vue/test-utils` for unit/component tests (co-located as `*.spec.ts`); Cypress for e2e (requires `php artisan serve` running). **Always write tests when implementing new functionality** — see Testing Rules below.
+- **Lazy loading**: `Model::preventLazyLoading()` is active in all non-production environments. If you see a `LazyLoadingViolationException`, fix it by eager-loading the relationship in the controller: `Post::with(['category', 'tags'])->paginate()`.
+
+## Testing Rules
+
+Every PR that adds or changes behaviour must ship with tests. No exceptions.
+
+### PHP / Laravel (Pest)
+
+| What you're adding | Test type | Location |
+|--------------------|-----------|----------|
+| Controller / route | Feature test (`tests/Feature/`) | Assert HTTP status, Inertia component, returned props |
+| Service / action class | Unit test (`tests/Unit/`) | Pure logic, no HTTP layer |
+| Model scope / relationship | Unit test | Use the in-memory SQLite DB from `.env.testing` |
+| Form Request validation | Feature test | Test valid + invalid payloads |
+| Artisan command | Feature test | `$this->artisan(...)` assertions |
+
+Run: `php artisan test` (uses `.env.testing` automatically)
+
+### Vue / TypeScript (Vitest)
+
+| What you're adding | Test type | Location |
+|--------------------|-----------|----------|
+| Component with logic | Component test (`*.spec.ts` co-located) | Mount with `@vue/test-utils`, assert rendered output + emits |
+| Pinia store | Unit test (`stores/*.spec.ts`) | Test actions/getters in isolation |
+| Composable | Unit test (`composables/*.spec.ts`) | Call and assert return values |
+| Full user flow | Cypress e2e (`cypress/e2e/`) | Only for critical happy paths |
+
+Run: `pnpm test` (Vitest) or `pnpm test:e2e` (Cypress)
+
+### When NOT to write a test
+
+- Pure config files (vite.config.ts, phpstan.neon, tailwind theme)
+- Build tooling / CI workflow changes
+- Migrations (covered by the test suite running `migrate:fresh`)
 
 ## Tracking Progress
 
