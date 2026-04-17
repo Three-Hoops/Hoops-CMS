@@ -26,7 +26,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅ | [#34](https://github.com/Three-Hoops/Hoops-CMS/issues/34) | Set up Dependabot for automated dependency updates | `infrastructure` |
 | ✅ | [#48](https://github.com/Three-Hoops/Hoops-CMS/issues/48) | Add .env.testing for the test environment | `testing` |
 | ✅ | [#5](https://github.com/Three-Hoops/Hoops-CMS/issues/5) | Add shadcn-vue component library | `developer-experience` |
-| ⬜ | [#7](https://github.com/Three-Hoops/Hoops-CMS/issues/7) | Set up Ziggy for Laravel route helpers in Vue | `developer-experience` |
+| ✅ | [#7](https://github.com/Three-Hoops/Hoops-CMS/issues/7) | Set up Ziggy for Laravel route helpers in Vue | `developer-experience` |
 | ⬜ | [#59](https://github.com/Three-Hoops/Hoops-CMS/issues/59) | Add laravel-ide-helper for IDE autocompletion | `developer-experience` |
 | ⬜ | [#96](https://github.com/Three-Hoops/Hoops-CMS/issues/96) | Enable Model::preventLazyLoading() to catch N+1 queries | `performance`, `developer-experience` |
 | ⬜ | [#102](https://github.com/Three-Hoops/Hoops-CMS/issues/102) | Add Vite bundle analyser | `performance`, `developer-experience` |

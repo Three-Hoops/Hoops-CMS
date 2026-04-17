@@ -81,6 +81,10 @@ Browser → Laravel `routes/web.php` → Controller calls `Inertia::render('Fold
 - **Path alias**: `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.ts`).
 - **Testing**: Vitest + `@vue/test-utils` for unit/component tests (co-located as `*.spec.ts`); Cypress for e2e (requires `php artisan serve` running).
 
+## Tracking Progress
+
+Just before opening a pull request for an issue, update `plan.md` by changing the status indicator for that issue from ⬜ to ✅ and include that change in the same commit.
+
 ## Git Workflow
 
 This project follows **GitHub Flow**: one branch per feature/fix, PR into `main`, merge after CI passes.
