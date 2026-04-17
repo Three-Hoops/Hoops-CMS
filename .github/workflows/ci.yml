@@ -74,7 +74,7 @@ jobs:
         run: pnpm type-check
 
       - name: Unit tests
-        run: pnpm test --run
+        run: pnpm exec vitest run
 
       - name: Build
         run: pnpm build

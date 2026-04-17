@@ -4,12 +4,14 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "strict": true,
+        "skipLibCheck": true,
         "jsx": "preserve",
         "sourceMap": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "lib": ["ESNext", "DOM"],
-        "types": ["vitest/globals"],
+        "types": ["vitest/globals", "vite/client"],
+        "ignoreDeprecations": "6.0",
         "baseUrl": ".",
         "paths": {
             "@/*": ["resources/js/*"]
