@@ -7,6 +7,7 @@ A fully-featured, reusable CMS starter built on **Laravel 13**, **Vue 3**, and *
 ## What Hoops-CMS does
 
 ### Content management
+
 - Create and manage **posts**, **pages**, **categories**, and **tags** through a rich admin interface
 - Write content with a **TipTap rich text editor** (headings, lists, links, inline images, formatting)
 - Hierarchical **page structure** with parent/child relationships
@@ -21,18 +22,21 @@ A fully-featured, reusable CMS starter built on **Laravel 13**, **Vue 3**, and *
 - **Sitemap** and **robots.txt** generation
 
 ### Multilingual content (i18n)
+
 - All content fields (title, body, excerpt, meta, OG) stored as **per-locale JSON** via `spatie/laravel-translatable`
 - Per-editor **language and timezone preferences**
 - **Language switcher** in edit forms with per-locale completion indicators
 - Public API serves content in the requested locale with a configurable fallback chain
 
 ### SEO
+
 - Per-content **meta title, description, keywords**
 - Per-content **Open Graph fields** (title, description, image, Twitter card, canonical URL) with a smart fallback chain
 - **JSON-LD / Schema.org** structured data for posts (Article) and site (WebSite)
 - Character count indicators and live social card preview in edit forms
 
 ### Media library
+
 - **Upload, browse, and organise** files into folders
 - **Image optimisation** on upload via Intervention Image
 - **Alt text** per file, translatable per locale
@@ -42,6 +46,7 @@ A fully-featured, reusable CMS starter built on **Laravel 13**, **Vue 3**, and *
 - **Inline image upload** from within the TipTap editor
 
 ### User management
+
 - **Role-based access control** — `super_admin`, `editor`, `viewer`
 - Defined capability matrix per role, enforced by Laravel Policies
 - **User invitation** flow with branded email
@@ -52,26 +57,31 @@ A fully-featured, reusable CMS starter built on **Laravel 13**, **Vue 3**, and *
 - **Last login tracking** for security auditing
 
 ### Theming
+
 - **Admin dark / light / system mode** toggle, stored per user
 - **Public site theme** — primary colour, secondary colour, fonts, and border radius stored in the database as CSS custom properties, applied without a redeploy
 - **Theme presets** — one-click preset picker with visual swatches
 - **Live theme preview** — see changes in a sandboxed iframe before saving
 
 ### Settings
+
 - Site name, tagline, logo, favicon, social handles
 - Translatable values for site-level strings (tagline, meta description)
 - All public settings shared to every page via Inertia shared props and cached in Redis
 
 ### Navigation & menus
+
 - Manage site navigation and menu structures from the admin
 
 ### Headless / public API
+
 - Versioned read-only REST API at `/api/v1/` for external frontends (Nuxt, Next.js, mobile apps)
 - Endpoints: posts, pages, categories, tags, settings
 - Locale resolution via `Accept-Language` header or `?locale=` query param
 - Rate limiting, HTTP cache headers (`ETag`, `Cache-Control`), and Sanctum token auth for private endpoints
 
 ### Audit & compliance
+
 - **Activity log** via `spatie/laravel-activitylog` — tracks all content and user changes
 - **GDPR-compliant** audit log retention with configurable pruning schedule
 - **Scheduled cleanup** — expired tokens, stale autosaves, old soft-deleted records pruned automatically
@@ -80,27 +90,27 @@ A fully-featured, reusable CMS starter built on **Laravel 13**, **Vue 3**, and *
 
 ## Tech stack
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | Laravel 13 (PHP 8.3) |
-| Frontend | Vue 3 + TypeScript |
-| Bridge | Inertia.js v2 |
-| State management | Pinia |
-| Styling | Tailwind CSS v4 |
-| Rich text editor | TipTap |
-| Build tool | Vite 8 (via pnpm) |
-| Unit / component tests | Vitest + Vue Test Utils |
-| E2E tests | Cypress + cypress-axe |
-| PHP static analysis | Larastan (PHPStan) |
-| Queue monitoring | Laravel Horizon |
-| Search | Laravel Scout + Meilisearch |
-| Cache / sessions / queues | Redis |
-| Media processing | Intervention Image |
-| Activity log | spatie/laravel-activitylog |
-| Backups | spatie/laravel-backup |
-| i18n | spatie/laravel-translatable |
-| API auth | Laravel Sanctum |
-| Error tracking | Flare |
+| Layer                     | Technology                  |
+| ------------------------- | --------------------------- |
+| Backend                   | Laravel 13 (PHP 8.3)        |
+| Frontend                  | Vue 3 + TypeScript          |
+| Bridge                    | Inertia.js v2               |
+| State management          | Pinia                       |
+| Styling                   | Tailwind CSS v4             |
+| Rich text editor          | TipTap                      |
+| Build tool                | Vite 8 (via pnpm)           |
+| Unit / component tests    | Vitest + Vue Test Utils     |
+| E2E tests                 | Cypress + cypress-axe       |
+| PHP static analysis       | Larastan (PHPStan)          |
+| Queue monitoring          | Laravel Horizon             |
+| Search                    | Laravel Scout + Meilisearch |
+| Cache / sessions / queues | Redis                       |
+| Media processing          | Intervention Image          |
+| Activity log              | spatie/laravel-activitylog  |
+| Backups                   | spatie/laravel-backup       |
+| i18n                      | spatie/laravel-translatable |
+| API auth                  | Laravel Sanctum             |
+| Error tracking            | Flare                       |
 
 ---
 
@@ -133,6 +143,7 @@ laravel/
 ```
 
 **Request flow:**
+
 ```
 Browser → Laravel routes/web.php
         → Controller → Inertia::render('Admin/Posts/Index', $props)
@@ -144,6 +155,7 @@ API consumer → GET /api/v1/posts?locale=nl
 ```
 
 **Key conventions:**
+
 - All admin routes live under `/admin/*`, protected by `auth` + role middleware
 - No Vue Router — all routing is Laravel-only; Inertia handles SPA navigation
 - Forms use `useForm()` from Inertia directly; Pinia stores hold filter and UI state only
@@ -157,6 +169,7 @@ API consumer → GET /api/v1/posts?locale=nl
 You need two terminals, both in the `laravel/` directory.
 
 **Terminal 1 — Laravel backend:**
+
 ```bash
 cd laravel
 php artisan serve
@@ -164,6 +177,7 @@ php artisan serve
 ```
 
 **Terminal 2 — Vite frontend:**
+
 ```bash
 cd laravel
 pnpm dev
@@ -172,6 +186,7 @@ pnpm dev
 Always open **`localhost:8000`** in the browser. Vite runs in the background for HMR only.
 
 ### Docker (alternative)
+
 ```bash
 docker compose up -d
 docker compose exec app composer install
@@ -200,7 +215,9 @@ pnpm install
 With nvm: `nvm install 22 && nvm use 22` (Node 22.12+ required for Vite 8).
 
 ### Demo content
+
 To seed sample posts, pages, categories, and media for local development:
+
 ```bash
 php artisan db:seed --class=DemoSeeder
 ```
@@ -229,14 +246,16 @@ composer analyse
 
 The full implementation plan — 110 GitHub issues across 9 stages — is tracked in [`plan.md`](./plan.md) and on the [GitHub Issues page](https://github.com/Three-Hoops/Hoops-CMS/issues).
 
-| Stage | Focus |
-|-------|-------|
-| 0 — Pre-flight | Tooling, DX, CI |
-| 1 — Auth + Admin Shell | Login, roles, layout, security |
-| 2 — Core Content | Posts, pages, categories, tags |
-| 3 — Media Library | Upload, folders, optimisation |
-| 4 — Users, Settings & Theming | User management, theme system |
-| 5 — Testing & Quality | Feature tests, E2E, a11y |
-| 6 — Infrastructure & Ops | Redis, queues, deployment |
-| 7 — Content Enhancements | Navigation, revisions, search, RSS |
-| 8 — Headless API | Public REST API, locale, caching |
+| Stage                         | Focus                              |
+| ----------------------------- | ---------------------------------- |
+| 0 — Pre-flight                | Tooling, DX, CI                    |
+| 1 — Auth + Admin Shell        | Login, roles, layout, security     |
+| 2 — Core Content              | Posts, pages, categories, tags     |
+| 3 — Media Library             | Upload, folders, optimisation      |
+| 4 — Users, Settings & Theming | User management, theme system      |
+| 5 — Testing & Quality         | Feature tests, E2E, a11y           |
+| 6 — Infrastructure & Ops      | Redis, queues, deployment          |
+| 7 — Content Enhancements      | Navigation, revisions, search, RSS |
+| 8 — Headless API              | Public REST API, locale, caching   |
+
+© 2026 Alex Verbraecken / 3Hoops — licensed under BUSL 1.1. Free for non-commercial use; commercial use requires a license.
