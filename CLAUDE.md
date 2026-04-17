@@ -16,6 +16,7 @@ All frontend commands must be run from the `laravel/` directory.
 pnpm install              # Install JS dependencies
 pnpm dev                  # Start Vite dev server (HMR)
 pnpm build                # Production asset build
+pnpm build:analyse        # Build + open bundle analyser (bundle-stats.html)
 pnpm test                 # Run Vitest unit/component tests
 pnpm test:ui              # Vitest with browser UI
 pnpm test:e2e             # Cypress e2e tests (headless, needs Laravel running)
