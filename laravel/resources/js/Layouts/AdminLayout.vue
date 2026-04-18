@@ -48,6 +48,12 @@ function logout() {
         <p class="text-xs text-muted-foreground">
           {{ authStore.user?.role }}
         </p>
+        <p
+          v-if="authStore.user?.last_login_at"
+          class="mt-1 text-xs text-muted-foreground"
+        >
+          Last login: {{ new Date(authStore.user.last_login_at).toLocaleString() }}
+        </p>
       </div>
     </aside>
 

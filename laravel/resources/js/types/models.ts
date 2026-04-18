@@ -5,6 +5,7 @@ export interface AuthUser {
     name: string
     email: string
     role: UserRole
+    last_login_at: string | null
 }
 
 export interface FlashMessages {
