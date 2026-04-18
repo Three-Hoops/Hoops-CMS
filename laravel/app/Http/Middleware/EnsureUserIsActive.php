@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\FlashType;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -17,10 +18,7 @@ class EnsureUserIsActive
         if ($user instanceof User && ! $user->is_active) {
             Auth::logout();
 
-            return redirect()->route('admin.login')->with('flash', [
-                'type'    => 'error',
-                'message' => 'Your account has been deactivated. Please contact an administrator.',
-            ]);
+            return redirect()->route('admin.login')->with(FlashType::Error->value, 'Your account has been deactivated. Please contact an administrator.');
         }
 
         return $next($request);
