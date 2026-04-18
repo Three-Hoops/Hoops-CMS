@@ -49,7 +49,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅ | [#77](https://github.com/Three-Hoops/Hoops-CMS/issues/77) | Track last_login_at on users | `auth`, `security` |
 | [#85](https://github.com/Three-Hoops/Hoops-CMS/issues/85) | Add is_active flag to users for account suspension | `auth`, `security` |
 | [#106](https://github.com/Three-Hoops/Hoops-CMS/issues/106) | Define and enforce viewer role capabilities | `auth`, `security` |
-| [#84](https://github.com/Three-Hoops/Hoops-CMS/issues/84) | Add remember me to login form | `auth`, `enhancement` |
+| ✅ | [#84](https://github.com/Three-Hoops/Hoops-CMS/issues/84) | Add remember me to login form | `auth`, `enhancement` |
 | [#109](https://github.com/Three-Hoops/Hoops-CMS/issues/109) | Add branded transactional email templates | `auth`, `enhancement` |
 | [#89](https://github.com/Three-Hoops/Hoops-CMS/issues/89) | Implement Content Security Policy (CSP) for admin panel | `security` |
 | ✅ | [#82](https://github.com/Three-Hoops/Hoops-CMS/issues/82) | Make admin layout mobile-responsive | `enhancement` |

@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
                 'name'     => 'Admin',
                 'password' => Hash::make('password'),
                 'role'     => UserRole::SuperAdmin,
+                'remember' => false,
             ]
         );
     }

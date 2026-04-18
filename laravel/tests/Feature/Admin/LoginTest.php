@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -47,6 +48,37 @@ class LoginTest extends TestCase
         ]);
 
         $this->assertTrue($user->fresh()->last_login_at->isAfter($previous));
+    }
+
+    public function test_remember_me_sets_remember_cookie_when_checked(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $response = $this->post('/admin/login', [
+            'email'    => $user->email,
+            'password' => 'password',
+            'remember' => true,
+        ]);
+
+        // Assert
+        $response->assertCookie(Auth::guard()->getRecallerName());
+    }
+
+    public function test_remember_me_does_not_set_remember_cookie_when_unchecked(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $response = $this->post('/admin/login', [
+            'email'    => $user->email,
+            'password' => 'password',
+        ]);
+
+        // Assert
+        $response->assertCookieMissing(Auth::guard()->getRecallerName());
     }
 
     public function test_last_login_at_is_shared_in_inertia_auth_prop(): void

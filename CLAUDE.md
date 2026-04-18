@@ -134,9 +134,15 @@ it('does something', () => {
 - Build tooling / CI workflow changes
 - Migrations (covered by the test suite running `migrate:fresh`)
 
+## Working Approach
+
+Before making any code changes, always explain what changes you plan to make and wait for the user to confirm before implementing. This applies to all tasks — bug fixes, new features, refactors, and configuration changes.
+
 ## Tracking Progress
 
 Just before opening a pull request for an issue, update `plan.md` by changing the status indicator for that issue from ⬜ to ✅ and include that change in the same commit.
+
+Every PR body must start with `Closes #<issue-number>` so GitHub automatically closes the issue on merge.
 
 Every new GitHub issue must also be added to `plan.md` under the appropriate stage and phase before any implementation begins.
 
