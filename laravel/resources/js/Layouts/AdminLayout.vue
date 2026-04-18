@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { Link, usePage, useForm } from "@inertiajs/vue3";
 import { route } from "ziggy-js";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -11,6 +11,9 @@ const page = usePage<SharedProps>();
 const appName = computed(() => page.props.app.name);
 
 const logoutForm = useForm({});
+const sidebarOpen = ref(false)
+
+watch(() => page.url, () => { sidebarOpen.value = false })
 
 function logout() {
     logoutForm.post(route("admin.logout"));
@@ -19,8 +22,20 @@ function logout() {
 
 <template>
   <div class="flex h-screen bg-background">
+    <!-- Mobile sidebar backdrop -->
+    <div
+      v-if="sidebarOpen"
+      class="fixed inset-0 z-20 bg-black/50 lg:hidden"
+      @click="sidebarOpen = false"
+    />
+
     <!-- Sidebar -->
-    <aside class="flex w-64 flex-col border-r bg-card">
+    <aside
+      :class="[
+        'fixed inset-y-0 left-0 z-30 flex w-64 flex-col border-r bg-card transition-transform duration-200 lg:static lg:translate-x-0',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+      ]"
+    >
       <!-- App name -->
       <div class="flex h-16 items-center border-b px-6">
         <span class="text-lg font-semibold">{{ appName }}</span>
@@ -61,11 +76,32 @@ function logout() {
     <div class="flex flex-1 flex-col overflow-hidden">
       <!-- Top bar -->
       <header
-        class="flex h-16 items-center justify-between border-b bg-card px-6"
+        class="flex h-16 items-center justify-between border-b bg-card px-4 lg:px-6"
       >
-        <h1 class="text-lg font-semibold">
-          <slot name="title" />
-        </h1>
+        <div class="flex items-center gap-3">
+          <!-- Hamburger (mobile only) -->
+          <button
+            class="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
+            @click="sidebarOpen = true"
+          >
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+          <h1 class="text-lg font-semibold">
+            <slot name="title" />
+          </h1>
+        </div>
         <button
           class="text-sm text-muted-foreground hover:text-foreground"
           @click="logout"
