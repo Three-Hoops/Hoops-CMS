@@ -33,10 +33,10 @@ function submit() {
         {{ page.props.flash.success }}
       </div>
       <div
-        v-if="form.errors.throttle"
+        v-if="page.props.errors.throttle"
         class="rounded-md bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
       >
-        {{ form.errors.throttle }}
+        {{ page.props.errors.throttle }}
       </div>
       <Card class="w-full">
         <CardHeader>
