@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { usePage } from "@inertiajs/vue3";
-import { useForm } from "@inertiajs/vue3";
+import { usePage, useForm } from "@inertiajs/vue3";
+import { computed } from "vue";
 import { route } from "ziggy-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,8 @@ const form = useForm({
     password: "",
     remember: false,
 });
+
+const throttleError = computed(() => (form.errors as Record<string, string | undefined>).throttle)
 
 function submit() {
     form.post(route("admin.post.login"), {
@@ -33,10 +35,10 @@ function submit() {
         {{ page.props.flash.success }}
       </div>
       <div
-        v-if="page.props.errors.throttle"
+        v-if="throttleError"
         class="rounded-md bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
       >
-        {{ page.props.errors.throttle }}
+        {{ throttleError }}
       </div>
       <Card class="w-full">
         <CardHeader>

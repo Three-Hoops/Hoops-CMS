@@ -2,19 +2,22 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import Login from './Login.vue'
 
-const mockPageProps = {
-    flash: { success: null as string | null, error: null as string | null },
-    errors: {} as Record<string, string>,
-}
+const mockFormErrors: Record<string, string> = {}
+const mockFlash = { success: null as string | null, error: null as string | null }
 
 vi.mock('@inertiajs/vue3', () => ({
-    usePage: () => ({ props: mockPageProps }),
+    usePage: () => ({
+        props: {
+            flash: mockFlash,
+            errors: {},
+        },
+    }),
     useForm: () => ({
         email: '',
         password: '',
         remember: false,
         processing: false,
-        errors: {},
+        errors: mockFormErrors,
         post: vi.fn(),
         reset: vi.fn(),
     }),
@@ -40,13 +43,14 @@ const globalConfig = {
 
 describe('Login', () => {
     beforeEach(() => {
-        mockPageProps.flash = { success: null, error: null }
-        mockPageProps.errors = {}
+        Object.keys(mockFormErrors).forEach(key => delete mockFormErrors[key])
+        mockFlash.success = null
+        mockFlash.error = null
     })
 
     it('shows throttle error banner when throttle error is present', () => {
         // Arrange
-        mockPageProps.errors = { throttle: 'Too many login attempts. Please try again in 60 seconds.' }
+        mockFormErrors.throttle = 'Too many login attempts. Please try again in 60 seconds.'
         const wrapper = mount(Login, globalConfig)
 
         // Assert
@@ -64,7 +68,7 @@ describe('Login', () => {
 
     it('shows success flash message on logout', () => {
         // Arrange
-        mockPageProps.flash = { success: 'You have been logged out.', error: null }
+        mockFlash.success = 'You have been logged out.'
         const wrapper = mount(Login, globalConfig)
 
         // Assert
