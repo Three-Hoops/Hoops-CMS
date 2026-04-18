@@ -15,8 +15,9 @@ use App\Enums\UserRole;
  * @property UserRole $role
  * @property \Illuminate\Support\Carbon|null $last_login_at
  * @property bool $is_active
+ * @property string $locale
  */
-#[Fillable(['name', 'email', 'password', 'role', 'last_login_at', 'is_active'])]
+#[Fillable(['name', 'email', 'password', 'role', 'last_login_at', 'is_active', 'locale'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
