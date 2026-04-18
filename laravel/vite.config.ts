@@ -3,7 +3,6 @@ import laravel from 'laravel-vite-plugin'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
-import path from 'path'
 
 export default defineConfig({
     plugins: [
@@ -27,11 +26,6 @@ export default defineConfig({
             brotliSize: true,
         }),
     ],
-    resolve: {
-        alias: {
-            'ziggy-js': path.resolve(__dirname, 'vendor/tightenco/ziggy/dist/index.esm.js'),
-        },
-    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],
