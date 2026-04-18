@@ -14,6 +14,7 @@ class EnsureUserIsActiveTest extends TestCase
     public function test_active_user_can_access_admin(): void
     {
         // Arrange
+        $this->withoutVite();
         $user = User::factory()->create(['is_active' => true]);
 
         // Act
