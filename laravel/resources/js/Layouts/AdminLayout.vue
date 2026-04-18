@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { Link, usePage, useForm } from "@inertiajs/vue3";
 import { route } from "ziggy-js";
 import { useAuthStore } from "@/stores/useAuthStore";
-import FlashBanner from "@/Components/Admin/FlashBanner.vue";
+import FlashBanner from "@/components/Admin/FlashBanner.vue";
 import type { SharedProps } from "@/types/models";
 
 const authStore = useAuthStore();

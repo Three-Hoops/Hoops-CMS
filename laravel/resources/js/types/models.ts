@@ -22,4 +22,5 @@ export interface SharedProps {
         location: string
         [key: string]: unknown
     }
+    [key: string]: unknown
 }
