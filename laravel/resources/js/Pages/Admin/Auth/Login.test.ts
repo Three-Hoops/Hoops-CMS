@@ -4,6 +4,8 @@ import Login from './Login.vue'
 
 const mockFormErrors: Record<string, string> = {}
 const mockFlash = { success: null as string | null, error: null as string | null }
+const mockPost = vi.fn()
+const mockReset = vi.fn()
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
@@ -18,8 +20,8 @@ vi.mock('@inertiajs/vue3', () => ({
         remember: false,
         processing: false,
         errors: mockFormErrors,
-        post: vi.fn(),
-        reset: vi.fn(),
+        post: mockPost,
+        reset: mockReset,
     }),
 }))
 
@@ -46,6 +48,8 @@ describe('Login', () => {
         Object.keys(mockFormErrors).forEach(key => delete mockFormErrors[key])
         mockFlash.success = null
         mockFlash.error = null
+        mockPost.mockReset()
+        mockReset.mockReset()
     })
 
     it('shows throttle error banner when throttle error is present', () => {
@@ -74,5 +78,16 @@ describe('Login', () => {
         // Assert
         expect(wrapper.find('.bg-green-50').exists()).toBe(true)
         expect(wrapper.find('.bg-green-50').text()).toContain('You have been logged out.')
+    })
+
+    it('submits the form when the sign in button is clicked', async () => {
+        // Arrange
+        const wrapper = mount(Login, globalConfig)
+
+        // Act
+        await wrapper.find('form').trigger('submit')
+
+        // Assert
+        expect(mockPost).toHaveBeenCalledWith('/admin.post.login', expect.objectContaining({ onFinish: expect.any(Function) }))
     })
 })
