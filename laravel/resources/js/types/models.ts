@@ -19,6 +19,7 @@ export interface SharedProps {
     }
     auth: AuthUser | null
     flash: FlashMessages
+    errors: Record<string, string>
     ziggy: {
         location: string
         [key: string]: unknown
