@@ -52,7 +52,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | [#84](https://github.com/Three-Hoops/Hoops-CMS/issues/84) | Add remember me to login form | `auth`, `enhancement` |
 | [#109](https://github.com/Three-Hoops/Hoops-CMS/issues/109) | Add branded transactional email templates | `auth`, `enhancement` |
 | [#89](https://github.com/Three-Hoops/Hoops-CMS/issues/89) | Implement Content Security Policy (CSP) for admin panel | `security` |
-| [#82](https://github.com/Three-Hoops/Hoops-CMS/issues/82) | Make admin layout mobile-responsive | `enhancement` |
+| ✅ | [#82](https://github.com/Three-Hoops/Hoops-CMS/issues/82) | Make admin layout mobile-responsive | `enhancement` |
 | [#14](https://github.com/Three-Hoops/Hoops-CMS/issues/14) | Configure rate limiting on the login endpoint | `security` |
 | [#16](https://github.com/Three-Hoops/Hoops-CMS/issues/16) | Add security headers middleware | `security` |
 | [#42](https://github.com/Three-Hoops/Hoops-CMS/issues/42) | Configure session security and timeout | `security` |
