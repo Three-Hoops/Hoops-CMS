@@ -46,7 +46,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅ | [#1](https://github.com/Three-Hoops/Hoops-CMS/issues/1) | Phase 1: Auth + Admin Shell | `auth`, `enhancement` |
 | [#71](https://github.com/Three-Hoops/Hoops-CMS/issues/71) | Add locale column to users table for editor language preference | `auth`, `enhancement` |
 | [#103](https://github.com/Three-Hoops/Hoops-CMS/issues/103) | Add timezone preference to users for correct scheduled publishing | `auth`, `enhancement` |
-| [#77](https://github.com/Three-Hoops/Hoops-CMS/issues/77) | Track last_login_at on users | `auth`, `security` |
+| ✅ | [#77](https://github.com/Three-Hoops/Hoops-CMS/issues/77) | Track last_login_at on users | `auth`, `security` |
 | [#85](https://github.com/Three-Hoops/Hoops-CMS/issues/85) | Add is_active flag to users for account suspension | `auth`, `security` |
 | [#106](https://github.com/Three-Hoops/Hoops-CMS/issues/106) | Define and enforce viewer role capabilities | `auth`, `security` |
 | [#84](https://github.com/Three-Hoops/Hoops-CMS/issues/84) | Add remember me to login form | `auth`, `enhancement` |
@@ -157,6 +157,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | [#101](https://github.com/Three-Hoops/Hoops-CMS/issues/101) | Add automated backup restore verification | `infrastructure` |
 | [#13](https://github.com/Three-Hoops/Hoops-CMS/issues/13) | Set up error tracking with Flare | `infrastructure` |
 | [#31](https://github.com/Three-Hoops/Hoops-CMS/issues/31) | Write deployment guide | `infrastructure`, `documentation` |
+| [#135](https://github.com/Three-Hoops/Hoops-CMS/issues/135) | Set up GitHub Pages for project documentation *(deferred — action when project goes public)* | `documentation` |
 | [#91](https://github.com/Three-Hoops/Hoops-CMS/issues/91) | Document and implement zero-downtime deployment strategy | `infrastructure`, `documentation` |
 
 ---

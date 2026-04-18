@@ -121,6 +121,8 @@ Run: `pnpm test` (Vitest) or `pnpm test:e2e` (Cypress)
 
 Just before opening a pull request for an issue, update `plan.md` by changing the status indicator for that issue from ⬜ to ✅ and include that change in the same commit.
 
+Every new GitHub issue must also be added to `plan.md` under the appropriate stage and phase before any implementation begins.
+
 ## Git Workflow
 
 This project follows **GitHub Flow**: one branch per feature/fix, PR into `main`, merge after CI passes.

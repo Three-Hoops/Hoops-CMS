@@ -35,5 +35,11 @@ export default defineConfig({
         environment: 'jsdom',
         globals: true,
         include: ['resources/js/**/*.{test,spec}.{ts,js}'],
+        coverage: {
+            provider: 'v8',
+            reporter: ['clover', 'text'],
+            include: ['resources/js/**/*.{ts,vue}'],
+            exclude: ['resources/js/components/ui/**'],
+        },
     },
 })

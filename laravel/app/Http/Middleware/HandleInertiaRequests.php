@@ -43,10 +43,11 @@ class HandleInertiaRequests extends Middleware
                 'name' => config('app.name'),
             ],
             'auth' => fn () => $request->user() ? [
-                'id'    => $request->user()->id,
-                'name'  => $request->user()->name,
-                'email' => $request->user()->email,
-                'role'  => $request->user()->role,
+                'id'            => $request->user()->id,
+                'name'          => $request->user()->name,
+                'email'         => $request->user()->email,
+                'role'          => $request->user()->role,
+                'last_login_at' => $request->user()->last_login_at?->toISOString(),
             ] : null,
             'flash' => fn () => [
                 'success' => $request->session()->get('success'),

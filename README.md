@@ -1,7 +1,11 @@
 # Hoops-CMS
 
-[![CI](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/ci.yml/badge.svg)](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/ci.yml)
+[![PHP Analysis](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/php-analysis.yml/badge.svg)](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/php-analysis.yml)
+[![PHP Tests](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/php-tests.yml/badge.svg)](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/php-tests.yml)
+[![Vue Tests](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/vue-tests.yml/badge.svg)](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/vue-tests.yml)
+[![Frontend](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/frontend.yml/badge.svg)](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/frontend.yml)
 [![CodeQL](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/codeql.yml/badge.svg)](https://github.com/Three-Hoops/Hoops-CMS/actions/workflows/codeql.yml)
+[![codecov](https://codecov.io/gh/Three-Hoops/Hoops-CMS/graph/badge.svg)](https://codecov.io/gh/Three-Hoops/Hoops-CMS)
 
 A fully-featured, reusable CMS starter built on **Laravel 13**, **Vue 3**, and **Inertia.js v3**. Drop it into a new project and get a production-ready admin panel with content management, media library, user management, multilingual support, theming, and a headless API — without writing any of the boilerplate yourself.
 
