@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role'     => UserRole::SuperAdmin,
                 'remember' => false,
+                'is_active' => true,
             ]
         );
     }

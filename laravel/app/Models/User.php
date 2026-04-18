@@ -14,8 +14,9 @@ use App\Enums\UserRole;
 /**
  * @property UserRole $role
  * @property \Illuminate\Support\Carbon|null $last_login_at
+ * @property bool $is_active
  */
-#[Fillable(['name', 'email', 'password', 'role', 'last_login_at'])]
+#[Fillable(['name', 'email', 'password', 'role', 'last_login_at', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -34,6 +35,7 @@ class User extends Authenticatable
             'last_login_at'     => 'datetime',
             'password'          => 'hashed',
             'role'              => UserRole::class,
+            'is_active'         => 'boolean',
         ];
     }
 }
