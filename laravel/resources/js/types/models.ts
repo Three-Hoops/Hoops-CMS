@@ -18,4 +18,8 @@ export interface SharedProps {
     }
     auth: AuthUser | null
     flash: FlashMessages
+    ziggy: {
+        location: string
+        [key: string]: unknown
+    }
 }

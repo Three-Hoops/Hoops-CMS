@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Link, usePage, useForm } from '@inertiajs/vue3'
-import { useAuthStore } from '@/stores/useAuthStore'
-import FlashBanner from '@/Components/Admin/FlashBanner.vue'
-import type { SharedProps } from '@/types/models'
+import { computed } from "vue";
+import { Link, usePage, useForm } from "@inertiajs/vue3";
+import { route } from "ziggy-js";
+import { useAuthStore } from "@/stores/useAuthStore";
+import FlashBanner from "@/Components/Admin/FlashBanner.vue";
+import type { SharedProps } from "@/types/models";
 
-const authStore = useAuthStore()
-const page = usePage<SharedProps>()
-const appName = computed(() => page.props.app.name)
+const authStore = useAuthStore();
+const page = usePage<SharedProps>();
+const appName = computed(() => page.props.app.name);
 
-const logoutForm = useForm({})
+const logoutForm = useForm({});
 
 function logout() {
-    logoutForm.post(route('admin.logout'))
+    logoutForm.post(route("admin.logout"));
 }
 </script>
 
@@ -30,7 +31,10 @@ function logout() {
         <Link
           :href="route('admin.dashboard')"
           class="flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-          :class="{ 'bg-accent text-accent-foreground': $page.url.startsWith('/admin') }"
+          :class="{
+            'bg-accent text-accent-foreground':
+              $page.url.startsWith('/admin'),
+          }"
         >
           Dashboard
         </Link>
@@ -50,7 +54,9 @@ function logout() {
     <!-- Main area -->
     <div class="flex flex-1 flex-col overflow-hidden">
       <!-- Top bar -->
-      <header class="flex h-16 items-center justify-between border-b bg-card px-6">
+      <header
+        class="flex h-16 items-center justify-between border-b bg-card px-6"
+      >
         <h1 class="text-lg font-semibold">
           <slot name="title" />
         </h1>

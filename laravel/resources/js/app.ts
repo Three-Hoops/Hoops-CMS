@@ -10,11 +10,13 @@ createInertiaApp({
         return pages[`./Pages/${name}.vue`]
     },
     setup({ el, App, props, plugin }) {
+        const ziggyConfig = (props.initialPage.props as { ziggy: unknown }).ziggy
+        Object.assign(globalThis, { Ziggy: ziggyConfig })
+
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(createPinia())
-            .use(ZiggyVue)
+            .use(ZiggyVue, ziggyConfig)
             .mount(el)
     },
 })
-
