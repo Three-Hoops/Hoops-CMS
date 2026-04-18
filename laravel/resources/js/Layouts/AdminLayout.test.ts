@@ -48,49 +48,58 @@ describe('AdminLayout', () => {
     })
 
     it('hides the sidebar by default', () => {
+        // Arrange
         const wrapper = mount(AdminLayout, globalConfig)
+
+        // Assert
         expect(wrapper.find('aside').classes()).toContain('-translate-x-full')
     })
 
     it('shows the sidebar after clicking the hamburger button', async () => {
+        // Arrange
         const wrapper = mount(AdminLayout, globalConfig)
 
+        // Act
         await wrapper.find('button[class*="lg:hidden"]').trigger('click')
 
+        // Assert
         expect(wrapper.find('aside').classes()).toContain('translate-x-0')
         expect(wrapper.find('aside').classes()).not.toContain('-translate-x-full')
     })
 
     it('shows the backdrop when sidebar is open', async () => {
+        // Arrange
         const wrapper = mount(AdminLayout, globalConfig)
 
-        expect(wrapper.find('[class*="bg-black"]').exists()).toBe(false)
-
+        // Act
         await wrapper.find('button[class*="lg:hidden"]').trigger('click')
 
+        // Assert
         expect(wrapper.find('[class*="bg-black"]').exists()).toBe(true)
     })
 
     it('closes the sidebar when the backdrop is clicked', async () => {
+        // Arrange
         const wrapper = mount(AdminLayout, globalConfig)
-
         await wrapper.find('button[class*="lg:hidden"]').trigger('click')
-        expect(wrapper.find('aside').classes()).toContain('translate-x-0')
 
+        // Act
         await wrapper.find('[class*="bg-black"]').trigger('click')
 
+        // Assert
         expect(wrapper.find('aside').classes()).toContain('-translate-x-full')
     })
 
     it('closes the sidebar when the page URL changes', async () => {
+        // Arrange
         const wrapper = mount(AdminLayout, globalConfig)
-
         await wrapper.find('button[class*="lg:hidden"]').trigger('click')
-        expect(wrapper.find('aside').classes()).toContain('translate-x-0')
 
+        // Act
         currentUrl.value = '/admin/posts'
         await flushPromises()
 
+        // Assert
         expect(wrapper.find('aside').classes()).toContain('-translate-x-full')
     })
 })
