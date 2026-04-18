@@ -20,6 +20,7 @@ class RateLimitingTest extends TestCase
     public function test_login_succeeds_within_rate_limit(): void
     {
         // Arrange
+        $this->withoutVite();
         $user = User::factory()->create();
 
         // Act
@@ -79,7 +80,10 @@ class RateLimitingTest extends TestCase
 
     public function test_get_login_page_is_not_rate_limited(): void
     {
-        // Arrange + Act
+        // Arrange
+        $this->withoutVite();
+
+        // Act
         for ($i = 0; $i < 10; $i++) {
             $response = $this->get('/admin/login');
         }
