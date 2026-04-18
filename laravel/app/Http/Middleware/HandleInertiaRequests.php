@@ -48,6 +48,7 @@ class HandleInertiaRequests extends Middleware
                 'email'         => $request->user()->email,
                 'role'          => $request->user()->role,
                 'last_login_at' => $request->user()->last_login_at?->toISOString(),
+                'locale'        => $request->user()->locale,
             ] : null,
             'flash' => fn () => [
                 'success' => $request->session()->get('success'),

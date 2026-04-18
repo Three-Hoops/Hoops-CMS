@@ -44,7 +44,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | Status | # | Issue | Labels |
 |--------|---|-------|--------|
 | ✅ | [#1](https://github.com/Three-Hoops/Hoops-CMS/issues/1) | Phase 1: Auth + Admin Shell | `auth`, `enhancement` |
-| [#71](https://github.com/Three-Hoops/Hoops-CMS/issues/71) | Add locale column to users table for editor language preference | `auth`, `enhancement` |
+| ✅ | [#71](https://github.com/Three-Hoops/Hoops-CMS/issues/71) | Add locale column to users table for editor language preference | `auth`, `enhancement` |
 | [#103](https://github.com/Three-Hoops/Hoops-CMS/issues/103) | Add timezone preference to users for correct scheduled publishing | `auth`, `enhancement` |
 | ✅ | [#77](https://github.com/Three-Hoops/Hoops-CMS/issues/77) | Track last_login_at on users | `auth`, `security` |
 | ✅ | [#86](https://github.com/Three-Hoops/Hoops-CMS/issues/86) | Add is_active flag to users for account suspension | `auth`, `security` |
