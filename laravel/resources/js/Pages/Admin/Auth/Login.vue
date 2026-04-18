@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3'
-import { useForm } from '@inertiajs/vue3'
-import { route } from 'ziggy-js'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import type { SharedProps } from '@/types/models'
+import { usePage } from "@inertiajs/vue3";
+import { useForm } from "@inertiajs/vue3";
+import { route } from "ziggy-js";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { SharedProps } from "@/types/models";
 
-const page = usePage<SharedProps>()
+const page = usePage<SharedProps>();
 
 const form = useForm({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     remember: false,
-})
+});
 
 function submit() {
-    form.post(route('admin.post.login'), {
-        onFinish: () => form.reset('password'),
-    })
+    form.post(route("admin.post.login"), {
+        onFinish: () => form.reset("password"),
+    });
 }
 </script>
 
@@ -31,6 +31,12 @@ function submit() {
         class="rounded-md bg-green-50 px-4 py-3 text-sm font-medium text-green-800"
       >
         {{ page.props.flash.success }}
+      </div>
+      <div
+        v-if="form.errors.throttle"
+        class="rounded-md bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+      >
+        {{ form.errors.throttle }}
       </div>
       <Card class="w-full">
         <CardHeader>
@@ -91,7 +97,7 @@ function submit() {
               class="w-full"
               :disabled="form.processing"
             >
-              {{ form.processing ? 'Signing in…' : 'Sign in' }}
+              {{ form.processing ? "Signing in…" : "Sign in" }}
             </Button>
           </form>
         </CardContent>
