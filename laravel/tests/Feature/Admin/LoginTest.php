@@ -51,6 +51,8 @@ class LoginTest extends TestCase
 
     public function test_last_login_at_is_shared_in_inertia_auth_prop(): void
     {
+        $this->withoutVite();
+
         $user = User::factory()->create(['last_login_at' => now()]);
 
         $this->actingAs($user)
