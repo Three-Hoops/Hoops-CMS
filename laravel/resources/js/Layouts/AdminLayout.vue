@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { Link, usePage, useForm } from "@inertiajs/vue3";
+import { Head, Link, usePage, useForm } from "@inertiajs/vue3";
 import { route } from "ziggy-js";
 import { useAuthStore } from "@/stores/useAuthStore";
 import FlashBanner from "@/components/Admin/FlashBanner.vue";
@@ -21,6 +21,12 @@ function logout() {
 </script>
 
 <template>
+  <Head>
+    <meta
+      name="robots"
+      content="noindex, nofollow"
+    >
+  </Head>
   <div class="flex h-screen bg-background">
     <!-- Mobile sidebar backdrop -->
     <div

@@ -16,6 +16,7 @@ vi.mock('@inertiajs/vue3', () => ({
         },
     }),
     useForm: () => ({ post: vi.fn(), processing: false }),
+    Head: { template: '<head><slot /></head>' },
     Link: { template: '<a><slot /></a>' },
 }))
 
