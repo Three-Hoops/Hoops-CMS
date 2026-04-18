@@ -24,6 +24,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['resources/js/components/ui/**/*.vue'],
+    rules: {
+      'vue/require-default-prop': 'off',
+    },
+  },
+  {
     ignores: ['public/build/**', 'node_modules/**'],
   },
 )
