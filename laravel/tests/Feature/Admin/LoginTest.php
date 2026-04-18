@@ -35,4 +35,33 @@ class LoginTest extends TestCase
 
         $this->assertNull($user->fresh()->last_login_at);
     }
+
+    public function test_last_login_at_is_updated_on_subsequent_login(): void
+    {
+        $user = User::factory()->create(['last_login_at' => now()->subDay()]);
+        $previous = $user->last_login_at;
+
+        $this->post('/admin/login', [
+            'email'    => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertTrue($user->fresh()->last_login_at->isAfter($previous));
+    }
+
+    public function test_last_login_at_is_shared_in_inertia_auth_prop(): void
+    {
+        $user = User::factory()->create();
+
+        $this->post('/admin/login', [
+            'email'    => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->actingAs($user)
+            ->get('/admin')
+            ->assertInertia(fn ($page) => $page
+                ->has('auth.last_login_at')
+            );
+    }
 }
