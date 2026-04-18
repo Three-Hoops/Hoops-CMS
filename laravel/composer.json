@@ -36,7 +36,7 @@
         }
     },
     "scripts": {
-        "analyse": "phpstan analyse --no-progress",
+        "analyse": "phpstan analyse --no-progress --memory-limit=512M",
         "lint": "pint",
         "lint:check": "pint --test",
         "setup": [
