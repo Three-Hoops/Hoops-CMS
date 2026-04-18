@@ -157,6 +157,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | [#101](https://github.com/Three-Hoops/Hoops-CMS/issues/101) | Add automated backup restore verification | `infrastructure` |
 | [#13](https://github.com/Three-Hoops/Hoops-CMS/issues/13) | Set up error tracking with Flare | `infrastructure` |
 | [#31](https://github.com/Three-Hoops/Hoops-CMS/issues/31) | Write deployment guide | `infrastructure`, `documentation` |
+| [#135](https://github.com/Three-Hoops/Hoops-CMS/issues/135) | Set up GitHub Pages for project documentation *(deferred — action when project goes public)* | `documentation` |
 | [#91](https://github.com/Three-Hoops/Hoops-CMS/issues/91) | Document and implement zero-downtime deployment strategy | `infrastructure`, `documentation` |
 
 ---
