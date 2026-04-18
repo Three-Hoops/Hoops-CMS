@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePage, useForm } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { ref } from "vue";
 import { route } from "ziggy-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,10 +16,14 @@ const form = useForm({
     remember: false,
 });
 
-const throttleError = computed(() => (form.errors as Record<string, string | undefined>).throttle)
+const throttleError = ref<string | null>(null)
 
 function submit() {
+    throttleError.value = null
     form.post(route("admin.post.login"), {
+        onError: (errors) => {
+            throttleError.value = (errors as Record<string, string>).throttle ?? null
+        },
         onFinish: () => form.reset("password"),
     });
 }
