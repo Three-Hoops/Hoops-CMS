@@ -2,21 +2,16 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import Login from './Login.vue'
 
-const mockFormErrors: Record<string, string> = {}
+const mockErrors: Record<string, string> = {}
 const mockFlash = { success: null as string | null, error: null as string | null }
+const mockPost = vi.fn()
 const mockReset = vi.fn()
-
-const mockPost = vi.fn((_, options?: { onError?: (e: Record<string, string>) => void }) => {
-    if (options?.onError && mockFormErrors.throttle) {
-        options.onError(mockFormErrors)
-    }
-})
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
         props: {
             flash: mockFlash,
-            errors: {},
+            errors: mockErrors,
         },
     }),
     useForm: () => ({
@@ -24,7 +19,7 @@ vi.mock('@inertiajs/vue3', () => ({
         password: '',
         remember: false,
         processing: false,
-        errors: mockFormErrors,
+        errors: {},
         post: mockPost,
         reset: mockReset,
     }),
@@ -50,20 +45,17 @@ const globalConfig = {
 
 describe('Login', () => {
     beforeEach(() => {
-        Object.keys(mockFormErrors).forEach(key => delete mockFormErrors[key])
+        Object.keys(mockErrors).forEach(key => delete mockErrors[key])
         mockFlash.success = null
         mockFlash.error = null
         mockPost.mockReset()
         mockReset.mockReset()
     })
 
-    it('shows throttle error banner when throttle error is present', async () => {
+    it('shows throttle error banner when throttle error is present', () => {
         // Arrange
-        mockFormErrors.throttle = 'Too many login attempts. Please try again in 60 seconds.'
+        mockErrors.throttle = 'Too many login attempts. Please try again in 60 seconds.'
         const wrapper = mount(Login, globalConfig)
-
-        // Act
-        await wrapper.find('form').trigger('submit')
 
         // Assert
         expect(wrapper.find('.bg-red-50').exists()).toBe(true)
