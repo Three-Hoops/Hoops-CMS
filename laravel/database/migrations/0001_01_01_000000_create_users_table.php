@@ -21,6 +21,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->enum('role', array_column(UserRole::cases(), 'value'))->default(UserRole::Editor->value);
+            $table->timestamp('last_login_at')->nullable();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
