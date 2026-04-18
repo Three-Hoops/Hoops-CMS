@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -37,7 +39,23 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            //
+            'app' => [
+                'name' => config('app.name'),
+            ],
+            'auth' => fn () => $request->user() ? [
+                'id'    => $request->user()->id,
+                'name'  => $request->user()->name,
+                'email' => $request->user()->email,
+                'role'  => $request->user()->role,
+            ] : null,
+            'flash' => fn () => [
+                'success' => $request->session()->get('success'),
+                'error'   => $request->session()->get('error'),
+            ],
+            'ziggy' => fn () => [
+                ...(new Ziggy)->toArray(),
+                'location' => $request->url(),
+            ],
         ];
     }
 }

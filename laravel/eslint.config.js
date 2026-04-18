@@ -1,6 +1,7 @@
 import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
+import globals from 'globals'
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -9,6 +10,10 @@ export default tseslint.config(
   {
     files: ['resources/js/**/*.{ts,vue}'],
     languageOptions: {
+      globals: {
+        ...globals.browser,
+        route: 'readonly',
+      },
       parserOptions: {
         parser: tseslint.parser,
         extraFileExtensions: ['.vue'],
@@ -16,6 +21,12 @@ export default tseslint.config(
     },
     rules: {
       'vue/multi-word-component-names': 'off',
+    },
+  },
+  {
+    files: ['resources/js/components/ui/**/*.vue'],
+    rules: {
+      'vue/require-default-prop': 'off',
     },
   },
   {
