@@ -34,6 +34,9 @@ class LoginRequest extends FormRequest
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
+        } else {
+            // successful login attempt
+            Auth::user()->update(['last_login_at' => now()]);
         }
 
         RateLimiter::clear($this->throttleKey());
