@@ -51,17 +51,12 @@ class LoginTest extends TestCase
 
     public function test_last_login_at_is_shared_in_inertia_auth_prop(): void
     {
-        $user = User::factory()->create();
-
-        $this->post('/admin/login', [
-            'email'    => $user->email,
-            'password' => 'password',
-        ]);
+        $user = User::factory()->create(['last_login_at' => now()]);
 
         $this->actingAs($user)
             ->get('/admin')
             ->assertInertia(fn ($page) => $page
-                ->has('auth.last_login_at')
+                ->where('auth.last_login_at', $user->last_login_at->toISOString())
             );
     }
 }
