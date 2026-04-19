@@ -20,6 +20,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
+        request()->session()->regenerate();
 
         return redirect()->route('admin.dashboard');
     }

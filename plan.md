@@ -55,7 +55,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅ | [#82](https://github.com/Three-Hoops/Hoops-CMS/issues/82) | Make admin layout mobile-responsive | `enhancement` |
 | ✅ | [#14](https://github.com/Three-Hoops/Hoops-CMS/issues/14) | Configure rate limiting on the login endpoint | `security` |
 | ✅ | [#16](https://github.com/Three-Hoops/Hoops-CMS/issues/16) | Add security headers middleware | `security` |
-| [#42](https://github.com/Three-Hoops/Hoops-CMS/issues/42) | Configure session security and timeout | `security` |
+| ✅ | [#42](https://github.com/Three-Hoops/Hoops-CMS/issues/42) | Configure session security and timeout | `security` |
 | ✅ | [#46](https://github.com/Three-Hoops/Hoops-CMS/issues/46) | Add noindex meta tag to all admin pages | `security` |
 | [#49](https://github.com/Three-Hoops/Hoops-CMS/issues/49) | Enforce password complexity policy for admin accounts | `security`, `auth` |
 | [#37](https://github.com/Three-Hoops/Hoops-CMS/issues/37) | Add password reset (forgot password) flow | `auth`, `enhancement` |
