@@ -13,7 +13,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.post.login');
 });
 
-Route::middleware(['auth', 'active'])->group(function () {
+Route::middleware(['auth', 'active', 'session.timeout'])->prefix('admin')->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');    
 });
