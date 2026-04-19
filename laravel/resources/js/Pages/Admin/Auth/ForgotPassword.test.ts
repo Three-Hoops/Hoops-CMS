@@ -1,11 +1,10 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import Login from './Login.vue'
+import ForgotPassword from './ForgotPassword.vue'
 
 const mockErrors: Record<string, string> = {}
 const mockFlash = { success: null as string | null, error: null as string | null }
 const mockPost = vi.fn()
-const mockReset = vi.fn()
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
@@ -16,12 +15,9 @@ vi.mock('@inertiajs/vue3', () => ({
     }),
     useForm: () => ({
         email: '',
-        password: '',
-        remember: false,
         processing: false,
-        errors: {},
+        errors: mockErrors,
         post: mockPost,
-        reset: mockReset,
     }),
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
@@ -44,59 +40,57 @@ const globalConfig = {
     },
 }
 
-describe('Login', () => {
+describe('ForgotPassword', () => {
     beforeEach(() => {
         Object.keys(mockErrors).forEach(key => delete mockErrors[key])
         mockFlash.success = null
         mockFlash.error = null
         mockPost.mockReset()
-        mockReset.mockReset()
     })
 
-    it('shows throttle error banner when throttle error is present', () => {
+    it('renders the email input', () => {
         // Arrange
-        mockErrors.throttle = 'Too many login attempts. Please try again in 60 seconds.'
-        const wrapper = mount(Login, globalConfig)
+        const wrapper = mount(ForgotPassword, globalConfig)
 
         // Assert
-        expect(wrapper.find('.bg-red-50').exists()).toBe(true)
-        expect(wrapper.find('.bg-red-50').text()).toContain('Too many login attempts')
+        expect(wrapper.find('input').exists()).toBe(true)
     })
 
-    it('does not show throttle error banner when no throttle error', () => {
+    it('shows success flash message after submission', () => {
         // Arrange
-        const wrapper = mount(Login, globalConfig)
-
-        // Assert
-        expect(wrapper.find('.bg-red-50').exists()).toBe(false)
-    })
-
-    it('shows success flash message on logout', () => {
-        // Arrange
-        mockFlash.success = 'You have been logged out.'
-        const wrapper = mount(Login, globalConfig)
+        mockFlash.success = 'If that email is registered, a reset link has been sent.'
+        const wrapper = mount(ForgotPassword, globalConfig)
 
         // Assert
         expect(wrapper.find('.bg-green-50').exists()).toBe(true)
-        expect(wrapper.find('.bg-green-50').text()).toContain('You have been logged out.')
+        expect(wrapper.find('.bg-green-50').text()).toContain('reset link')
     })
 
-    it('has a forgot password link', () => {
+    it('shows throttle error when rate limited', () => {
         // Arrange
-        const wrapper = mount(Login, globalConfig)
+        mockErrors.throttle = 'Too many requests.'
+        const wrapper = mount(ForgotPassword, globalConfig)
 
         // Assert
-        expect(wrapper.text()).toContain('Forgot your password?')
+        expect(wrapper.find('.bg-red-50').exists()).toBe(true)
     })
 
-    it('submits the form when the sign in button is clicked', async () => {
+    it('submits to the correct route', async () => {
         // Arrange
-        const wrapper = mount(Login, globalConfig)
+        const wrapper = mount(ForgotPassword, globalConfig)
 
         // Act
         await wrapper.find('form').trigger('submit')
 
         // Assert
-        expect(mockPost).toHaveBeenCalledWith('/admin.post.login', expect.objectContaining({ onFinish: expect.any(Function) }))
+        expect(mockPost).toHaveBeenCalledWith('/admin.password.email', expect.anything())
+    })
+
+    it('has a back to login link', () => {
+        // Arrange
+        const wrapper = mount(ForgotPassword, globalConfig)
+
+        // Assert
+        expect(wrapper.text()).toContain('Back to login')
     })
 })
