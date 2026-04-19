@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import ForgotPassword from './ForgotPassword.vue'
+import ForgotPassword from '@/Pages/Admin/Auth/ForgotPassword.vue'
 
 const mockErrors: Record<string, string> = {}
 const mockFlash = { success: null as string | null, error: null as string | null }

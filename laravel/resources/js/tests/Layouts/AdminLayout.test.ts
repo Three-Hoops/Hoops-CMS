@@ -1,7 +1,7 @@
 import { mount, flushPromises } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
-import AdminLayout from './AdminLayout.vue'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
 
 const currentUrl = ref('/admin')
 

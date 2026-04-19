@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import ResetPassword from './ResetPassword.vue'
+import ResetPassword from '@/Pages/Admin/Auth/ResetPassword.vue'
 
 const mockErrors: Record<string, string> = {}
 const mockPost = vi.fn()
