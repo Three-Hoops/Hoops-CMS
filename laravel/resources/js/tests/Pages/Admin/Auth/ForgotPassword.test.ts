@@ -86,6 +86,16 @@ describe('ForgotPassword', () => {
         expect(mockPost).toHaveBeenCalledWith('/admin.password.email', expect.anything())
     })
 
+    it('shows inline email field error', () => {
+        // Arrange
+        mockErrors.email = 'The email field must be a valid email address.'
+        const wrapper = mount(ForgotPassword, globalConfig)
+
+        // Assert
+        expect(wrapper.find('.text-destructive').exists()).toBe(true)
+        expect(wrapper.find('.text-destructive').text()).toContain('valid email address')
+    })
+
     it('has a back to login link', () => {
         // Arrange
         const wrapper = mount(ForgotPassword, globalConfig)

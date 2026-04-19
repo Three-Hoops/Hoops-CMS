@@ -79,4 +79,13 @@ describe('ResetPassword', () => {
         // Assert
         expect(wrapper.text()).toContain('The password field must be at least 8 characters.')
     })
+
+    it('shows password confirmation error when passwords do not match', () => {
+        // Arrange
+        mockErrors.password_confirmation = 'The password confirmation does not match.'
+        const wrapper = mount(ResetPassword, { ...globalConfig, props: defaultProps })
+
+        // Assert
+        expect(wrapper.text()).toContain('The password confirmation does not match.')
+    })
 })
