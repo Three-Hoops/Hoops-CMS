@@ -35,7 +35,7 @@ class SessionSecurityTest extends TestCase
         $this->withoutVite();
 
         // Act
-        $response = $this->get('/admin/admin');
+        $response = $this->get('/admin');
 
         // Assert
         $response->assertRedirect('/admin/login');
@@ -44,7 +44,7 @@ class SessionSecurityTest extends TestCase
     public function test_absolute_session_timeout_redirects_expired_session(): void
     {
         // Arrange
-        $request = Request::create('/admin/admin', 'GET');
+        $request = Request::create('/admin', 'GET');
         $session = app('session')->driver('array');
         $session->start();
         $session->put('session_started_at', now()->subHours(9));
@@ -61,7 +61,7 @@ class SessionSecurityTest extends TestCase
     public function test_absolute_session_timeout_allows_active_session(): void
     {
         // Arrange
-        $request = Request::create('/admin/admin', 'GET');
+        $request = Request::create('/admin', 'GET');
         $session = app('session')->driver('array');
         $session->start();
         $session->put('session_started_at', now()->subHours(1));
@@ -78,7 +78,7 @@ class SessionSecurityTest extends TestCase
     public function test_absolute_session_timeout_stamps_session_on_first_request(): void
     {
         // Arrange
-        $request = Request::create('/admin/admin', 'GET');
+        $request = Request::create('/admin', 'GET');
         $session = app('session')->driver('array');
         $session->start();
         $request->setLaravelSession($session);
