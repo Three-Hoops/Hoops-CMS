@@ -23,7 +23,7 @@ class PasswordResetTest extends TestCase
 
         // Assert
         $response->assertOk();
-        $response->assertInertia(fn ($page) => $page->component('Admin/Auth/ForgotPassword'));
+        $response->assertInertia(fn ($page) => $page->component('Admin/Auth/ForgotPassword', false));
     }
 
     public function test_reset_link_is_sent_for_valid_email(): void
@@ -66,7 +66,7 @@ class PasswordResetTest extends TestCase
         // Assert
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
-            ->component('Admin/Auth/ResetPassword')
+            ->component('Admin/Auth/ResetPassword', false)
             ->where('token', $token)
             ->where('email', $user->email)
         );
