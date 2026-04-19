@@ -21,13 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
-        ]);
-
-        $middleware->alias([
             'active' => EnsureUserIsActive::class,
+            'session.timeout' => AbsoluteSessionTimeout::class,
         ]);
-
-        $middleware->alias(['session.timeout' => AbsoluteSessionTimeout::class]);
 
         $middleware->redirectGuestsTo('/admin/login');
 

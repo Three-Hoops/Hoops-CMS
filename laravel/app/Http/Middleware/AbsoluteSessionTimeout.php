@@ -14,7 +14,7 @@ class AbsoluteSessionTimeout
         if ($request->session()->has('session_started_at')) {
             $startedAt = $request->session()->get('session_started_at');
 
-            if (now()->diffInHours($startedAt) >= $hours) {
+            if ($startedAt->diffInHours(now()) >= $hours) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
