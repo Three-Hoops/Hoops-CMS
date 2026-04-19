@@ -11,14 +11,10 @@ const page = usePage<SharedProps>();
 
 const form = useForm({
     email: "",
-    password: "",
-    remember: false,
 });
 
 function submit() {
-    form.post(route("admin.post.login"), {
-        onFinish: () => form.reset("password"),
-    });
+    form.post(route("admin.password.email"), {});
 }
 </script>
 
@@ -40,7 +36,7 @@ function submit() {
       <Card class="w-full">
         <CardHeader>
           <CardTitle class="text-2xl">
-            Sign in
+            Forgot your password?
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -65,45 +61,22 @@ function submit() {
               </p>
             </div>
 
-            <div class="space-y-2">
-              <Label for="password">Password</Label>
-              <Input
-                id="password"
-                v-model="form.password"
-                type="password"
-                autocomplete="current-password"
-              />
-              <p
-                v-if="form.errors.password"
-                class="text-sm text-destructive"
-              >
-                {{ form.errors.password }}
-              </p>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <input
-                id="remember"
-                v-model="form.remember"
-                type="checkbox"
-                class="rounded border-input"
-              >
-              <Label for="remember">Remember me</Label>
-            </div>
-
             <Button
               type="submit"
               class="w-full"
               :disabled="form.processing"
             >
-              {{ form.processing ? "Signing in…" : "Sign in" }}
+              {{
+                form.processing ? "Sending…" : "Send reset link"
+              }}
             </Button>
+
             <div class="text-center text-sm">
               <Link
-                :href="route('admin.password.request')"
+                :href="route('admin.login')"
                 class="text-muted-foreground underline-offset-4 hover:underline"
               >
-                Forgot your password?
+                Back to login
               </Link>
             </div>
           </form>

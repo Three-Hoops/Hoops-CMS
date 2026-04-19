@@ -80,7 +80,7 @@ Browser → Laravel `routes/web.php` → Controller calls `Inertia::render('Fold
 - **State**: Pinia stores in `resources/js/stores/`. Global shared state (auth user, flash messages) goes through `HandleInertiaRequests::share()`.
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin.
 - **Path alias**: `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.ts`).
-- **Testing**: Vitest + `@vue/test-utils` for unit/component tests (co-located as `*.test.ts`); Cypress for e2e (requires `php artisan serve` running). **Always write tests when implementing new functionality** — see Testing Rules below.
+- **Testing**: Vitest + `@vue/test-utils` for unit/component tests (all in `resources/js/tests/`, mirroring the source structure); Cypress for e2e (requires `php artisan serve` running). **Always write tests when implementing new functionality** — see Testing Rules below.
 - **Lazy loading**: `Model::preventLazyLoading()` is active in all non-production environments. If you see a `LazyLoadingViolationException`, fix it by eager-loading the relationship in the controller: `Post::with(['category', 'tags'])->paginate()`.
 - **Vite manifest in PHP tests**: The CI PHP test job has no built frontend assets. Any feature test that hits an Inertia route (i.e. renders a Vue page) must call `$this->withoutVite()` at the start of the test, otherwise CI will fail with `Vite manifest not found`.
 - **Vue SFC order**: always `<script setup lang="ts">` first, then `<template>`, then `<style>` (if needed). Never use Options API.
@@ -105,9 +105,9 @@ Run: `php artisan test` (uses `.env.testing` automatically)
 
 | What you're adding | Test type | Location |
 |--------------------|-----------|----------|
-| Component with logic | Component test (`*.test.ts` co-located) | Mount with `@vue/test-utils`, assert rendered output + emits |
-| Pinia store | Unit test (`stores/*.test.ts`) | Test actions/getters in isolation |
-| Composable | Unit test (`composables/*.test.ts`) | Call and assert return values |
+| Component with logic | Component test (`resources/js/tests/**/*.test.ts`) | Mount with `@vue/test-utils`, assert rendered output + emits |
+| Pinia store | Unit test (`resources/js/tests/stores/*.test.ts`) | Test actions/getters in isolation |
+| Composable | Unit test (`resources/js/tests/composables/*.test.ts`) | Call and assert return values |
 | Full user flow | Cypress e2e (`cypress/e2e/`) | Only for critical happy paths |
 
 Run: `pnpm test` (Vitest) or `pnpm test:e2e` (Cypress)

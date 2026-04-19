@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import Login from './Login.vue'
+import Login from '@/Pages/Admin/Auth/Login.vue'
 
 const mockErrors: Record<string, string> = {}
 const mockFlash = { success: null as string | null, error: null as string | null }
@@ -19,10 +19,11 @@ vi.mock('@inertiajs/vue3', () => ({
         password: '',
         remember: false,
         processing: false,
-        errors: {},
+        errors: mockErrors,
         post: mockPost,
         reset: mockReset,
     }),
+    Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
 
 vi.mock('ziggy-js', () => ({
@@ -78,6 +79,34 @@ describe('Login', () => {
         // Assert
         expect(wrapper.find('.bg-green-50').exists()).toBe(true)
         expect(wrapper.find('.bg-green-50').text()).toContain('You have been logged out.')
+    })
+
+    it('shows inline email error on failed login', () => {
+        // Arrange
+        mockErrors.email = 'These credentials do not match our records.'
+        const wrapper = mount(Login, globalConfig)
+
+        // Assert
+        expect(wrapper.find('.text-destructive').exists()).toBe(true)
+        expect(wrapper.find('.text-destructive').text()).toContain('credentials do not match')
+    })
+
+    it('shows inline password error when password is invalid', () => {
+        // Arrange
+        mockErrors.password = 'The password field is required.'
+        const wrapper = mount(Login, globalConfig)
+
+        // Assert
+        const errors = wrapper.findAll('.text-destructive')
+        expect(errors.some(e => e.text().includes('password field is required'))).toBe(true)
+    })
+
+    it('has a forgot password link', () => {
+        // Arrange
+        const wrapper = mount(Login, globalConfig)
+
+        // Assert
+        expect(wrapper.text()).toContain('Forgot your password?')
     })
 
     it('submits the form when the sign in button is clicked', async () => {

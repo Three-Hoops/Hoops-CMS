@@ -1,52 +1,35 @@
 <script setup lang="ts">
-import { usePage, useForm, Link } from "@inertiajs/vue3";
 import { route } from "ziggy-js";
+import { useForm } from "@inertiajs/vue3";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { SharedProps } from "@/types/models";
 
-const page = usePage<SharedProps>();
-
+const props = defineProps<{ token: string; email: string }>();
 const form = useForm({
-    email: "",
+    token: props.token,
+    email: props.email,
     password: "",
-    remember: false,
+    password_confirmation: "",
 });
-
-function submit() {
-    form.post(route("admin.post.login"), {
-        onFinish: () => form.reset("password"),
-    });
-}
 </script>
 
 <template>
   <div class="flex min-h-screen items-center justify-center bg-background">
     <div class="w-full max-w-sm space-y-4">
-      <div
-        v-if="page.props.flash.success"
-        class="rounded-md bg-green-50 px-4 py-3 text-sm font-medium text-green-800"
-      >
-        {{ page.props.flash.success }}
-      </div>
-      <div
-        v-if="page.props.errors.throttle"
-        class="rounded-md bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
-      >
-        {{ page.props.errors.throttle }}
-      </div>
       <Card class="w-full">
         <CardHeader>
           <CardTitle class="text-2xl">
-            Sign in
+            Reset your password
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form
             class="space-y-4"
-            @submit.prevent="submit"
+            @submit.prevent="
+              form.post(route('admin.password.update'))
+            "
           >
             <div class="space-y-2">
               <Label for="email">Email</Label>
@@ -54,8 +37,7 @@ function submit() {
                 id="email"
                 v-model="form.email"
                 type="email"
-                autocomplete="email"
-                autofocus
+                readonly
               />
               <p
                 v-if="form.errors.email"
@@ -64,14 +46,14 @@ function submit() {
                 {{ form.errors.email }}
               </p>
             </div>
-
             <div class="space-y-2">
-              <Label for="password">Password</Label>
+              <Label for="password">New password</Label>
               <Input
                 id="password"
                 v-model="form.password"
                 type="password"
-                autocomplete="current-password"
+                autocomplete="new-password"
+                autofocus
               />
               <p
                 v-if="form.errors.password"
@@ -80,32 +62,32 @@ function submit() {
                 {{ form.errors.password }}
               </p>
             </div>
-
-            <div class="flex items-center gap-2">
-              <input
-                id="remember"
-                v-model="form.remember"
-                type="checkbox"
-                class="rounded border-input"
+            <div class="space-y-2">
+              <Label for="password_confirmation">Confirm password</Label>
+              <Input
+                id="password_confirmation"
+                v-model="form.password_confirmation"
+                type="password"
+                autocomplete="new-password"
+              />
+              <p
+                v-if="form.errors.password_confirmation"
+                class="text-sm text-destructive"
               >
-              <Label for="remember">Remember me</Label>
+                {{ form.errors.password_confirmation }}
+              </p>
             </div>
-
             <Button
               type="submit"
               class="w-full"
               :disabled="form.processing"
             >
-              {{ form.processing ? "Signing in…" : "Sign in" }}
+              {{
+                form.processing
+                  ? "Resetting…"
+                  : "Reset password"
+              }}
             </Button>
-            <div class="text-center text-sm">
-              <Link
-                :href="route('admin.password.request')"
-                class="text-muted-foreground underline-offset-4 hover:underline"
-              >
-                Forgot your password?
-              </Link>
-            </div>
           </form>
         </CardContent>
       </Card>
