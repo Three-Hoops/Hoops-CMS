@@ -34,6 +34,13 @@ vi.mock('@/stores/useAuthStore', () => ({
     }),
 }))
 
+vi.mock('@/composables/useThemeMode', () => ({
+    useThemeMode: () => ({
+        themeMode: { value: 'system' },
+        setTheme: vi.fn(),
+    }),
+}))
+
 const globalConfig = {
     global: {
         plugins: [],

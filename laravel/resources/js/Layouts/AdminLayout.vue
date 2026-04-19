@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { Head, Link, usePage, useForm } from "@inertiajs/vue3";
 import { route } from "ziggy-js";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useThemeMode } from "@/composables/useThemeMode";
 import FlashBanner from "@/components/Admin/FlashBanner.vue";
 import type { SharedProps } from "@/types/models";
 
@@ -12,11 +13,17 @@ const appName = computed(() => page.props.app.name);
 
 const logoutForm = useForm({});
 const sidebarOpen = ref(false)
+const { themeMode, setTheme } = useThemeMode()
 
 watch(() => page.url, () => { sidebarOpen.value = false })
 
 function logout() {
     logoutForm.post(route("admin.logout"));
+}
+
+function cycleTheme() {
+    const next: Record<string, 'light' | 'dark' | 'system'> = { light: 'dark', dark: 'system', system: 'light' }
+    setTheme(next[themeMode.value])
 }
 </script>
 
@@ -108,12 +115,76 @@ function logout() {
             <slot name="title" />
           </h1>
         </div>
-        <button
-          class="text-sm text-muted-foreground hover:text-foreground"
-          @click="logout"
-        >
-          Log out
-        </button>
+        <div class="flex items-center gap-3">
+          <!-- Theme toggle -->
+          <button
+            class="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+            :title="`Theme: ${themeMode}`"
+            @click="cycleTheme"
+          >
+            <!-- Sun (light) -->
+            <svg
+              v-if="themeMode === 'light'"
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="4"
+              />
+              <path
+                stroke-linecap="round"
+                d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+            <!-- Moon (dark) -->
+            <svg
+              v-else-if="themeMode === 'dark'"
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+            <!-- Monitor (system) -->
+            <svg
+              v-else
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <rect
+                x="2"
+                y="3"
+                width="20"
+                height="14"
+                rx="2"
+              />
+              <path
+                stroke-linecap="round"
+                d="M8 21h8M12 17v4"
+              />
+            </svg>
+          </button>
+          <button
+            class="text-sm text-muted-foreground hover:text-foreground"
+            @click="logout"
+          >
+            Log out
+          </button>
+        </div>
       </header>
 
       <!-- Flash banner -->

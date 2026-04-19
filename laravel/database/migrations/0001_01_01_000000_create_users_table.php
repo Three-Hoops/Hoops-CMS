@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use App\Enums\UserRole;
+use App\Enums\ThemeMode;
 
 return new class extends Migration
 {
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->timestamp('last_login_at')->nullable();
             $table->boolean('is_active')->default(true)->index();
             $table->string('locale', 5)->default('en');
+            $table->enum('theme_mode', array_column(ThemeMode::cases(), 'value'))->default(ThemeMode::System->value);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
