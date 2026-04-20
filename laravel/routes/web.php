@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PasswordResetController;
+use App\Http\Controllers\Admin\UserPreferenceController;
 
 Route::get('/', function () {
     return inertia('Home');
@@ -24,5 +25,6 @@ Route::middleware('guest')->prefix('admin')->name('admin.')->group(function () {
 
 Route::middleware(['auth', 'active', 'session.timeout'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');    
+    Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+    Route::put('/admin/preferences/theme', [UserPreferenceController::class, 'update'])->name('admin.preferences.theme');
 });

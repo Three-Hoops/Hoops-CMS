@@ -49,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                 'role'          => $request->user()->role,
                 'last_login_at' => $request->user()->last_login_at?->toISOString(),
                 'locale'        => $request->user()->locale,
+                'theme_mode'    => $request->user()->theme_mode,
             ] : null,
             'flash' => fn () => [
                 'success' => $request->session()->get('success'),

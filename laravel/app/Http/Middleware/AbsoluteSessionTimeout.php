@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,7 @@ class AbsoluteSessionTimeout
     public function handle(Request $request, Closure $next, int $hours = 8): Response
     {
         if ($request->session()->has('session_started_at')) {
-            $startedAt = $request->session()->get('session_started_at');
+            $startedAt = Carbon::parse($request->session()->get('session_started_at'));
 
             if ($startedAt->diffInHours(now()) >= $hours) {
                 Auth::logout();
@@ -29,4 +30,3 @@ class AbsoluteSessionTimeout
         return $next($request);
     }
 }
-?>

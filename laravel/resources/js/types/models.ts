@@ -1,4 +1,5 @@
 export type UserRole = 'super_admin' | 'editor' | 'viewer'
+export type ThemeMode = 'light' | 'dark' | 'system'
 
 export interface AuthUser {
     id: number
@@ -7,6 +8,7 @@ export interface AuthUser {
     role: UserRole
     locale: string
     last_login_at: string | null
+    theme_mode: ThemeMode
 }
 
 export interface FlashMessages {

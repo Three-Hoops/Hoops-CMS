@@ -60,7 +60,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅ | [#49](https://github.com/Three-Hoops/Hoops-CMS/issues/49) | Enforce password complexity policy for admin accounts | `security`, `auth` |
 | ✅ | [#37](https://github.com/Three-Hoops/Hoops-CMS/issues/37) | Add password reset (forgot password) flow | `auth`, `enhancement` |
 | [#41](https://github.com/Three-Hoops/Hoops-CMS/issues/41) | Add custom Inertia error pages (404, 419, 500) | `enhancement` |
-| [#60](https://github.com/Three-Hoops/Hoops-CMS/issues/60) | Admin dark/light mode toggle (per-user preference) | `theming`, `enhancement` |
+| ✅ | [#60](https://github.com/Three-Hoops/Hoops-CMS/issues/60) | Admin dark/light mode toggle (per-user preference) | `theming`, `enhancement` |
 
 ---
 
