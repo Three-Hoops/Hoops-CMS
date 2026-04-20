@@ -18,7 +18,7 @@ use App\Enums\ThemeMode;
  * @property bool $is_active
  * @property string $locale
  */
-#[Fillable(['name', 'email', 'password', 'role', 'last_login_at', 'is_active', 'locale', 'theme_mode'])]
+#[Fillable(['name', 'email', 'password', 'role', 'last_login_at', 'is_active', 'locale', 'theme_mode', 'timezone'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {

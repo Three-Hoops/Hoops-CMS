@@ -26,6 +26,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true)->index();
             $table->string('locale', 5)->default('en');
             $table->enum('theme_mode', array_column(ThemeMode::cases(), 'value'))->default(ThemeMode::System->value);
+            $table->string('timezone', 64)->default('UTC');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -73,4 +73,60 @@ class UserPreferenceTest extends TestCase
             ]);
         }
     }
+
+    public function test_authenticated_user_can_update_timezone(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['timezone' => 'UTC']);
+
+        // Act
+        $response = $this->actingAs($user)->put('/admin/preferences/timezone', [
+            'timezone' => 'Europe/Brussels',
+        ]);
+
+        // Assert
+        $response->assertRedirect();
+        $this->assertDatabaseHas('users', [
+            'id'       => $user->id,
+            'timezone' => 'Europe/Brussels',
+        ]);
+    }
+
+    public function test_timezone_update_rejects_invalid_value(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $response = $this->actingAs($user)->put('/admin/preferences/timezone', [
+            'timezone' => 'Not/ATimezone',
+        ]);
+
+        // Assert
+        $response->assertSessionHasErrors('timezone');
+    }
+
+    public function test_guest_cannot_update_timezone(): void
+    {
+        // Act
+        $response = $this->put('/admin/preferences/timezone', [
+            'timezone' => 'Europe/Brussels',
+        ]);
+
+        // Assert
+        $response->assertRedirect(route('admin.login'));
+    }
+
+    public function test_timezone_is_shared_in_inertia_auth_prop(): void
+    {
+        // Arrange
+        $this->withoutVite();
+        $user = User::factory()->create(['timezone' => 'America/New_York']);
+
+        // Act
+        $response = $this->actingAs($user)->get('/admin');
+
+        // Assert
+        $response->assertInertia(fn ($page) => $page->where('auth.timezone', 'America/New_York'));
+    }
 }
