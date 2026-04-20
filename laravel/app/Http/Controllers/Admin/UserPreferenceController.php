@@ -19,4 +19,15 @@ class UserPreferenceController extends Controller
 
         return back();
     }
+
+    public function updateTimeZone(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([                                                                                                                                                                                                                                        
+            'timezone' => ['required', 'string', 'timezone:all'],                                                                                                                                                                                                                
+        ]);
+
+        $request->user()->update(['timezone' => $validated['timezone']]);                                                                                                                                                                                                        
+
+        return back(); 
+    }
 }

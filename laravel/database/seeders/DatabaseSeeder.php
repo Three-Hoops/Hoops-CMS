@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
                 'role'      => UserRole::SuperAdmin,
                 'is_active' => true,
                 'theme_mode'=> ThemeMode::System,
+                'timezone'=>'UTC',
             ]
         );
     }

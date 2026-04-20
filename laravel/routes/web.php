@@ -27,4 +27,5 @@ Route::middleware(['auth', 'active', 'session.timeout'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
     Route::put('/admin/preferences/theme', [UserPreferenceController::class, 'update'])->name('admin.preferences.theme');
+    Route::put('/admin/preferences/timezone', [UserPreferenceController::class, 'updateTimeZone'])->name('admin.preferences.timezone');
 });
