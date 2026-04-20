@@ -3,9 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Page;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Enums\ContentStatus;
 
 /**
  * @extends Factory<Page>
@@ -24,10 +26,17 @@ class PageFactory extends Factory
      */
     public function definition(): array
     {
+        $title = fake()->sentence(3);
+
         return [
-            'name' => fake()->name(),
-            'slug' => fake()->slug()->unique(),
-            'description' => fake()->description(),
+            'title' => fake()->title(),
+            'slug' => Str::slug($title),
+            'content' => fake()->sentence(),
+            'content_json' => [],
+            'excerpt' => fake()->sentence(),
+            'status'=> fake()->randomElement(ContentStatus::cases()),
+            'user_id'=> User::factory(),
+            'published_at' => null,
         ];
     }
 }
