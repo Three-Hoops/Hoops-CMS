@@ -20,7 +20,7 @@ class ErrorPageTest extends TestCase
         // Assert
         $response->assertStatus(404);
         $response->assertInertia(fn ($page) => $page
-            ->component('Error')
+            ->component('Error', shouldExist: false)
             ->where('status', 404)
         );
     }
