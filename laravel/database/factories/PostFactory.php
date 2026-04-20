@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Enums\ContentStatus;
 
@@ -14,11 +13,6 @@ use App\Enums\ContentStatus;
  */
 class PostFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
     /**
      * Define the model's default state.
      *
