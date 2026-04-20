@@ -75,6 +75,23 @@ class SessionSecurityTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function test_absolute_session_timeout_handles_serialized_string_timestamp(): void
+    {
+        // Arrange - simulates session deserialized as string instead of Carbon
+        $request = Request::create('/admin', 'GET');
+        $session = app('session')->driver('array');
+        $session->start();
+        $session->put('session_started_at', now()->subHours(1)->toIso8601String());
+        $request->setLaravelSession($session);
+
+        // Act
+        $middleware = new AbsoluteSessionTimeout();
+        $response = $middleware->handle($request, fn ($req) => response('OK'));
+
+        // Assert
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function test_absolute_session_timeout_stamps_session_on_first_request(): void
     {
         // Arrange
