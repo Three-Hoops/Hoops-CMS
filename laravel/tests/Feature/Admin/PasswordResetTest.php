@@ -112,6 +112,7 @@ class PasswordResetTest extends TestCase
     public function test_forgot_password_post_is_rate_limited(): void
     {
         // Arrange
+        $this->withoutVite();
         $user = User::factory()->create();
 
         // Act — exceed the 3 attempts per minute limit

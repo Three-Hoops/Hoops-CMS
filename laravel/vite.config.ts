@@ -39,7 +39,11 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['clover', 'text'],
             include: ['resources/js/**/*.{ts,vue}'],
-            exclude: ['resources/js/components/ui/**'],
+            exclude: [
+                'resources/js/components/ui/**',
+                'resources/js/app.ts',
+                'resources/js/types/**',
+            ],
         },
     },
 })
