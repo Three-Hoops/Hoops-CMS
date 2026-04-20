@@ -67,26 +67,31 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 ### Stage 2 — Core Content `phase-2`
 > Full CRUD for pages, posts, categories, and tags.
 
-| # | Issue | Labels |
-|---|-------|--------|
-| [#70](https://github.com/Three-Hoops/Hoops-CMS/issues/70) | Add multilingual content support with spatie/laravel-translatable | `content`, `enhancement` |
-| [#2](https://github.com/Three-Hoops/Hoops-CMS/issues/2) | Phase 2: Core Content (Pages, Posts, Categories, Tags) | `content`, `enhancement` |
-| [#76](https://github.com/Three-Hoops/Hoops-CMS/issues/76) | Add parent_id to pages table for hierarchical page structure | `content`, `enhancement` |
-| [#85](https://github.com/Three-Hoops/Hoops-CMS/issues/85) | Add duplicate action for posts and pages | `content`, `enhancement` |
-| [#65](https://github.com/Three-Hoops/Hoops-CMS/issues/65) | Add per-post and per-page Open Graph / social meta fields | `content`, `enhancement` |
-| [#69](https://github.com/Three-Hoops/Hoops-CMS/issues/69) | Add featured/pinned flag to posts | `content`, `enhancement` |
-| [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models | `content` |
-| [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40) | Add database indexes to content migrations | `performance` |
-| [#43](https://github.com/Three-Hoops/Hoops-CMS/issues/43) | Handle slug collisions with auto-increment | `content` |
-| [#45](https://github.com/Three-Hoops/Hoops-CMS/issues/45) | Wrap multi-step writes in database transactions | `content` |
-| [#38](https://github.com/Three-Hoops/Hoops-CMS/issues/38) | Sanitise TipTap HTML output to prevent XSS | `security`, `content` |
-| [#68](https://github.com/Three-Hoops/Hoops-CMS/issues/68) | Add autosave for rich text editor to prevent data loss | `content`, `enhancement` |
-| [#110](https://github.com/Three-Hoops/Hoops-CMS/issues/110) | Warn users about unsaved changes before navigating away | `content`, `enhancement` |
-| [#58](https://github.com/Three-Hoops/Hoops-CMS/issues/58) | Bulk actions on content lists (publish, draft, delete) | `content`, `enhancement` |
-| [#75](https://github.com/Three-Hoops/Hoops-CMS/issues/75) | Add trash view and restore for soft-deleted content | `content`, `enhancement` |
-| [#32](https://github.com/Three-Hoops/Hoops-CMS/issues/32) | Add draft preview for posts and pages | `content`, `enhancement` |
-| [#72](https://github.com/Three-Hoops/Hoops-CMS/issues/72) | Add language switcher UI to post and page edit forms | `content`, `enhancement` |
-| [#66](https://github.com/Three-Hoops/Hoops-CMS/issues/66) | Write Vue component tests for admin UI components | `testing` |
+| Status | # | Issue | Labels |
+|--------|---|-------|--------|
+| ⬜ | [#2](https://github.com/Three-Hoops/Hoops-CMS/issues/2) | Phase 2: Core Content (Pages, Posts, Categories, Tags) — umbrella | `content`, `enhancement` |
+| ⬜ | [#156](https://github.com/Three-Hoops/Hoops-CMS/issues/156) | Create content migrations (categories, tags, pages, posts, post_tag) | `content`, `enhancement` |
+| ⬜ | [#157](https://github.com/Three-Hoops/Hoops-CMS/issues/157) | Add ContentStatus enum and content models (Category, Tag, Page, Post) | `content`, `enhancement` |
+| ⬜ | [#158](https://github.com/Three-Hoops/Hoops-CMS/issues/158) | Add controllers, form requests, and policies for content types | `content`, `enhancement` |
+| ⬜ | [#159](https://github.com/Three-Hoops/Hoops-CMS/issues/159) | Register admin resource routes for content types | `content`, `enhancement` |
+| ⬜ | [#160](https://github.com/Three-Hoops/Hoops-CMS/issues/160) | Build Vue pages and shared components for content management | `content`, `enhancement` |
+| ⬜ | [#76](https://github.com/Three-Hoops/Hoops-CMS/issues/76) | Add parent_id to pages table for hierarchical page structure | `content`, `enhancement` |
+| ⬜ | [#85](https://github.com/Three-Hoops/Hoops-CMS/issues/85) | Add duplicate action for posts and pages | `content`, `enhancement` |
+| ⬜ | [#65](https://github.com/Three-Hoops/Hoops-CMS/issues/65) | Add per-post and per-page Open Graph / social meta fields | `content`, `enhancement` |
+| ⬜ | [#69](https://github.com/Three-Hoops/Hoops-CMS/issues/69) | Add featured/pinned flag to posts | `content`, `enhancement` |
+| ⬜ | [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models | `content` |
+| ⬜ | [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40) | Add database indexes to content migrations | `performance` |
+| ⬜ | [#43](https://github.com/Three-Hoops/Hoops-CMS/issues/43) | Handle slug collisions with auto-increment | `content` |
+| ⬜ | [#45](https://github.com/Three-Hoops/Hoops-CMS/issues/45) | Wrap multi-step writes in database transactions | `content` |
+| ⬜ | [#38](https://github.com/Three-Hoops/Hoops-CMS/issues/38) | Sanitise TipTap HTML output to prevent XSS | `security`, `content` |
+| ⬜ | [#68](https://github.com/Three-Hoops/Hoops-CMS/issues/68) | Add autosave for rich text editor to prevent data loss | `content`, `enhancement` |
+| ⬜ | [#110](https://github.com/Three-Hoops/Hoops-CMS/issues/110) | Warn users about unsaved changes before navigating away | `content`, `enhancement` |
+| ⬜ | [#58](https://github.com/Three-Hoops/Hoops-CMS/issues/58) | Bulk actions on content lists (publish, draft, delete) | `content`, `enhancement` |
+| ⬜ | [#75](https://github.com/Three-Hoops/Hoops-CMS/issues/75) | Add trash view and restore for soft-deleted content | `content`, `enhancement` |
+| ⬜ | [#32](https://github.com/Three-Hoops/Hoops-CMS/issues/32) | Add draft preview for posts and pages | `content`, `enhancement` |
+| ⬜ | [#72](https://github.com/Three-Hoops/Hoops-CMS/issues/72) | Add language switcher UI to post and page edit forms | `content`, `enhancement` |
+| ⬜ | [#66](https://github.com/Three-Hoops/Hoops-CMS/issues/66) | Write Vue component tests for admin UI components | `testing` |
+| ⬜ | [#70](https://github.com/Three-Hoops/Hoops-CMS/issues/70) | Add multilingual content support with spatie/laravel-translatable | `content`, `enhancement` |
 
 ---
 
