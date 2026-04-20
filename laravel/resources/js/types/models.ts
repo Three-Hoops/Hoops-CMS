@@ -65,4 +65,5 @@ export interface Post extends Page {
     category_id: number | null;
     category: Category | null;
     tags: Tag[];
+    content_json: unknown;
 }
