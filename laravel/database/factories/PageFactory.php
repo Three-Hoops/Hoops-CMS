@@ -29,7 +29,7 @@ class PageFactory extends Factory
         $title = fake()->sentence(3);
 
         return [
-            'title' => fake()->title(),
+            'title' => $title,
             'slug' => Str::slug($title),
             'content' => fake()->sentence(),
             'content_json' => [],

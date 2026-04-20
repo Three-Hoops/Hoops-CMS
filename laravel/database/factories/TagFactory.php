@@ -13,11 +13,6 @@ use Illuminate\Support\Str;
 class TagFactory extends Factory
 {
     /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
-    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
@@ -27,7 +22,6 @@ class TagFactory extends Factory
         return [
             'name' => fake()->name(),
             'slug' => Str::slug(fake()->words(2, true)),
-            'description' => fake()->sentence(),
         ];
     }
 }

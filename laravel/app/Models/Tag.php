@@ -7,7 +7,7 @@ use Database\Factories\TagFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  */
@@ -17,8 +17,8 @@ class Tag extends Model
     /** @use HasFactory<TagFactory> */
     use HasFactory;
     
-    public function posts(): HasMany
+    public function posts(): BelongsToMany
     {
-        return $this->hasMany(Post::class, 'post_id');
+        return $this->belongsToMany(Post::class);
     }
 }
