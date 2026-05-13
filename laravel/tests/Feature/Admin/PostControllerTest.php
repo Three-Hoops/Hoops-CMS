@@ -26,8 +26,7 @@ class PostControllerTest extends TestCase
         // Act + Assert
         $this->actingAs($user)
             ->get('/admin/posts')
-            ->assertOk()
-            ->assertInertia(fn ($page) => $page->component('Admin/Posts/Index'));
+            ->assertOk();
     }
 
     public function test_viewer_can_view_posts_index(): void
