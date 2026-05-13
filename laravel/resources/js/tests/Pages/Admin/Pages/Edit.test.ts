@@ -47,6 +47,19 @@ vi.mock('@/composables/useThemeMode', () => ({
     useThemeMode: () => ({ themeMode: { value: 'system' }, setTheme: vi.fn() }),
 }))
 
+vi.mock('@/composables/useAutosave', async () => {
+    const { ref } = await import('vue')
+    return {
+        useAutosave: () => ({
+            lastSavedAt: ref(null),
+            hasDraft: ref(false),
+            draftContent: ref(null),
+            clearDraft: vi.fn(),
+            dismissDraft: vi.fn(),
+        }),
+    }
+})
+
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
 const SelectStub = {
@@ -76,32 +89,32 @@ const globalConfig = {
 
 describe('Pages/Edit', () => {
     it('renders the page title "Edit Page"', () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.text()).toContain('Edit Page')
     })
 
     it('pre-populates the title field', () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         const inputs = wrapper.findAll('input')
         const titleInput = inputs.find(i => i.attributes('value') === 'My Page')
         expect(titleInput).toBeTruthy()
     })
 
     it('pre-populates the slug field', () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         const inputs = wrapper.findAll('input')
         expect(inputs.some(i => i.attributes('value') === 'my-page')).toBe(true)
     })
 
     it('pre-populates the content in TipTap editor', () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.find('.tiptap').attributes('data-value')).toBe('<p>Content</p>')
     })
 
     it('calls form.put on submit', async () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         await wrapper.find('form').trigger('submit')
-        expect(mockPut).toHaveBeenCalledWith('/admin.pages.update/5')
+        expect(mockPut).toHaveBeenCalledWith('/admin.pages.update/5', expect.objectContaining({ onSuccess: expect.any(Function) }))
     })
 
     it('passes parent_id as string modelValue to parent selector when set', () => {
@@ -109,7 +122,7 @@ describe('Pages/Edit', () => {
         const pageWithParent = { ...page, parent_id: 2, parent: { id: 2, title: 'About', slug: 'about' } }
 
         // Act
-        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages, autosaveDraft: null }, ...globalConfig })
 
         // Assert — first Select stub is the parent page selector
         const parentSelect = wrapper.findAllComponents(SelectStub)[0]
@@ -121,7 +134,7 @@ describe('Pages/Edit', () => {
         const pageWithParent = { ...page, parent_id: 2, parent: { id: 2, title: 'About', slug: 'about' } }
         const form = { ...pageWithParent, processing: false, errors: {}, put: mockPut }
         mockUseForm.mockReturnValueOnce(form)
-        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages, autosaveDraft: null }, ...globalConfig })
 
         // Act
         await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', 'none')
@@ -134,7 +147,7 @@ describe('Pages/Edit', () => {
         // Arrange
         const form = { ...page, processing: false, errors: {}, put: mockPut }
         mockUseForm.mockReturnValueOnce(form)
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
 
         // Act
         await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', '1')

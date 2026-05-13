@@ -50,6 +50,19 @@ vi.mock('@/composables/useThemeMode', () => ({
     useThemeMode: () => ({ themeMode: { value: 'system' }, setTheme: vi.fn() }),
 }))
 
+vi.mock('@/composables/useAutosave', async () => {
+    const { ref } = await import('vue')
+    return {
+        useAutosave: () => ({
+            lastSavedAt: ref(null),
+            hasDraft: ref(false),
+            draftContent: ref(null),
+            clearDraft: vi.fn(),
+            dismissDraft: vi.fn(),
+        }),
+    }
+})
+
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
 const globalConfig = {
@@ -73,40 +86,40 @@ const globalConfig = {
 
 describe('Posts/Edit', () => {
     it('renders the page title "Edit Post"', () => {
-        const wrapper = mount(PostsEdit, { props: { post, categories, tags }, ...globalConfig })
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.text()).toContain('Edit Post')
     })
 
     it('pre-populates title from post prop', () => {
-        const wrapper = mount(PostsEdit, { props: { post, categories, tags }, ...globalConfig })
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.findAll('input').some(i => i.attributes('value') === 'My Post')).toBe(true)
     })
 
     it('pre-populates slug from post prop', () => {
-        const wrapper = mount(PostsEdit, { props: { post, categories, tags }, ...globalConfig })
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.findAll('input').some(i => i.attributes('value') === 'my-post')).toBe(true)
     })
 
     it('pre-populates content in TipTap editor', () => {
-        const wrapper = mount(PostsEdit, { props: { post, categories, tags }, ...globalConfig })
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.find('.tiptap').attributes('data-value')).toBe('<p>Body</p>')
     })
 
     it('renders tag checkboxes', () => {
-        const wrapper = mount(PostsEdit, { props: { post, categories, tags }, ...globalConfig })
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.text()).toContain('Laravel')
         expect(wrapper.text()).toContain('Vue')
     })
 
     it('renders category options', () => {
-        const wrapper = mount(PostsEdit, { props: { post, categories, tags }, ...globalConfig })
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.text()).toContain('Tech')
         expect(wrapper.text()).toContain('News')
     })
 
     it('calls form.put on submit', async () => {
-        const wrapper = mount(PostsEdit, { props: { post, categories, tags }, ...globalConfig })
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         await wrapper.find('form').trigger('submit')
-        expect(mockPut).toHaveBeenCalledWith('/admin.posts.update/3')
+        expect(mockPut).toHaveBeenCalledWith('/admin.posts.update/3', expect.objectContaining({ onSuccess: expect.any(Function) }))
     })
 })
