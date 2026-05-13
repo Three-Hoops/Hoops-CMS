@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
+import DOMPurify from 'dompurify'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -24,7 +25,7 @@ const editor = useEditor({
         Placeholder.configure({ placeholder: props.placeholder ?? 'Write something…' }),
     ],
     onUpdate({ editor }) {
-        emit('update:modelValue', editor.getHTML())
+        emit('update:modelValue', DOMPurify.sanitize(editor.getHTML()))
     },
 })
 
