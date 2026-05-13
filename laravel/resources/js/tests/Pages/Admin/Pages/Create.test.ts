@@ -5,7 +5,7 @@ import PagesCreate from '@/Pages/Admin/Pages/Create.vue'
 const { mockPost, mockUseForm } = vi.hoisted(() => {
     const post = vi.fn()
     const useForm = vi.fn(() => ({
-        title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '', parent_id: null,
+        title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '', parent_id: null as number | null,
         processing: false, errors: {} as Record<string, string>, post,
     }))
     return { mockPost: post, mockUseForm: useForm }
