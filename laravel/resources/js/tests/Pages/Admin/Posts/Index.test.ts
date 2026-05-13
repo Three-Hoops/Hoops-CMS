@@ -43,7 +43,7 @@ const makePost = (overrides: Partial<Post> = {}): Post => ({
     id: 1, user_id: 1, title: 'Hello World', slug: 'hello-world', content: '<p>Hi</p>', content_json: {},
     excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: '2025-01-01 10:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
-    featured_image: null, category_id: null, category: null, tags: [], author,
+    featured_image: null, category_id: null, category: null, tags: [], author, parent_id: null, parent: null,
     ...overrides,
 })
 

@@ -12,7 +12,7 @@ const post: Post = {
     excerpt: null, status: 'draft', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: null, created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
     featured_image: 'https://example.com/img.jpg', category_id: 2, category: null,
-    tags: [{ id: 1, name: 'Laravel', slug: 'laravel' }], author,
+    tags: [{ id: 1, name: 'Laravel', slug: 'laravel' }], author, parent_id: null, parent: null,
 }
 
 const categories: Category[] = [

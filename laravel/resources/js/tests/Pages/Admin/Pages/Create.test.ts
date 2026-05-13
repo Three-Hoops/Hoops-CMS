@@ -5,7 +5,7 @@ import PagesCreate from '@/Pages/Admin/Pages/Create.vue'
 const { mockPost, mockUseForm } = vi.hoisted(() => {
     const post = vi.fn()
     const useForm = vi.fn(() => ({
-        title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '',
+        title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '', parent_id: null as number | null,
         processing: false, errors: {} as Record<string, string>, post,
     }))
     return { mockPost: post, mockUseForm: useForm }
@@ -35,6 +35,12 @@ vi.mock('@/composables/useThemeMode', () => ({
 
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
+const SelectStub = {
+    template: '<div :data-model="modelValue"><slot /></div>',
+    props: ['modelValue'],
+    emits: ['update:modelValue'],
+}
+
 const globalConfig = {
     global: {
         stubs: {
@@ -43,7 +49,7 @@ const globalConfig = {
             Input: { template: '<input :id="id" />', props: ['id', 'modelValue', 'type', 'class'] },
             Label: { template: '<label><slot /></label>', props: ['for'] },
             Textarea: { template: '<textarea />', props: ['id', 'modelValue', 'rows'] },
-            Select: { template: '<div><slot /></div>', props: ['modelValue'] },
+            Select: SelectStub,
             SelectTrigger: { template: '<div><slot /></div>' },
             SelectContent: { template: '<div><slot /></div>' },
             SelectItem: { template: '<div><slot /></div>', props: ['value'] },
@@ -55,13 +61,15 @@ const globalConfig = {
 }
 
 describe('Pages/Create', () => {
+const pages = [{ id: 1, title: 'Home', slug: 'home' }]
+
     it('renders the page title "New Page"', () => {
-        const wrapper = mount(PagesCreate, globalConfig)
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
         expect(wrapper.text()).toContain('New Page')
     })
 
     it('renders title, slug, status, meta fields', () => {
-        const wrapper = mount(PagesCreate, globalConfig)
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
         expect(wrapper.text()).toContain('Title')
         expect(wrapper.text()).toContain('Slug')
         expect(wrapper.text()).toContain('Status')
@@ -70,22 +78,70 @@ describe('Pages/Create', () => {
     })
 
     it('renders the TipTap editor', () => {
-        const wrapper = mount(PagesCreate, globalConfig)
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
         expect(wrapper.find('.tiptap').exists()).toBe(true)
     })
 
     it('calls form.post on submit', async () => {
-        const wrapper = mount(PagesCreate, globalConfig)
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
         await wrapper.find('form').trigger('submit')
         expect(mockPost).toHaveBeenCalledWith('/admin.pages.store')
     })
 
     it('shows validation error when title error is set', () => {
         mockUseForm.mockReturnValueOnce({
-            title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '',
+            title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '', parent_id: null,
             processing: false, errors: { title: 'The title field is required.' }, post: mockPost,
         })
-        const wrapper = mount(PagesCreate, globalConfig)
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
         expect(wrapper.text()).toContain('The title field is required.')
+    })
+
+    it('passes "none" as modelValue to parent selector when parent_id is null', () => {
+        // Arrange
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
+
+        // Act + Assert — first Select stub is the parent page selector
+        const parentSelect = wrapper.findAllComponents(SelectStub)[0]
+        expect(parentSelect.attributes('data-model')).toBe('none')
+    })
+
+    it('passes parent_id as string modelValue to parent selector when set', () => {
+        // Arrange
+        mockUseForm.mockReturnValueOnce({
+            title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '', parent_id: 1,
+            processing: false, errors: {} as Record<string, string>, post: mockPost,
+        })
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
+
+        // Act + Assert
+        const parentSelect = wrapper.findAllComponents(SelectStub)[0]
+        expect(parentSelect.attributes('data-model')).toBe('1')
+    })
+
+    it('sets parent_id to null when "none" is selected in parent dropdown', async () => {
+        // Arrange
+        const form = { title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '', parent_id: 1 as number | null, processing: false, errors: {} as Record<string, string>, post: mockPost }
+        mockUseForm.mockReturnValueOnce(form)
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
+
+        // Act
+        await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', 'none')
+
+        // Assert
+        expect(form.parent_id).toBeNull()
+    })
+
+    it('sets parent_id to a number when a page is selected in parent dropdown', async () => {
+        // Arrange
+        const form = { title: '', slug: '', content: '', status: 'draft', meta_title: '', meta_description: '', published_at: '', parent_id: null as number | null, processing: false, errors: {} as Record<string, string>, post: mockPost }
+        mockUseForm.mockReturnValueOnce(form)
+        const wrapper = mount(PagesCreate, { props: { pages }, ...globalConfig })
+
+        // Act
+        await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', '2')
+
+        // Assert
+        expect(form.parent_id).toBe(2)
     })
 })

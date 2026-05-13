@@ -42,6 +42,7 @@ const makePage = (overrides: Partial<Page> = {}): Page => ({
     excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: '2025-01-01 10:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
     author: { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admin', locale: 'en', last_login_at: null, theme_mode: 'system', timezone: 'UTC' },
+    parent_id: null, parent: null,
     ...overrides,
 })
 
@@ -102,5 +103,25 @@ describe('Pages/Index', () => {
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('cancel')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(false)
+    })
+
+    it('shows parent title when page has a parent', () => {
+        // Arrange
+        const pageWithParent = makePage({ parent_id: 3, parent: { id: 3, title: 'Home', slug: 'home' } })
+        const withParent: Paginated<Page> = { ...pages, data: [pageWithParent] }
+
+        // Act
+        const wrapper = mount(PagesIndex, { props: { pages: withParent }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).toContain('Home')
+    })
+
+    it('shows em-dash in parent column when page has no parent', () => {
+        // Arrange — default pages fixture has parent: null
+        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+
+        // Assert — at least one em-dash present (published_at and parent columns)
+        expect(wrapper.text()).toContain('—')
     })
 })

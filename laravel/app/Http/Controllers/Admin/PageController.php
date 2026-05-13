@@ -19,7 +19,7 @@ class PageController extends Controller
     {
         $this->authorize('viewAny', Page::class);
 
-        $pages = Page::with('author')
+        $pages = Page::with(['author', 'parent'])
             ->latest()
             ->paginate(15);
 
@@ -32,7 +32,9 @@ class PageController extends Controller
     {
         $this->authorize('create', Page::class);
 
-        return Inertia::render('Admin/Pages/Create');
+        return Inertia::render('Admin/Pages/Create', [
+            'pages' => Page::select('id', 'title', 'slug')->orderBy('title')->get(),
+        ]);
     }
 
     public function store(StorePage $request): RedirectResponse
@@ -58,7 +60,8 @@ class PageController extends Controller
         $this->authorize('update', $page);
 
         return Inertia::render('Admin/Pages/Edit', [
-            'page' => $page->load('author'),
+            'page' => $page->load(['author', 'parent']),
+            'pages' => Page::select('id', 'title', 'slug')->where('id', '!=', $page->id)->orderBy('title')->get(),
         ]);
     }
 

@@ -5,6 +5,8 @@ namespace App\Http\Requests\Admin;
 use App\Enums\ContentStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Closure;
+use App\Models\Page;
 
 class UpdatePage extends FormRequest
 {
@@ -28,6 +30,20 @@ class UpdatePage extends FormRequest
             'meta_description' => ['nullable', 'string', 'max:255'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
             'published_at'     => ['nullable', 'date'],
+            'parent_id'        => ['nullable', 'integer', Rule::exists('pages', 'id'), function (string $attribute, mixed $value, Closure $fail) {
+                $page = $this->route('page');
+                if ($value === null) {
+                    return;
+                }
+                if ((int) $value === $page->id) {
+                    $fail('A page cannot be its own parent.');
+                    return;
+                }
+                $candidate = Page::find($value);
+                if ($candidate && $candidate->isDescendantOf($page)) {
+                    $fail('A page cannot be assigned a descendant as its parent.');
+                }
+            }]
         ];
     }
 }
