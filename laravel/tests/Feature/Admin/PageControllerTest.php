@@ -455,4 +455,97 @@ class PageControllerTest extends TestCase
         // Act + Assert
         $this->actingAs($user)->delete("/admin/pages/{$page->id}")->assertForbidden();
     }
+
+    // ─── parent_id validation ─────────────────────────────────────────────────
+
+    public function test_store_accepts_valid_parent_id(): void
+    {
+        // Arrange
+        $user   = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $parent = Page::factory()->create();
+
+        // Act
+        $this->actingAs($user)->post('/admin/pages', [
+            'title'     => 'Child Page',
+            'content'   => 'Body',
+            'status'    => 'draft',
+            'parent_id' => $parent->id,
+        ]);
+
+        // Assert
+        $this->assertDatabaseHas('pages', [
+            'title'     => 'Child Page',
+            'parent_id' => $parent->id,
+        ]);
+    }
+
+    public function test_store_rejects_non_existent_parent_id(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/pages', [
+                'title'     => 'Child Page',
+                'content'   => 'Body',
+                'status'    => 'draft',
+                'parent_id' => 99999,
+            ])
+            ->assertSessionHasErrors('parent_id');
+    }
+
+    public function test_update_accepts_valid_parent_id(): void
+    {
+        // Arrange
+        $user   = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $parent = Page::factory()->create();
+        $page   = Page::factory()->create();
+
+        // Act
+        $this->actingAs($user)->put("/admin/pages/{$page->id}", [
+            'title'     => 'Updated',
+            'content'   => 'Body',
+            'status'    => 'draft',
+            'parent_id' => $parent->id,
+        ]);
+
+        // Assert
+        $this->assertDatabaseHas('pages', ['id' => $page->id, 'parent_id' => $parent->id]);
+    }
+
+    public function test_update_rejects_assigning_page_as_its_own_parent(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $page = Page::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->put("/admin/pages/{$page->id}", [
+                'title'     => 'Title',
+                'content'   => 'Body',
+                'status'    => 'draft',
+                'parent_id' => $page->id,
+            ])
+            ->assertSessionHasErrors('parent_id');
+    }
+
+    public function test_update_rejects_assigning_descendant_as_parent(): void
+    {
+        // Arrange
+        $user  = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $page  = Page::factory()->create();
+        $child = Page::factory()->create(['parent_id' => $page->id]);
+
+        // Act + Assert — trying to make the ancestor a child of its own descendant
+        $this->actingAs($user)
+            ->put("/admin/pages/{$page->id}", [
+                'title'     => 'Title',
+                'content'   => 'Body',
+                'status'    => 'draft',
+                'parent_id' => $child->id,
+            ])
+            ->assertSessionHasErrors('parent_id');
+    }
 }

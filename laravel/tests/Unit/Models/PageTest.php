@@ -74,4 +74,67 @@ class PageTest extends TestCase
         // Assert
         $this->assertSoftDeleted('pages', ['id' => $page->id]);
     }
+
+    // ─── parent / children relationships ─────────────────────────────────────
+
+    public function test_parent_relationship_returns_parent_page(): void
+    {
+        // Arrange
+        $parent = Page::factory()->create();
+        $child  = Page::factory()->create(['parent_id' => $parent->id]);
+
+        // Act + Assert
+        $this->assertTrue($child->parent->is($parent));
+    }
+
+    public function test_children_relationship_returns_child_pages(): void
+    {
+        // Arrange
+        $parent   = Page::factory()->create();
+        $childOne = Page::factory()->create(['parent_id' => $parent->id]);
+        $childTwo = Page::factory()->create(['parent_id' => $parent->id]);
+        Page::factory()->create(); // unrelated
+
+        // Act
+        $children = $parent->children;
+
+        // Assert
+        $this->assertCount(2, $children);
+        $this->assertTrue($children->contains($childOne));
+        $this->assertTrue($children->contains($childTwo));
+    }
+
+    // ─── isDescendantOf ───────────────────────────────────────────────────────
+
+    public function test_is_descendant_of_returns_true_for_direct_parent(): void
+    {
+        // Arrange
+        $parent = Page::factory()->create();
+        $child  = Page::factory()->create(['parent_id' => $parent->id]);
+
+        // Act + Assert
+        $this->assertTrue($child->isDescendantOf($parent));
+    }
+
+    public function test_is_descendant_of_returns_true_for_grandparent(): void
+    {
+        // Arrange
+        $grandparent = Page::factory()->create();
+        $parent      = Page::factory()->create(['parent_id' => $grandparent->id]);
+        $child       = Page::factory()->create(['parent_id' => $parent->id]);
+
+        // Act + Assert — load parent chain before calling
+        $child->load('parent.parent');
+        $this->assertTrue($child->isDescendantOf($grandparent));
+    }
+
+    public function test_is_descendant_of_returns_false_for_unrelated_page(): void
+    {
+        // Arrange
+        $pageA = Page::factory()->create();
+        $pageB = Page::factory()->create();
+
+        // Act + Assert
+        $this->assertFalse($pageB->isDescendantOf($pageA));
+    }
 }
