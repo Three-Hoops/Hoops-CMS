@@ -42,6 +42,7 @@ const makePage = (overrides: Partial<Page> = {}): Page => ({
     excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: '2025-01-01 10:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
     author: { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admin', locale: 'en', last_login_at: null, theme_mode: 'system', timezone: 'UTC' },
+    parent_id: null, parent: null,
     ...overrides,
 })
 
