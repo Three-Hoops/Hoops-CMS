@@ -88,10 +88,3 @@ watch(() => props.modelValue, (val) => {
     <EditorContent :editor="editor" />
   </div>
 </template>
-
-<style scoped>
-:deep(.ProseMirror) {
-    min-height: 8rem;
-    outline: none;
-}
-</style>
