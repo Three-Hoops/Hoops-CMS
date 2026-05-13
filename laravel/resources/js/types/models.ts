@@ -37,6 +37,7 @@ export interface Category {
     slug: string;
     description: string | null;
     parent_id: number | null;
+    parent: Category | null;
 }
 
 export interface Tag {
@@ -47,9 +48,11 @@ export interface Tag {
 
 export interface Page {
     id: number;
+    user_id: number;
     title: string;
     slug: string;
     content: string;
+    content_json: unknown;
     excerpt: string | null;
     status: "draft" | "published";
     meta_title: string | null;
@@ -58,6 +61,7 @@ export interface Page {
     published_at: string | null;
     created_at: string;
     updated_at: string;
+    author: AuthUser;
 }
 
 export interface Post extends Page {
@@ -65,5 +69,37 @@ export interface Post extends Page {
     category_id: number | null;
     category: Category | null;
     tags: Tag[];
-    content_json: unknown;
+}
+
+export interface Paginated<T> {
+    data: T[];
+    links: Array<{
+        url: string | null;
+        label: string;
+        active: boolean;
+    }>;
+    meta: {
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+    };
+}
+
+export interface RecentPost {
+    id: number;
+    title: string;
+    status: "draft" | "published";
+    published_at: string | null;
+    created_at: string;
+    user_id: number;
+    author: AuthUser;
+}
+
+export interface DashboardStats {
+    posts: { total: number; published: number; draft: number };
+    pages: { total: number; published: number; draft: number };
+    categories: number;
+    tags: number;
+    recent_posts: RecentPost[];
 }
