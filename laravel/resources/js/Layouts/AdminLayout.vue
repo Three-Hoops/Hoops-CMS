@@ -58,13 +58,125 @@ function cycleTheme() {
       <nav class="flex-1 space-y-1 p-4">
         <Link
           :href="route('admin.dashboard')"
-          class="flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-          :class="{
-            'bg-accent text-accent-foreground':
-              $page.url.startsWith('/admin'),
-          }"
+          class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+          :class="{ 'bg-accent text-accent-foreground': $page.url === '/admin' }"
         >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          ><rect
+            x="3"
+            y="3"
+            width="7"
+            height="7"
+            rx="1"
+          /><rect
+            x="14"
+            y="3"
+            width="7"
+            height="7"
+            rx="1"
+          /><rect
+            x="3"
+            y="14"
+            width="7"
+            height="7"
+            rx="1"
+          /><rect
+            x="14"
+            y="14"
+            width="7"
+            height="7"
+            rx="1"
+          /></svg>
           Dashboard
+        </Link>
+        <Link
+          :href="route('admin.posts.index')"
+          class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+          :class="{ 'bg-accent text-accent-foreground': $page.url.startsWith('/admin/posts') }"
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v8a2 2 0 0 1-2 2z"
+          /><path
+            stroke-linecap="round"
+            d="M17 20v-8H7v8M7 4v4h8"
+          /></svg>
+          Posts
+        </Link>
+        <Link
+          :href="route('admin.pages.index')"
+          class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+          :class="{ 'bg-accent text-accent-foreground': $page.url.startsWith('/admin/pages') }"
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+          /><polyline
+            stroke-linecap="round"
+            points="14 2 14 8 20 8"
+          /></svg>
+          Pages
+        </Link>
+        <Link
+          :href="route('admin.categories.index')"
+          class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+          :class="{ 'bg-accent text-accent-foreground': $page.url.startsWith('/admin/categories') }"
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3 7h18M3 12h18M3 17h18"
+          /></svg>
+          Categories
+        </Link>
+        <Link
+          :href="route('admin.tags.index')"
+          class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+          :class="{ 'bg-accent text-accent-foreground': $page.url.startsWith('/admin/tags') }"
+        >
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
+          /><circle
+            cx="7"
+            cy="7"
+            r="1.5"
+            fill="currentColor"
+            stroke="none"
+          /></svg>
+          Tags
         </Link>
       </nav>
 
