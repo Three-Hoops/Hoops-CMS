@@ -137,4 +137,17 @@ class PageTest extends TestCase
         // Act + Assert
         $this->assertFalse($pageB->isDescendantOf($pageA));
     }
+
+    public function test_content_is_sanitised_on_save(): void
+    {
+        // Arrange
+        $dirty = '<p>Hello</p><script>alert("xss")</script>';
+
+        // Act
+        $page = Page::factory()->create(['content' => $dirty]);
+
+        // Assert
+        $this->assertStringNotContainsString('<script>', $page->content);
+        $this->assertStringContainsString('<p>Hello</p>', $page->content);
+    }
 }
