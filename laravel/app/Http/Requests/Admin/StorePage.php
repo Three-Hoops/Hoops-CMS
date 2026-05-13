@@ -27,6 +27,7 @@ class StorePage extends FormRequest
             'meta_description' => ['nullable', 'string', 'max:255'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
             'published_at'     => ['nullable', 'date'],
+            'parent_id'        => ['nullable', 'integer', Rule::exists('pages', 'id')],
         ];
     }
 }
