@@ -49,4 +49,28 @@ class CategoryTest extends TestCase
         // Assert
         $this->assertNull($category->parent_id);
     }
+
+    public function test_category_has_posts_relationship(): void
+    {
+        // Arrange
+        $category = Category::factory()->create();
+        $posts = Post::factory()->count(2)->create(['category_id' => $category->id]);
+
+        // Act
+        $related = $category->posts;
+
+        // Assert
+        $this->assertCount(2, $related);
+        $this->assertTrue($related->contains($posts->first()));
+        $this->assertTrue($related->contains($posts->last()));
+    }
+
+    public function test_category_posts_returns_empty_when_no_posts(): void
+    {
+        // Arrange
+        $category = Category::factory()->create();
+
+        // Act + Assert
+        $this->assertCount(0, $category->posts);
+    }
 }
