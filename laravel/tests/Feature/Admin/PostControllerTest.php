@@ -23,6 +23,21 @@ class PostControllerTest extends TestCase
 
     // ─── index ───────────────────────────────────────────────────────────────
 
+    public function test_index_returns_inertia_page_with_paginated_posts(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        Post::factory()->count(3)->create(['user_id' => $user->id]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get('/admin/posts')
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Posts/Index')
+                ->has('posts.data', 3)
+            );
+    }
+
     public function test_super_admin_can_view_posts_index(): void
     {
         // Arrange
@@ -60,6 +75,47 @@ class PostControllerTest extends TestCase
 
         // Act + Assert — would throw LazyLoadingViolationException if not eager-loaded
         $this->actingAs($user)->get('/admin/posts')->assertOk();
+    }
+
+    // ─── create ───────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_view_create_post_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get('/admin/posts/create')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Posts/Create')
+                ->has('categories')
+                ->has('tags')
+            );
+    }
+
+    public function test_editor_can_view_create_post_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+
+        // Act + Assert
+        $this->actingAs($user)->get('/admin/posts/create')->assertOk();
+    }
+
+    public function test_viewer_cannot_view_create_post_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Viewer]);
+
+        // Act + Assert
+        $this->actingAs($user)->get('/admin/posts/create')->assertForbidden();
+    }
+
+    public function test_guest_is_redirected_from_create_post_form(): void
+    {
+        $this->get('/admin/posts/create')->assertRedirect(route('admin.login'));
     }
 
     // ─── store ────────────────────────────────────────────────────────────────
@@ -185,6 +241,56 @@ class PostControllerTest extends TestCase
         $this->assertNotNull(Post::first()->published_at);
     }
 
+    public function test_store_requires_title(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/posts', ['content' => 'Body', 'status' => 'draft'])
+            ->assertSessionHasErrors('title');
+    }
+
+    public function test_store_requires_content(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/posts', ['title' => 'Title', 'status' => 'draft'])
+            ->assertSessionHasErrors('content');
+    }
+
+    public function test_store_requires_valid_status(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/posts', ['title' => 'Title', 'content' => 'Body', 'status' => 'invalid'])
+            ->assertSessionHasErrors('status');
+    }
+
+    public function test_store_rejects_duplicate_slug(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        Post::factory()->create(['slug' => 'existing-slug']);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/posts', [
+                'title'   => 'Title',
+                'slug'    => 'existing-slug',
+                'content' => 'Body',
+                'status'  => 'draft',
+            ])
+            ->assertSessionHasErrors('slug');
+    }
+
     public function test_store_validates_category_exists(): void
     {
         // Arrange
@@ -215,6 +321,57 @@ class PostControllerTest extends TestCase
                 'tag_ids' => [99999],
             ])
             ->assertSessionHasErrors('tag_ids.0');
+    }
+
+    // ─── edit ─────────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_view_post_edit_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get("/admin/posts/{$post->id}/edit")
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Posts/Edit')
+                ->has('post')
+                ->has('categories')
+                ->has('tags')
+            );
+    }
+
+    public function test_editor_can_view_own_post_edit_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $post = Post::factory()->create(['user_id' => $user->id]);
+
+        // Act + Assert
+        $this->actingAs($user)->get("/admin/posts/{$post->id}/edit")->assertOk();
+    }
+
+    public function test_editor_cannot_view_other_users_post_edit_form(): void
+    {
+        // Arrange
+        $editor = User::factory()->create(['role' => UserRole::Editor]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $post   = Post::factory()->create(['user_id' => $owner->id]);
+
+        // Act + Assert
+        $this->actingAs($editor)->get("/admin/posts/{$post->id}/edit")->assertForbidden();
+    }
+
+    public function test_viewer_cannot_view_post_edit_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Viewer]);
+        $post = Post::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)->get("/admin/posts/{$post->id}/edit")->assertForbidden();
     }
 
     // ─── update ───────────────────────────────────────────────────────────────
@@ -311,6 +468,41 @@ class PostControllerTest extends TestCase
 
         // Assert
         $this->assertCount(0, $post->fresh()->tags);
+    }
+
+    public function test_update_ignores_own_slug_in_uniqueness_check(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create(['slug' => 'my-post']);
+
+        // Act + Assert — re-submitting the post's own slug must not fail validation
+        $this->actingAs($user)
+            ->put("/admin/posts/{$post->id}", [
+                'title'   => 'My Post',
+                'slug'    => 'my-post',
+                'content' => 'Body',
+                'status'  => 'draft',
+            ])
+            ->assertRedirect('/admin/posts');
+    }
+
+    public function test_update_rejects_slug_already_used_by_another_post(): void
+    {
+        // Arrange
+        $user  = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $other = Post::factory()->create(['slug' => 'taken-slug']);
+        $post  = Post::factory()->create(['slug' => 'my-post']);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->put("/admin/posts/{$post->id}", [
+                'title'   => 'My Post',
+                'slug'    => 'taken-slug',
+                'content' => 'Body',
+                'status'  => 'draft',
+            ])
+            ->assertSessionHasErrors('slug');
     }
 
     public function test_update_does_not_reset_published_at(): void

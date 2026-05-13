@@ -1,20 +1,27 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { reactive } from 'vue'
 import PostsCreate from '@/Pages/Admin/Posts/Create.vue'
 import type { Category, Tag } from '@/types/models'
 
-const { mockPost } = vi.hoisted(() => ({ mockPost: vi.fn() }))
+const { mockPost, mockUseForm } = vi.hoisted(() => ({
+    mockPost: vi.fn(),
+    mockUseForm: vi.fn(),
+}))
+
+const makeForm = (overrides = {}) => ({
+    title: '', slug: '', content: '', status: 'draft', featured_image: '', category_id: '',
+    tag_ids: [] as number[], meta_title: '', meta_description: '', published_at: '',
+    processing: false, errors: {} as Record<string, string>, post: mockPost,
+    ...overrides,
+})
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
         url: '/admin/posts/create',
         props: { app: { name: 'Hoops CMS' }, auth: null, flash: { success: null, error: null }, errors: {}, ziggy: { location: 'http://localhost', routes: {} } },
     }),
-    useForm: vi.fn(() => ({
-        title: '', slug: '', content: '', status: 'draft', featured_image: '', category_id: '',
-        tag_ids: [], meta_title: '', meta_description: '', published_at: '',
-        processing: false, errors: {}, post: mockPost,
-    })),
+    useForm: mockUseForm,
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
@@ -63,6 +70,11 @@ const globalConfig = {
 }
 
 describe('Posts/Create', () => {
+    beforeEach(() => {
+        mockPost.mockReset()
+        mockUseForm.mockReturnValue(makeForm())
+    })
+
     it('renders the page title "New Post"', () => {
         const wrapper = mount(PostsCreate, { props: { categories, tags }, ...globalConfig })
         expect(wrapper.text()).toContain('New Post')
@@ -102,5 +114,40 @@ describe('Posts/Create', () => {
         const wrapper = mount(PostsCreate, { props: { categories, tags }, ...globalConfig })
         expect(wrapper.text()).toContain('Tech')
         expect(wrapper.text()).toContain('News')
+    })
+
+    it('shows validation error when title error is set', () => {
+        // Arrange
+        mockUseForm.mockReturnValueOnce(makeForm({ errors: { title: 'The title field is required.' } }))
+
+        // Act
+        const wrapper = mount(PostsCreate, { props: { categories, tags }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).toContain('The title field is required.')
+    })
+
+    it('shows validation error when content error is set', () => {
+        // Arrange
+        mockUseForm.mockReturnValueOnce(makeForm({ errors: { content: 'The content field is required.' } }))
+
+        // Act
+        const wrapper = mount(PostsCreate, { props: { categories, tags }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).toContain('The content field is required.')
+    })
+
+    it('adds tag id to form.tag_ids when checkbox is changed', async () => {
+        // Arrange
+        const form = reactive(makeForm())
+        mockUseForm.mockReturnValueOnce(form)
+        const wrapper = mount(PostsCreate, { props: { categories, tags }, ...globalConfig })
+
+        // Act — trigger change on the first tag checkbox (Laravel, id=1)
+        await wrapper.find('input[type="checkbox"]').trigger('change')
+
+        // Assert
+        expect(form.tag_ids).toContain(1)
     })
 })
