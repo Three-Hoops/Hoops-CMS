@@ -70,9 +70,9 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | Status | # | Issue | Labels |
 |--------|---|-------|--------|
 | ⬜ | [#2](https://github.com/Three-Hoops/Hoops-CMS/issues/2) | Phase 2: Core Content (Pages, Posts, Categories, Tags) — umbrella | `content`, `enhancement` |
-| ⬜ | [#156](https://github.com/Three-Hoops/Hoops-CMS/issues/156) | Create content migrations (categories, tags, pages, posts, post_tag) | `content`, `enhancement` |
-| ⬜ | [#157](https://github.com/Three-Hoops/Hoops-CMS/issues/157) | Add ContentStatus enum and content models (Category, Tag, Page, Post) | `content`, `enhancement` |
-| ⬜ | [#158](https://github.com/Three-Hoops/Hoops-CMS/issues/158) | Add controllers, form requests, and policies for content types | `content`, `enhancement` |
+| ✅ | [#156](https://github.com/Three-Hoops/Hoops-CMS/issues/156) | Create content migrations (categories, tags, pages, posts, post_tag) | `content`, `enhancement` |
+| ✅ | [#157](https://github.com/Three-Hoops/Hoops-CMS/issues/157) | Add ContentStatus enum and content models (Category, Tag, Page, Post) | `content`, `enhancement` |
+| ✅ | [#158](https://github.com/Three-Hoops/Hoops-CMS/issues/158) | Add controllers, form requests, and policies for content types | `content`, `enhancement` |
 | ⬜ | [#159](https://github.com/Three-Hoops/Hoops-CMS/issues/159) | Register admin resource routes for content types | `content`, `enhancement` |
 | ⬜ | [#160](https://github.com/Three-Hoops/Hoops-CMS/issues/160) | Build Vue pages and shared components for content management | `content`, `enhancement` |
 | ⬜ | [#76](https://github.com/Three-Hoops/Hoops-CMS/issues/76) | Add parent_id to pages table for hierarchical page structure | `content`, `enhancement` |
