@@ -29,6 +29,8 @@ return new class extends Migration
             $table->softDeletes();
             $table->index('status');
             $table->index('published_at');
+            $table->foreignId('parent_id')->nullable()->constrained('pages')->nullOnDelete();
+            $table->index('parent_id');
         });
     }
 
