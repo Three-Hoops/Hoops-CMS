@@ -12,12 +12,17 @@ class TagControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
     // ─── index ───────────────────────────────────────────────────────────────
 
     public function test_all_roles_can_view_tags_index(): void
     {
         // Arrange
-        $this->withoutVite();
 
         foreach ([UserRole::SuperAdmin, UserRole::Editor, UserRole::Viewer] as $role) {
             $user = User::factory()->create(['role' => $role]);

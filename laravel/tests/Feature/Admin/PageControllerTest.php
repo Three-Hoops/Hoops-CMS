@@ -13,12 +13,17 @@ class PageControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
     // ─── index ───────────────────────────────────────────────────────────────
 
     public function test_super_admin_can_view_pages_index(): void
     {
         // Arrange
-        $this->withoutVite();
         $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
 
         // Act + Assert
@@ -30,7 +35,6 @@ class PageControllerTest extends TestCase
     public function test_editor_can_view_pages_index(): void
     {
         // Arrange
-        $this->withoutVite();
         $user = User::factory()->create(['role' => UserRole::Editor]);
 
         // Act + Assert
@@ -40,7 +44,6 @@ class PageControllerTest extends TestCase
     public function test_viewer_can_view_pages_index(): void
     {
         // Arrange
-        $this->withoutVite();
         $user = User::factory()->create(['role' => UserRole::Viewer]);
 
         // Act + Assert
@@ -58,7 +61,6 @@ class PageControllerTest extends TestCase
     public function test_super_admin_can_view_create_page_form(): void
     {
         // Arrange
-        $this->withoutVite();
         $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
 
         // Act + Assert
@@ -254,7 +256,6 @@ class PageControllerTest extends TestCase
     public function test_super_admin_can_view_edit_page_form(): void
     {
         // Arrange
-        $this->withoutVite();
         $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
         $page = Page::factory()->create();
 
@@ -267,7 +268,6 @@ class PageControllerTest extends TestCase
     public function test_editor_can_view_own_pages_edit_form(): void
     {
         // Arrange
-        $this->withoutVite();
         $user = User::factory()->create(['role' => UserRole::Editor]);
         $page = Page::factory()->create(['user_id' => $user->id]);
 

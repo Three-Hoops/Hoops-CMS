@@ -15,12 +15,17 @@ class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
     // ─── index ───────────────────────────────────────────────────────────────
 
     public function test_super_admin_can_view_posts_index(): void
     {
         // Arrange
-        $this->withoutVite();
         $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
 
         // Act + Assert
@@ -32,7 +37,6 @@ class PostControllerTest extends TestCase
     public function test_viewer_can_view_posts_index(): void
     {
         // Arrange
-        $this->withoutVite();
         $user = User::factory()->create(['role' => UserRole::Viewer]);
 
         // Act + Assert
@@ -48,7 +52,6 @@ class PostControllerTest extends TestCase
     public function test_posts_index_eager_loads_relationships(): void
     {
         // Arrange
-        $this->withoutVite();
         $user     = User::factory()->create(['role' => UserRole::SuperAdmin]);
         $category = Category::factory()->create();
         $post     = Post::factory()->create(['category_id' => $category->id, 'user_id' => $user->id]);
