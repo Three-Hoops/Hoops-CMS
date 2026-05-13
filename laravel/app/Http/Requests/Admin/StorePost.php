@@ -18,7 +18,7 @@ class StorePost extends FormRequest
     {
         return [
             'title'            => ['required', 'string', 'max:255'],
-            'slug'             => ['nullable', 'string', 'max:255', Rule::unique('posts', 'slug')],
+            'slug'             => ['nullable', 'string', 'max:255'],
             'content'          => ['required', 'string'],
             'content_json'     => ['nullable', 'array'],
             'excerpt'          => ['nullable', 'string', 'max:1000'],

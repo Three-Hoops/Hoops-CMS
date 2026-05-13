@@ -4,7 +4,6 @@ namespace App\Http\Requests\Admin;
 
 use App\Models\Tag;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreTag extends FormRequest
 {
@@ -17,7 +16,7 @@ class StoreTag extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', Rule::unique('tags', 'slug')],
+            'slug' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
