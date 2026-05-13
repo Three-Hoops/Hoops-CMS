@@ -82,7 +82,7 @@ Browser → Laravel `routes/web.php` → Controller calls `Inertia::render('Fold
 - **Path alias**: `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.ts`).
 - **Testing**: Vitest + `@vue/test-utils` for unit/component tests (all in `resources/js/tests/`, mirroring the source structure); Cypress for e2e (requires `php artisan serve` running). **Always write tests when implementing new functionality** — see Testing Rules below.
 - **Lazy loading**: `Model::preventLazyLoading()` is active in all non-production environments. If you see a `LazyLoadingViolationException`, fix it by eager-loading the relationship in the controller: `Post::with(['category', 'tags'])->paginate()`.
-- **Vite manifest in PHP tests**: The CI PHP test job has no built frontend assets. Any feature test that hits an Inertia route (i.e. renders a Vue page) must call `$this->withoutVite()` at the start of the test, otherwise CI will fail with `Vite manifest not found`.
+- **Vite manifest in PHP tests**: The CI PHP test job has no built frontend assets. Any feature test that hits an Inertia route must call `$this->withoutVite()`, otherwise CI will fail with `Vite manifest not found`. This includes tests that expect **403/404 responses** — Laravel renders those as Inertia error pages too. The cleanest approach is to add `$this->withoutVite()` in the `setUp()` method of every feature test class, so it applies to all tests automatically.
 - **Vue SFC order**: always `<script setup lang="ts">` first, then `<template>`, then `<style>` (if needed). Never use Options API.
 
 ## Testing Rules
