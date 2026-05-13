@@ -10,15 +10,42 @@ import type { Category, Paginated } from '@/types/models'
 
 defineProps<{
     categories: Paginated<Category>
+    trash: boolean
 }>()
 
-const deletingId = ref<number | null>(null)
+const confirmingId = ref<number | null>(null)
+const confirmingForceDelete = ref(false)
+
+function confirmDelete(id: number) {
+    confirmingId.value = id
+    confirmingForceDelete.value = false
+}
+
+function confirmForceDelete(id: number) {
+    confirmingId.value = id
+    confirmingForceDelete.value = true
+}
 
 function doDelete() {
-    if (deletingId.value === null) return
-    router.delete(route('admin.categories.destroy', deletingId.value), {
-        onFinish: () => { deletingId.value = null },
+    if (confirmingId.value === null) return
+    router.delete(route('admin.categories.destroy', confirmingId.value), {
+        onFinish: () => { confirmingId.value = null },
     })
+}
+
+function doForceDelete() {
+    if (confirmingId.value === null) return
+    router.delete(route('admin.categories.forceDelete', confirmingId.value), {
+        onFinish: () => { confirmingId.value = null },
+    })
+}
+
+function restore(id: number) {
+    router.post(route('admin.categories.restore', id))
+}
+
+function switchView(toTrash: boolean) {
+    router.get(route('admin.categories.index'), toTrash ? { trash: 1 } : {}, { preserveState: false })
 }
 </script>
 
@@ -29,8 +56,28 @@ function doDelete() {
     </template>
 
     <div class="space-y-4">
-      <div class="flex justify-end">
-        <Button as-child>
+      <div class="flex items-center justify-between">
+        <div class="flex rounded-md border text-sm">
+          <button
+            class="px-4 py-1.5 transition-colors"
+            :class="!trash ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'"
+            @click="switchView(false)"
+          >
+            All
+          </button>
+          <button
+            class="px-4 py-1.5 transition-colors"
+            :class="trash ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'"
+            @click="switchView(true)"
+          >
+            Trash
+          </button>
+        </div>
+
+        <Button
+          v-if="!trash"
+          as-child
+        >
           <Link :href="route('admin.categories.create')">
             New Category
           </Link>
@@ -61,7 +108,7 @@ function doDelete() {
                 colspan="4"
                 class="px-4 py-8 text-center text-muted-foreground"
               >
-                No categories yet.
+                {{ trash ? 'Trash is empty.' : 'No categories yet.' }}
               </td>
             </tr>
             <tr
@@ -79,7 +126,10 @@ function doDelete() {
                 {{ category.parent?.name ?? '—' }}
               </td>
               <td class="px-4 py-3">
-                <div class="flex items-center gap-2">
+                <div
+                  v-if="!trash"
+                  class="flex items-center gap-2"
+                >
                   <Button
                     variant="outline"
                     size="sm"
@@ -92,9 +142,28 @@ function doDelete() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    @click="deletingId = category.id"
+                    @click="confirmDelete(category.id)"
                   >
                     Delete
+                  </Button>
+                </div>
+                <div
+                  v-else
+                  class="flex items-center gap-2"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    @click="restore(category.id)"
+                  >
+                    Restore
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    @click="confirmForceDelete(category.id)"
+                  >
+                    Delete permanently
                   </Button>
                 </div>
               </td>
@@ -107,11 +176,19 @@ function doDelete() {
     </div>
 
     <ConfirmModal
-      :open="deletingId !== null"
+      :open="confirmingId !== null && !confirmingForceDelete"
       title="Delete category?"
       description="Posts in this category will have their category cleared."
       @confirm="doDelete"
-      @cancel="deletingId = null"
+      @cancel="confirmingId = null"
+    />
+
+    <ConfirmModal
+      :open="confirmingId !== null && confirmingForceDelete"
+      title="Permanently delete category?"
+      description="This cannot be undone. The category will be gone forever."
+      @confirm="doForceDelete"
+      @cancel="confirmingId = null"
     />
   </AdminLayout>
 </template>

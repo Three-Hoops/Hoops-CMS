@@ -12,19 +12,42 @@ import type { Post, Paginated } from '@/types/models'
 
 defineProps<{
     posts: Paginated<Post>
+    trash: boolean
 }>()
 
-const deletingId = ref<number | null>(null)
+const confirmingId = ref<number | null>(null)
+const confirmingForceDelete = ref(false)
 
 function confirmDelete(id: number) {
-    deletingId.value = id
+    confirmingId.value = id
+    confirmingForceDelete.value = false
+}
+
+function confirmForceDelete(id: number) {
+    confirmingId.value = id
+    confirmingForceDelete.value = true
 }
 
 function doDelete() {
-    if (deletingId.value === null) return
-    router.delete(route('admin.posts.destroy', deletingId.value), {
-        onFinish: () => { deletingId.value = null },
+    if (confirmingId.value === null) return
+    router.delete(route('admin.posts.destroy', confirmingId.value), {
+        onFinish: () => { confirmingId.value = null },
     })
+}
+
+function doForceDelete() {
+    if (confirmingId.value === null) return
+    router.delete(route('admin.posts.forceDelete', confirmingId.value), {
+        onFinish: () => { confirmingId.value = null },
+    })
+}
+
+function restore(id: number) {
+    router.post(route('admin.posts.restore', id))
+}
+
+function switchView(toTrash: boolean) {
+    router.get(route('admin.posts.index'), toTrash ? { trash: 1 } : {}, { preserveState: false })
 }
 </script>
 
@@ -35,8 +58,28 @@ function doDelete() {
     </template>
 
     <div class="space-y-4">
-      <div class="flex justify-end">
-        <Button as-child>
+      <div class="flex items-center justify-between">
+        <div class="flex rounded-md border text-sm">
+          <button
+            class="px-4 py-1.5 transition-colors"
+            :class="!trash ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'"
+            @click="switchView(false)"
+          >
+            All
+          </button>
+          <button
+            class="px-4 py-1.5 transition-colors"
+            :class="trash ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'"
+            @click="switchView(true)"
+          >
+            Trash
+          </button>
+        </div>
+
+        <Button
+          v-if="!trash"
+          as-child
+        >
           <Link :href="route('admin.posts.create')">
             New Post
           </Link>
@@ -73,7 +116,7 @@ function doDelete() {
                 colspan="6"
                 class="px-4 py-8 text-center text-muted-foreground"
               >
-                No posts yet.
+                {{ trash ? 'Trash is empty.' : 'No posts yet.' }}
               </td>
             </tr>
             <tr
@@ -110,7 +153,10 @@ function doDelete() {
                 {{ post.author.name }}
               </td>
               <td class="px-4 py-3">
-                <div class="flex items-center gap-2">
+                <div
+                  v-if="!trash"
+                  class="flex items-center gap-2"
+                >
                   <Button
                     variant="outline"
                     size="sm"
@@ -128,6 +174,25 @@ function doDelete() {
                     Delete
                   </Button>
                 </div>
+                <div
+                  v-else
+                  class="flex items-center gap-2"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    @click="restore(post.id)"
+                  >
+                    Restore
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    @click="confirmForceDelete(post.id)"
+                  >
+                    Delete permanently
+                  </Button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -138,11 +203,19 @@ function doDelete() {
     </div>
 
     <ConfirmModal
-      :open="deletingId !== null"
+      :open="confirmingId !== null && !confirmingForceDelete"
       title="Delete post?"
-      description="This action cannot be undone."
+      description="This will move the post to trash."
       @confirm="doDelete"
-      @cancel="deletingId = null"
+      @cancel="confirmingId = null"
+    />
+
+    <ConfirmModal
+      :open="confirmingId !== null && confirmingForceDelete"
+      title="Permanently delete post?"
+      description="This cannot be undone. The post will be gone forever."
+      @confirm="doForceDelete"
+      @cancel="confirmingId = null"
     />
   </AdminLayout>
 </template>
