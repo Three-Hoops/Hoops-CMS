@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { watch } from 'vue'
 import { useForm, Link } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
@@ -20,19 +19,6 @@ const form = useForm({
     slug: '',
     description: '',
     parent_id: '' as string | number,
-})
-
-watch(() => form.name, (val) => {
-    if (!form.slug) {
-        form.slug = val
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[̀-ͯ]/g, '')
-            .replace(/[^a-z0-9\s-]/g, '')
-            .trim()
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-    }
 })
 
 function submit() {
@@ -67,7 +53,10 @@ function submit() {
 
       <div class="space-y-2">
         <Label>Slug</Label>
-        <SlugInput v-model="form.slug" />
+        <SlugInput
+          v-model="form.slug"
+          :source="form.name"
+        />
         <p
           v-if="form.errors.slug"
           class="text-xs text-destructive"
