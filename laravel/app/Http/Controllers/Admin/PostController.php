@@ -12,6 +12,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -58,8 +59,12 @@ class PostController extends Controller
             $validated['published_at'] = now();
         }
 
-        $post = Post::create($validated);
-        $post->tags()->sync($tagIds);
+        $post = DB::transaction(function () use ($validated, $tagIds) {
+            $post = Post::create($validated);
+            $post->tags()->sync($tagIds);
+
+            return $post;
+        });
 
         return redirect()
             ->route('admin.posts.index')
@@ -93,8 +98,10 @@ class PostController extends Controller
             $validated['published_at'] = now();
         }
 
-        $post->update($validated);
-        $post->tags()->sync($tagIds);
+        DB::transaction(function () use ($post, $validated, $tagIds) {
+            $post->update($validated);
+            $post->tags()->sync($tagIds);
+        });
 
         return redirect()
             ->route('admin.posts.index')
