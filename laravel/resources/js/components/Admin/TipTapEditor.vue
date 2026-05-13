@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, onBeforeUnmount } from 'vue'
+import { watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
@@ -33,12 +33,13 @@ watch(() => props.modelValue, (val) => {
         editor.value.commands.setContent(val)
     }
 })
-
-onBeforeUnmount(() => editor.value?.destroy())
 </script>
 
 <template>
-  <div class="min-h-[200px] rounded-md border border-input bg-background px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-ring">
+  <div
+    class="min-h-[200px] cursor-text rounded-md border border-input bg-background px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-ring"
+    @click="editor?.commands.focus()"
+  >
     <div
       v-if="editor"
       class="mb-2 flex flex-wrap gap-1 border-b pb-2"

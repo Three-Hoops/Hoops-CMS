@@ -6,12 +6,12 @@ import TipTapEditor from '@/components/Admin/TipTapEditor.vue'
 const mockRun = vi.fn()
 const mockGetHTML = vi.fn(() => '<p>Hello</p>')
 const mockSetContent = vi.fn()
+const mockFocus = vi.fn()
 const mockIsActive = vi.fn(() => false)
-const mockDestroy = vi.fn()
 
 const mockEditor = {
     getHTML: mockGetHTML,
-    commands: { setContent: mockSetContent },
+    commands: { setContent: mockSetContent, focus: mockFocus },
     chain: () => ({
         focus: () => ({
             toggleBold: () => ({ run: mockRun }),
@@ -22,7 +22,6 @@ const mockEditor = {
         }),
     }),
     isActive: mockIsActive,
-    destroy: mockDestroy,
 }
 
 let capturedOnUpdate: ((args: { editor: typeof mockEditor }) => void) | null = null
@@ -45,7 +44,7 @@ describe('TipTapEditor', () => {
         mockRun.mockReset()
         mockGetHTML.mockReturnValue('<p>Hello</p>')
         mockIsActive.mockReturnValue(false)
-        mockDestroy.mockReset()
+        mockFocus.mockReset()
         capturedOnUpdate = null
     })
 
@@ -89,12 +88,12 @@ describe('TipTapEditor', () => {
         mockGetHTML.mockReturnValue('<p>Hello</p>')
         await wrapper.setProps({ modelValue: '<p>New content</p>' })
         await flushPromises()
-        expect(mockSetContent).toHaveBeenCalledWith('<p>New content</p>', false)
+        expect(mockSetContent).toHaveBeenCalledWith('<p>New content</p>')
     })
 
-    it('destroys the editor on unmount', () => {
+    it('calls editor.commands.focus() when the wrapper div is clicked', async () => {
         const wrapper = mount(TipTapEditor, { props: { modelValue: '' } })
-        wrapper.unmount()
-        expect(mockDestroy).toHaveBeenCalled()
+        await wrapper.find('div').trigger('click')
+        expect(mockFocus).toHaveBeenCalled()
     })
 })
