@@ -1,0 +1,4 @@
+allowBuilds:
+  cypress: true
+  esbuild: true
+  vue-demi: true
