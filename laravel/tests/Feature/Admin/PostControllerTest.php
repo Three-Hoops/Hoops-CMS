@@ -274,13 +274,13 @@ class PostControllerTest extends TestCase
             ->assertSessionHasErrors('status');
     }
 
-    public function test_store_rejects_duplicate_slug(): void
+    public function test_store_auto_increments_duplicate_slug(): void
     {
         // Arrange
         $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
         Post::factory()->create(['slug' => 'existing-slug']);
 
-        // Act + Assert
+        // Act
         $this->actingAs($user)
             ->post('/admin/posts', [
                 'title'   => 'Title',
@@ -288,7 +288,30 @@ class PostControllerTest extends TestCase
                 'content' => 'Body',
                 'status'  => 'draft',
             ])
-            ->assertSessionHasErrors('slug');
+            ->assertRedirect('/admin/posts');
+
+        // Assert
+        $this->assertDatabaseHas('posts', ['slug' => 'existing-slug-1']);
+    }
+
+    public function test_store_auto_increments_slug_derived_from_title_on_collision(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        Post::factory()->create(['slug' => 'duplicate-title']);
+        Post::factory()->create(['slug' => 'duplicate-title-1']);
+
+        // Act
+        $this->actingAs($user)
+            ->post('/admin/posts', [
+                'title'   => 'Duplicate Title',
+                'content' => 'Body',
+                'status'  => 'draft',
+            ])
+            ->assertRedirect('/admin/posts');
+
+        // Assert
+        $this->assertDatabaseHas('posts', ['slug' => 'duplicate-title-2']);
     }
 
     public function test_store_validates_category_exists(): void
@@ -487,14 +510,14 @@ class PostControllerTest extends TestCase
             ->assertRedirect('/admin/posts');
     }
 
-    public function test_update_rejects_slug_already_used_by_another_post(): void
+    public function test_update_auto_increments_slug_already_used_by_another_post(): void
     {
         // Arrange
         $user  = User::factory()->create(['role' => UserRole::SuperAdmin]);
         $other = Post::factory()->create(['slug' => 'taken-slug']);
         $post  = Post::factory()->create(['slug' => 'my-post']);
 
-        // Act + Assert
+        // Act
         $this->actingAs($user)
             ->put("/admin/posts/{$post->id}", [
                 'title'   => 'My Post',
@@ -502,7 +525,10 @@ class PostControllerTest extends TestCase
                 'content' => 'Body',
                 'status'  => 'draft',
             ])
-            ->assertSessionHasErrors('slug');
+            ->assertRedirect('/admin/posts');
+
+        // Assert
+        $this->assertDatabaseHas('posts', ['id' => $post->id, 'slug' => 'taken-slug-1']);
     }
 
     public function test_update_does_not_reset_published_at(): void

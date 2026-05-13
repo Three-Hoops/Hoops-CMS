@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTag;
 use App\Http\Requests\Admin\UpdateTag;
 use App\Models\Tag;
+use App\Support\UniqueSlug;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,7 +28,7 @@ class TagController extends Controller
     public function store(StoreTag $request): RedirectResponse
     {
         $validated = $request->validated();
-        $validated['slug'] ??= Str::slug($validated['name']);
+        $validated['slug'] = UniqueSlug::generate($validated['slug'] ?? $validated['name'], 'tags');
 
         Tag::create($validated);
 
@@ -40,7 +40,7 @@ class TagController extends Controller
     public function update(UpdateTag $request, Tag $tag): RedirectResponse
     {
         $validated = $request->validated();
-        $validated['slug'] ??= Str::slug($validated['name']);
+        $validated['slug'] = UniqueSlug::generate($validated['slug'] ?? $validated['name'], 'tags', $tag->id);
 
         $tag->update($validated);
 

@@ -234,13 +234,13 @@ class PageControllerTest extends TestCase
             ->assertSessionHasErrors('status');
     }
 
-    public function test_store_rejects_duplicate_slug(): void
+    public function test_store_auto_increments_duplicate_slug(): void
     {
         // Arrange
         $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
         Page::factory()->create(['slug' => 'existing-slug']);
 
-        // Act + Assert
+        // Act
         $this->actingAs($user)
             ->post('/admin/pages', [
                 'title'   => 'Title',
@@ -248,7 +248,10 @@ class PageControllerTest extends TestCase
                 'content' => 'Body',
                 'status'  => 'draft',
             ])
-            ->assertSessionHasErrors('slug');
+            ->assertRedirect('/admin/pages');
+
+        // Assert
+        $this->assertDatabaseHas('pages', ['slug' => 'existing-slug-1']);
     }
 
     // ─── edit ─────────────────────────────────────────────────────────────────

@@ -10,10 +10,10 @@ use App\Http\Requests\Admin\UpdatePost;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Support\UniqueSlug;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -51,7 +51,7 @@ class PostController extends Controller
         $validated = $request->validated();
         $tagIds    = Arr::pull($validated, 'tag_ids', []);
 
-        $validated['slug']         ??= Str::slug($validated['title']);
+        $validated['slug']         = UniqueSlug::generate($validated['slug'] ?? $validated['title'], 'posts');
         $validated['content_json'] ??= [];
         $validated['user_id']        = $request->user()->id;
 
@@ -87,7 +87,7 @@ class PostController extends Controller
         $validated = $request->validated();
         $tagIds    = Arr::pull($validated, 'tag_ids', []);
 
-        $validated['slug']         ??= Str::slug($validated['title']);
+        $validated['slug']         = UniqueSlug::generate($validated['slug'] ?? $validated['title'], 'posts', $post->id);
         $validated['content_json'] ??= [];
 
         if (
