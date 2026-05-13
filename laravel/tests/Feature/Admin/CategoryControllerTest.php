@@ -38,6 +38,43 @@ class CategoryControllerTest extends TestCase
         $this->get('/admin/categories')->assertRedirect(route('admin.login'));
     }
 
+    // ─── create ───────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_view_create_category_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get('/admin/categories/create')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Admin/Categories/Create'));
+    }
+
+    public function test_editor_can_view_create_category_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+
+        // Act + Assert
+        $this->actingAs($user)->get('/admin/categories/create')->assertOk();
+    }
+
+    public function test_viewer_cannot_view_create_category_form(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Viewer]);
+
+        // Act + Assert
+        $this->actingAs($user)->get('/admin/categories/create')->assertForbidden();
+    }
+
+    public function test_guest_is_redirected_from_create_category_form(): void
+    {
+        $this->get('/admin/categories/create')->assertRedirect(route('admin.login'));
+    }
+
     // ─── store ────────────────────────────────────────────────────────────────
 
     public function test_super_admin_can_create_category(): void
@@ -126,6 +163,56 @@ class CategoryControllerTest extends TestCase
         $this->actingAs($user)
             ->post('/admin/categories', ['name' => 'Whatever', 'slug' => 'existing'])
             ->assertSessionHasErrors('slug');
+    }
+
+    public function test_store_requires_name(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/categories', [])
+            ->assertSessionHasErrors('name');
+    }
+
+    // ─── edit ─────────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_view_edit_category_form(): void
+    {
+        // Arrange
+        $user     = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $category = Category::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get("/admin/categories/{$category->id}/edit")
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Categories/Edit')
+                ->has('category')
+                ->has('parents')
+            );
+    }
+
+    public function test_editor_can_view_edit_category_form(): void
+    {
+        // Arrange
+        $user     = User::factory()->create(['role' => UserRole::Editor]);
+        $category = Category::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)->get("/admin/categories/{$category->id}/edit")->assertOk();
+    }
+
+    public function test_viewer_cannot_view_edit_category_form(): void
+    {
+        // Arrange
+        $user     = User::factory()->create(['role' => UserRole::Viewer]);
+        $category = Category::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)->get("/admin/categories/{$category->id}/edit")->assertForbidden();
     }
 
     // ─── update ───────────────────────────────────────────────────────────────

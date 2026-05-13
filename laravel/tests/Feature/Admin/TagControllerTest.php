@@ -87,6 +87,17 @@ class TagControllerTest extends TestCase
         $this->assertDatabaseHas('tags', ['slug' => 'open-source']);
     }
 
+    public function test_store_requires_name(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/tags', [])
+            ->assertSessionHasErrors('name');
+    }
+
     public function test_store_rejects_duplicate_slug(): void
     {
         // Arrange
@@ -136,6 +147,18 @@ class TagControllerTest extends TestCase
         $this->actingAs($user)
             ->put("/admin/tags/{$tag->id}", ['name' => 'Hacked'])
             ->assertForbidden();
+    }
+
+    public function test_update_requires_name(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $tag  = Tag::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->put("/admin/tags/{$tag->id}", [])
+            ->assertSessionHasErrors('name');
     }
 
     public function test_update_ignores_own_slug(): void
