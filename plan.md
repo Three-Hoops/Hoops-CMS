@@ -79,7 +79,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ⬜ | [#85](https://github.com/Three-Hoops/Hoops-CMS/issues/85) | Add duplicate action for posts and pages | `content`, `enhancement` |
 | ⬜ | [#65](https://github.com/Three-Hoops/Hoops-CMS/issues/65) | Add per-post and per-page Open Graph / social meta fields | `content`, `enhancement` |
 | ⬜ | [#69](https://github.com/Three-Hoops/Hoops-CMS/issues/69) | Add featured/pinned flag to posts | `content`, `enhancement` |
-| ⬜ | [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models | `content` |
+| ✅ | [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models | `content` |
 | ⬜ | [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40) | Add database indexes to content migrations | `performance` |
 | ⬜ | [#43](https://github.com/Three-Hoops/Hoops-CMS/issues/43) | Handle slug collisions with auto-increment | `content` |
 | ⬜ | [#45](https://github.com/Three-Hoops/Hoops-CMS/issues/45) | Wrap multi-step writes in database transactions | `content` |
