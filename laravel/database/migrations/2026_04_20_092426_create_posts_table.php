@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamp('published_at')->nullable();
             $table->softDeletes();
+            $table->index('deleted_at');
             $table->index('status');
             $table->index('published_at');
             $table->index('category_id');
