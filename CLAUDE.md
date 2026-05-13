@@ -164,3 +164,13 @@ This project follows **GitHub Flow**: one branch per feature/fix, PR into `main`
 - `main` is always deployable — never commit directly to it.
 - Open a PR for every change; CI must pass before merging.
 - Branch protection on `main` is enabled: PR + 1 approval required, force pushes blocked. Required status checks will be added once CI is configured (issue #9).
+
+### Commit granularity
+
+Keep commits small and focused — one logical change per commit. This makes diffs easy to review and bisect. Examples of good commit boundaries:
+
+- One commit per new file type (e.g. policies separate from form requests, controllers separate from tests)
+- Config/tooling changes in their own commit, not bundled with feature code
+- `plan.md` status updates in their own commit, separate from implementation
+
+Never bundle unrelated changes into a single commit. If two things would be described with "and" in the commit message, they belong in separate commits.
