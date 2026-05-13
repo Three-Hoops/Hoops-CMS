@@ -47,7 +47,7 @@ const globalConfig = {
     global: {
         stubs: {
             AdminLayout: { template: '<div><slot name="title" /><slot /></div>' },
-            Button: { template: '<button type="submit" :disabled="disabled"><slot /></button>', props: ['disabled', 'variant', 'size', 'asChild'] },
+            Button: { template: '<button type="submit" :disabled="disabled"><slot /></button>', props: ['disabled', 'variant', 'size', 'asChild', 'as', 'href'] },
             Input: { template: '<input :id="id" />', props: ['id', 'modelValue', 'type', 'placeholder', 'class'] },
             Label: { template: '<label><slot /></label>', props: ['for'] },
             Textarea: { template: '<textarea />', props: ['id', 'modelValue', 'rows'] },

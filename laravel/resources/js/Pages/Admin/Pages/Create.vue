@@ -120,13 +120,11 @@ function submit() {
 
       <div class="flex items-center justify-end gap-3">
         <Button
-          type="button"
           variant="outline"
-          as-child
+          :as="Link"
+          :href="route('admin.pages.index')"
         >
-          <Link :href="route('admin.pages.index')">
-            Cancel
-          </Link>
+          Cancel
         </Button>
         <Button
           type="submit"
