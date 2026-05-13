@@ -37,8 +37,8 @@ vi.mock('@/composables/useThemeMode', () => ({
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
 const parents: Category[] = [
-    { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null },
-    { id: 2, name: 'Other', slug: 'other', description: null, parent_id: null, parent: null },
+    { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: null },
+    { id: 2, name: 'Other', slug: 'other', description: null, parent_id: null, parent: null, deleted_at: null },
 ]
 
 const globalConfig = {
