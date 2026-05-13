@@ -11,13 +11,13 @@ const post: Post = {
     id: 3, user_id: 1, title: 'My Post', slug: 'my-post', content: '<p>Body</p>', content_json: {},
     excerpt: null, status: 'draft', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: null, created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
-    featured_image: 'https://example.com/img.jpg', category_id: 2, category: null,
+    deleted_at: null, featured_image: 'https://example.com/img.jpg', category_id: 2, category: null,
     tags: [{ id: 1, name: 'Laravel', slug: 'laravel' }], author, parent_id: null, parent: null,
 }
 
 const categories: Category[] = [
-    { id: 1, name: 'Tech', slug: 'tech', description: null, parent_id: null, parent: null },
-    { id: 2, name: 'News', slug: 'news', description: null, parent_id: null, parent: null },
+    { id: 1, name: 'Tech', slug: 'tech', description: null, parent_id: null, parent: null, deleted_at: null },
+    { id: 2, name: 'News', slug: 'news', description: null, parent_id: null, parent: null, deleted_at: null },
 ]
 
 const tags: Tag[] = [

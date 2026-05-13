@@ -81,6 +81,8 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ⬜ | [#69](https://github.com/Three-Hoops/Hoops-CMS/issues/69) | Add featured/pinned flag to posts | `content`, `enhancement` |
 | ⬜ | [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models | `content` |
 | ✅ | [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40) | Add database indexes to content migrations | `performance` |
+| ✅ | [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17) | Add soft deletes to content models | `content` |
+| ⬜ | [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40) | Add database indexes to content migrations | `performance` |
 | ⬜ | [#43](https://github.com/Three-Hoops/Hoops-CMS/issues/43) | Handle slug collisions with auto-increment | `content` |
 | ⬜ | [#45](https://github.com/Three-Hoops/Hoops-CMS/issues/45) | Wrap multi-step writes in database transactions | `content` |
 | ⬜ | [#38](https://github.com/Three-Hoops/Hoops-CMS/issues/38) | Sanitise TipTap HTML output to prevent XSS | `security`, `content` |

@@ -11,7 +11,7 @@ vi.mock('@inertiajs/vue3', () => ({
         props: { app: { name: 'Hoops CMS' }, auth: null, flash: { success: null, error: null }, errors: {}, ziggy: { location: 'http://localhost', routes: {} } },
     }),
     useForm: vi.fn(() => ({ processing: false, errors: {}, post: vi.fn(), reset: vi.fn() })),
-    router: { delete: mockDelete },
+    router: { delete: mockDelete, post: vi.fn(), get: vi.fn() },
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
@@ -41,6 +41,7 @@ const makePage = (overrides: Partial<Page> = {}): Page => ({
     id: 1, user_id: 1, title: 'About Us', slug: 'about-us', content: '<p>Hello</p>', content_json: {},
     excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: '2025-01-01 10:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
+    deleted_at: null,
     author: { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admin', locale: 'en', last_login_at: null, theme_mode: 'system', timezone: 'UTC' },
     parent_id: null, parent: null,
     ...overrides,
@@ -63,43 +64,43 @@ const globalConfig = {
 
 describe('Pages/Index', () => {
     it('renders page titles from props', () => {
-        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('About Us')
         expect(wrapper.text()).toContain('Contact')
     })
 
     it('shows "No pages yet" when data is empty', () => {
         const empty: Paginated<Page> = { ...pages, data: [] }
-        const wrapper = mount(PagesIndex, { props: { pages: empty }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages: empty, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('No pages yet')
     })
 
     it('shows published_at date when present', () => {
-        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('1/1/2025')
     })
 
     it('shows em-dash when published_at is null', () => {
-        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('—')
     })
 
     it('opens confirm modal when delete button is clicked', async () => {
-        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
         const deleteButtons = wrapper.findAll('button').filter(b => b.text() === 'Delete')
         await deleteButtons[0].trigger('click')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(true)
     })
 
     it('calls router.delete when confirm is emitted', async () => {
-        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('confirm')
         expect(mockDelete).toHaveBeenCalledWith(expect.stringContaining('1'), expect.any(Object))
     })
 
     it('closes confirm modal when cancel is emitted', async () => {
-        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('cancel')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(false)
@@ -111,7 +112,7 @@ describe('Pages/Index', () => {
         const withParent: Paginated<Page> = { ...pages, data: [pageWithParent] }
 
         // Act
-        const wrapper = mount(PagesIndex, { props: { pages: withParent }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages: withParent, trash: false }, ...globalConfig })
 
         // Assert
         expect(wrapper.text()).toContain('Home')
@@ -119,7 +120,7 @@ describe('Pages/Index', () => {
 
     it('shows em-dash in parent column when page has no parent', () => {
         // Arrange — default pages fixture has parent: null
-        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
 
         // Assert — at least one em-dash present (published_at and parent columns)
         expect(wrapper.text()).toContain('—')

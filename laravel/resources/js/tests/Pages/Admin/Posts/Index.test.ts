@@ -11,7 +11,7 @@ vi.mock('@inertiajs/vue3', () => ({
         props: { app: { name: 'Hoops CMS' }, auth: null, flash: { success: null, error: null }, errors: {}, ziggy: { location: 'http://localhost', routes: {} } },
     }),
     useForm: vi.fn(() => ({ processing: false, errors: {}, post: vi.fn() })),
-    router: { delete: mockDelete },
+    router: { delete: mockDelete, post: vi.fn(), get: vi.fn() },
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
@@ -43,13 +43,13 @@ const makePost = (overrides: Partial<Post> = {}): Post => ({
     id: 1, user_id: 1, title: 'Hello World', slug: 'hello-world', content: '<p>Hi</p>', content_json: {},
     excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: '2025-01-01 10:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
-    featured_image: null, category_id: null, category: null, tags: [], author, parent_id: null, parent: null,
+    deleted_at: null, featured_image: null, category_id: null, category: null, tags: [], author, parent_id: null, parent: null,
     ...overrides,
 })
 
 const posts: Paginated<Post> = {
     data: [
-        makePost({ id: 1, title: 'Hello World', category: { id: 1, name: 'Tech', slug: 'tech', description: null, parent_id: null, parent: null }, tags: [{ id: 1, name: 'Vue', slug: 'vue' }] }),
+        makePost({ id: 1, title: 'Hello World', category: { id: 1, name: 'Tech', slug: 'tech', description: null, parent_id: null, parent: null, deleted_at: null }, tags: [{ id: 1, name: 'Vue', slug: 'vue' }] }),
         makePost({ id: 2, title: 'Second Post', status: 'draft' }),
     ],
     links: [],
@@ -68,45 +68,45 @@ const globalConfig = {
 
 describe('Posts/Index', () => {
     it('renders post titles from props', () => {
-        const wrapper = mount(PostsIndex, { props: { posts }, ...globalConfig })
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('Hello World')
         expect(wrapper.text()).toContain('Second Post')
     })
 
     it('shows "No posts yet" when data is empty', () => {
         const empty: Paginated<Post> = { ...posts, data: [] }
-        const wrapper = mount(PostsIndex, { props: { posts: empty }, ...globalConfig })
+        const wrapper = mount(PostsIndex, { props: { posts: empty, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('No posts yet')
     })
 
     it('shows category name when post has a category', () => {
-        const wrapper = mount(PostsIndex, { props: { posts }, ...globalConfig })
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('Tech')
     })
 
     it('shows em-dash when post has no category', () => {
-        const wrapper = mount(PostsIndex, { props: { posts }, ...globalConfig })
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('—')
     })
 
     it('renders tag names as badges', () => {
-        const wrapper = mount(PostsIndex, { props: { posts }, ...globalConfig })
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('Vue')
     })
 
     it('shows author name', () => {
-        const wrapper = mount(PostsIndex, { props: { posts }, ...globalConfig })
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('Alice')
     })
 
     it('opens confirm modal when delete is clicked', async () => {
-        const wrapper = mount(PostsIndex, { props: { posts }, ...globalConfig })
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(true)
     })
 
     it('calls router.delete on confirm', async () => {
-        const wrapper = mount(PostsIndex, { props: { posts }, ...globalConfig })
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('confirm')
         expect(mockDelete).toHaveBeenCalledWith(expect.stringContaining('1'), expect.any(Object))

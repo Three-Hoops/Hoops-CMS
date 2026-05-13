@@ -38,6 +38,7 @@ export interface Category {
     description: string | null;
     parent_id: number | null;
     parent: Category | null;
+    deleted_at: string | null;
 }
 
 export interface Tag {
@@ -61,6 +62,7 @@ export interface Page {
     published_at: string | null;
     created_at: string;
     updated_at: string;
+    deleted_at: string | null;
     author: AuthUser;
     parent_id: number | null;
     parent: Pick<Page, "id" | "slug" | "title"> | null;

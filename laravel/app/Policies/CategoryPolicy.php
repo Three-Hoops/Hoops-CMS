@@ -31,4 +31,14 @@ class CategoryPolicy
     {
         return $user->role->canEdit();
     }
+
+    public function restore(User $user, Category $category): bool
+    {
+        return $user->role->canEdit();
+    }
+
+    public function forceDelete(User $user, Category $category): bool
+    {
+        return $user->role->canManageUsers();
+    }
 }
