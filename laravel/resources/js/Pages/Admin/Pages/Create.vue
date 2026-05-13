@@ -1,27 +1,38 @@
 <script setup lang="ts">
-import { useForm, Link } from '@inertiajs/vue3'
-import { route } from 'ziggy-js'
-import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import TipTapEditor from '@/components/Admin/TipTapEditor.vue'
-import SlugInput from '@/components/Admin/SlugInput.vue'
+import { useForm, Link } from "@inertiajs/vue3";
+import { route } from "ziggy-js";
+import AdminLayout from "@/Layouts/AdminLayout.vue";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import TipTapEditor from "@/components/Admin/TipTapEditor.vue";
+import SlugInput from "@/components/Admin/SlugInput.vue";
+
+defineProps<{
+    pages: Array<{ id: number; title: string; slug: string }>;
+}>();
 
 const form = useForm({
-    title: '',
-    slug: '',
-    content: '',
-    status: 'draft' as 'draft' | 'published',
-    meta_title: '',
-    meta_description: '',
-    published_at: '',
-})
+    title: "",
+    slug: "",
+    content: "",
+    status: "draft" as "draft" | "published",
+    meta_title: "",
+    meta_description: "",
+    published_at: "",
+    parent_id: null as number | null,
+});
 
 function submit() {
-    form.post(route('admin.pages.store'))
+    form.post(route("admin.pages.store"));
 }
 </script>
 
@@ -62,6 +73,32 @@ function submit() {
         >
           {{ form.errors.slug }}
         </p>
+      </div>
+
+      <div class="space-y-2">
+        <Label>Parent Page</Label>
+        <Select
+          :model-value="form.parent_id?.toString() ?? ''"
+          @update:model-value="
+            (val) => (form.parent_id = val ? Number(val) : null)
+          "
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="None (top-level)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">
+              None (top-level)
+            </SelectItem>
+            <SelectItem
+              v-for="p in pages"
+              :key="p.id"
+              :value="p.id.toString()"
+            >
+              {{ p.title }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div class="space-y-2">

@@ -1,29 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Link, router } from '@inertiajs/vue3'
-import { route } from 'ziggy-js'
-import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { Button } from '@/components/ui/button'
-import StatusBadge from '@/components/Admin/StatusBadge.vue'
-import Pagination from '@/components/Admin/Pagination.vue'
-import ConfirmModal from '@/components/Admin/ConfirmModal.vue'
-import type { Page, Paginated } from '@/types/models'
+import { ref } from "vue";
+import { Link, router } from "@inertiajs/vue3";
+import { route } from "ziggy-js";
+import AdminLayout from "@/Layouts/AdminLayout.vue";
+import { Button } from "@/components/ui/button";
+import StatusBadge from "@/components/Admin/StatusBadge.vue";
+import Pagination from "@/components/Admin/Pagination.vue";
+import ConfirmModal from "@/components/Admin/ConfirmModal.vue";
+import type { Page, Paginated } from "@/types/models";
 
 defineProps<{
-    pages: Paginated<Page>
-}>()
+    pages: Paginated<Page>;
+}>();
 
-const deletingId = ref<number | null>(null)
+const deletingId = ref<number | null>(null);
 
 function confirmDelete(id: number) {
-    deletingId.value = id
+    deletingId.value = id;
 }
 
 function doDelete() {
-    if (deletingId.value === null) return
-    router.delete(route('admin.pages.destroy', deletingId.value), {
-        onFinish: () => { deletingId.value = null },
-    })
+    if (deletingId.value === null) return;
+    router.delete(route("admin.pages.destroy", deletingId.value), {
+        onFinish: () => {
+            deletingId.value = null;
+        },
+    });
 }
 </script>
 
@@ -53,6 +55,9 @@ function doDelete() {
                 Slug
               </th>
               <th class="px-4 py-3 font-medium">
+                Parent
+              </th>
+              <th class="px-4 py-3 font-medium">
                 Status
               </th>
               <th class="px-4 py-3 font-medium">
@@ -64,11 +69,9 @@ function doDelete() {
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-if="pages.data.length === 0"
-            >
+            <tr v-if="pages.data.length === 0">
               <td
-                colspan="5"
+                colspan="6"
                 class="px-4 py-8 text-center text-muted-foreground"
               >
                 No pages yet.
@@ -85,11 +88,20 @@ function doDelete() {
               <td class="px-4 py-3 text-muted-foreground">
                 {{ page.slug }}
               </td>
+              <td class="px-4 py-3 text-muted-foreground">
+                {{ page.parent ? page.parent.title : "—" }}
+              </td>
               <td class="px-4 py-3">
                 <StatusBadge :status="page.status" />
               </td>
               <td class="px-4 py-3 text-muted-foreground">
-                {{ page.published_at ? new Date(page.published_at).toLocaleDateString() : '—' }}
+                {{
+                  page.published_at
+                    ? new Date(
+                      page.published_at
+                    ).toLocaleDateString()
+                    : "—"
+                }}
               </td>
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2">
@@ -98,7 +110,14 @@ function doDelete() {
                     size="sm"
                     as-child
                   >
-                    <Link :href="route('admin.pages.edit', page.id)">
+                    <Link
+                      :href="
+                        route(
+                          'admin.pages.edit',
+                          page.id
+                        )
+                      "
+                    >
                       Edit
                     </Link>
                   </Button>

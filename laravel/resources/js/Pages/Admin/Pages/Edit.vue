@@ -1,34 +1,42 @@
 <script setup lang="ts">
-import { useForm, Link } from '@inertiajs/vue3'
-import { route } from 'ziggy-js'
-import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import TipTapEditor from '@/components/Admin/TipTapEditor.vue'
-import SlugInput from '@/components/Admin/SlugInput.vue'
-import type { Page } from '@/types/models'
+import { useForm, Link } from "@inertiajs/vue3";
+import { route } from "ziggy-js";
+import AdminLayout from "@/Layouts/AdminLayout.vue";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import TipTapEditor from "@/components/Admin/TipTapEditor.vue";
+import SlugInput from "@/components/Admin/SlugInput.vue";
+import type { Page } from "@/types/models";
 
 const props = defineProps<{
-    page: Page
-}>()
+    page: Page;
+    pages: Array<{ id: number; title: string; slug: string }>;
+}>();
 
 const form = useForm({
     title: props.page.title,
     slug: props.page.slug,
     content: props.page.content,
     status: props.page.status,
-    meta_title: props.page.meta_title ?? '',
-    meta_description: props.page.meta_description ?? '',
+    meta_title: props.page.meta_title ?? "",
+    meta_description: props.page.meta_description ?? "",
     published_at: props.page.published_at
-        ? props.page.published_at.replace(' ', 'T').slice(0, 16)
-        : '',
-})
+        ? props.page.published_at.replace(" ", "T").slice(0, 16)
+        : "",
+    parent_id: props.page.parent_id,
+});
 
 function submit() {
-    form.put(route('admin.pages.update', props.page.id))
+    form.put(route("admin.pages.update", props.page.id));
 }
 </script>
 
@@ -66,6 +74,32 @@ function submit() {
         >
           {{ form.errors.slug }}
         </p>
+      </div>
+
+      <div class="space-y-2">
+        <Label>Parent Page</Label>
+        <Select
+          :model-value="form.parent_id?.toString() ?? ''"
+          @update:model-value="
+            (val) => (form.parent_id = val ? Number(val) : null)
+          "
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="None (top-level)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">
+              None (top-level)
+            </SelectItem>
+            <SelectItem
+              v-for="p in pages"
+              :key="p.id"
+              :value="p.id.toString()"
+            >
+              {{ p.title }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div class="space-y-2">

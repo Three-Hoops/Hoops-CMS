@@ -62,6 +62,8 @@ export interface Page {
     created_at: string;
     updated_at: string;
     author: AuthUser;
+    parent_id: number | null;
+    parent: Pick<Page, "id" | "slug" | "title"> | null;
 }
 
 export interface Post extends Page {
