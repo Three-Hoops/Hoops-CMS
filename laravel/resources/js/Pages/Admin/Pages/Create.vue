@@ -78,16 +78,16 @@ function submit() {
       <div class="space-y-2">
         <Label>Parent Page</Label>
         <Select
-          :model-value="form.parent_id?.toString() ?? ''"
+          :model-value="form.parent_id != null ? form.parent_id.toString() : 'none'"
           @update:model-value="
-            (val) => (form.parent_id = val ? Number(val) : null)
+            (val) => (form.parent_id = val === 'none' ? null : Number(val))
           "
         >
           <SelectTrigger>
             <SelectValue placeholder="None (top-level)" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">
+            <SelectItem value="none">
               None (top-level)
             </SelectItem>
             <SelectItem
