@@ -2,8 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PasswordResetController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserPreferenceController;
 
 Route::get('/', function () {
@@ -23,9 +27,14 @@ Route::middleware('guest')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/reset-password', [PasswordResetController::class, 'update'])->name('password.update')->middleware('throttle:3,1');
 });
 
-Route::middleware(['auth', 'active', 'session.timeout'])->group(function () {
-    Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
-    Route::put('/admin/preferences/theme', [UserPreferenceController::class, 'update'])->name('admin.preferences.theme');
-    Route::put('/admin/preferences/timezone', [UserPreferenceController::class, 'updateTimeZone'])->name('admin.preferences.timezone');
+Route::middleware(['auth', 'active', 'session.timeout'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::put('/preferences/theme', [UserPreferenceController::class, 'update'])->name('preferences.theme');
+    Route::put('/preferences/timezone', [UserPreferenceController::class, 'updateTimeZone'])->name('preferences.timezone');
+
+    Route::resource('pages', PageController::class)->except('show');
+    Route::resource('posts', PostController::class)->except('show');
+    Route::resource('categories', CategoryController::class)->except('show');
+    Route::resource('tags', TagController::class)->only(['index', 'store', 'update', 'destroy']);
 });
