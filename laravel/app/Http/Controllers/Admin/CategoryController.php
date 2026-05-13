@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCategory;
 use App\Http\Requests\Admin\UpdateCategory;
 use App\Models\Category;
+use App\Support\UniqueSlug;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -43,7 +43,7 @@ class CategoryController extends Controller
     public function store(StoreCategory $request): RedirectResponse
     {
         $validated = $request->validated();
-        $validated['slug'] ??= Str::slug($validated['name']);
+        $validated['slug'] = UniqueSlug::generate($validated['slug'] ?? $validated['name'], 'categories');
 
         Category::create($validated);
 
@@ -67,7 +67,7 @@ class CategoryController extends Controller
     public function update(UpdateCategory $request, Category $category): RedirectResponse
     {
         $validated = $request->validated();
-        $validated['slug'] ??= Str::slug($validated['name']);
+        $validated['slug'] = UniqueSlug::generate($validated['slug'] ?? $validated['name'], 'categories', $category->id);
 
         $category->update($validated);
 

@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StorePage;
 use App\Http\Requests\Admin\UpdatePage;
 use App\Models\Page;
+use App\Support\UniqueSlug;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -44,7 +44,7 @@ class PageController extends Controller
     public function store(StorePage $request): RedirectResponse
     {
         $validated = $request->validated();
-        $validated['slug']         ??= Str::slug($validated['title']);
+        $validated['slug']         = UniqueSlug::generate($validated['slug'] ?? $validated['title'], 'pages');
         $validated['content_json'] ??= [];
         $validated['user_id']        = $request->user()->id;
 
@@ -72,7 +72,7 @@ class PageController extends Controller
     public function update(UpdatePage $request, Page $page): RedirectResponse
     {
         $validated = $request->validated();
-        $validated['slug']         ??= Str::slug($validated['title']);
+        $validated['slug']         = UniqueSlug::generate($validated['slug'] ?? $validated['title'], 'pages', $page->id);
         $validated['content_json'] ??= [];
 
         if (
