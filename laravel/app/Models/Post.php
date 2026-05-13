@@ -29,12 +29,15 @@ class Post extends Model
      *
      * @return array<string, string>
      */
+    protected $hidden = ['autosave_json'];
+
     protected function casts(): array
     {
         return [
             'published_at'  => 'datetime',
             'status'        => ContentStatus::class,
             'content_json'  => 'array',
+            'autosave_json' => 'array',
         ];
     }
 
