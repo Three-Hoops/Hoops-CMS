@@ -3,7 +3,16 @@ import { describe, it, expect, vi } from 'vitest'
 import PagesEdit from '@/Pages/Admin/Pages/Edit.vue'
 import type { Page } from '@/types/models'
 
-const { mockPut } = vi.hoisted(() => ({ mockPut: vi.fn() }))
+const { mockPut, mockUseForm } = vi.hoisted(() => {
+    const mockPut = vi.fn()
+    const mockUseForm = vi.fn((initial: Record<string, unknown>) => ({
+        ...initial,
+        processing: false,
+        errors: {},
+        put: mockPut,
+    }))
+    return { mockPut, mockUseForm }
+})
 
 const page: Page = {
     id: 5, user_id: 1, title: 'My Page', slug: 'my-page', content: '<p>Content</p>', content_json: {},
@@ -20,12 +29,7 @@ vi.mock('@inertiajs/vue3', () => ({
         url: '/admin/pages/5/edit',
         props: { app: { name: 'Hoops CMS' }, auth: null, flash: { success: null, error: null }, errors: {}, ziggy: { location: 'http://localhost', routes: {} } },
     }),
-    useForm: vi.fn((initial: Record<string, unknown>) => ({
-        ...initial,
-        processing: false,
-        errors: {},
-        put: mockPut,
-    })),
+    useForm: mockUseForm,
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
@@ -44,6 +48,12 @@ vi.mock('@/composables/useThemeMode', () => ({
 
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
+const SelectStub = {
+    template: '<div :data-model="modelValue"><slot /></div>',
+    props: ['modelValue'],
+    emits: ['update:modelValue'],
+}
+
 const globalConfig = {
     global: {
         stubs: {
@@ -52,7 +62,7 @@ const globalConfig = {
             Input: { template: '<input :id="id" :value="modelValue" />', props: ['id', 'modelValue', 'type', 'class'] },
             Label: { template: '<label><slot /></label>', props: ['for'] },
             Textarea: { template: '<textarea :value="modelValue" />', props: ['id', 'modelValue', 'rows'] },
-            Select: { template: '<div><slot /></div>', props: ['modelValue'] },
+            Select: SelectStub,
             SelectTrigger: { template: '<div><slot /></div>' },
             SelectContent: { template: '<div><slot /></div>' },
             SelectItem: { template: '<div><slot /></div>', props: ['value'] },
@@ -91,5 +101,44 @@ describe('Pages/Edit', () => {
         const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
         await wrapper.find('form').trigger('submit')
         expect(mockPut).toHaveBeenCalledWith('/admin.pages.update/5')
+    })
+
+    it('passes parent_id as string modelValue to parent selector when set', () => {
+        // Arrange
+        const pageWithParent = { ...page, parent_id: 2, parent: { id: 2, title: 'About', slug: 'about' } }
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages }, ...globalConfig })
+
+        // Assert — first Select stub is the parent page selector
+        const parentSelect = wrapper.findAllComponents(SelectStub)[0]
+        expect(parentSelect.attributes('data-model')).toBe('2')
+    })
+
+    it('sets parent_id to null when "none" is selected in parent dropdown', async () => {
+        // Arrange
+        const pageWithParent = { ...page, parent_id: 2, parent: { id: 2, title: 'About', slug: 'about' } }
+        const form = { ...pageWithParent, processing: false, errors: {}, put: mockPut }
+        mockUseForm.mockReturnValueOnce(form)
+        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages }, ...globalConfig })
+
+        // Act
+        await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', 'none')
+
+        // Assert
+        expect(form.parent_id).toBeNull()
+    })
+
+    it('sets parent_id to a number when a page is selected in parent dropdown', async () => {
+        // Arrange
+        const form = { ...page, processing: false, errors: {}, put: mockPut }
+        mockUseForm.mockReturnValueOnce(form)
+        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+
+        // Act
+        await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', '1')
+
+        // Assert
+        expect(form.parent_id).toBe(1)
     })
 })

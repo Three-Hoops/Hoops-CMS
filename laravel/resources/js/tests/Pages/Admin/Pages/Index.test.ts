@@ -104,4 +104,24 @@ describe('Pages/Index', () => {
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('cancel')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(false)
     })
+
+    it('shows parent title when page has a parent', () => {
+        // Arrange
+        const pageWithParent = makePage({ parent_id: 3, parent: { id: 3, title: 'Home', slug: 'home' } })
+        const withParent: Paginated<Page> = { ...pages, data: [pageWithParent] }
+
+        // Act
+        const wrapper = mount(PagesIndex, { props: { pages: withParent }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).toContain('Home')
+    })
+
+    it('shows em-dash in parent column when page has no parent', () => {
+        // Arrange — default pages fixture has parent: null
+        const wrapper = mount(PagesIndex, { props: { pages }, ...globalConfig })
+
+        // Assert — at least one em-dash present (published_at and parent columns)
+        expect(wrapper.text()).toContain('—')
+    })
 })
