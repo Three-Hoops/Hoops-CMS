@@ -11,10 +11,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  */
-#[Fillable(['title', 'slug', 'content', 'content_json', 'excerpt', 'status', 'meta_title', 'meta_description', 'meta_keywords', 'user_id', 'published_at'])]
+#[Fillable(['title', 'slug', 'content', 'content_json', 'excerpt', 'status', 'meta_title', 'meta_description', 'meta_keywords', 'user_id', 'published_at', 'parent_id'])]
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */
@@ -42,5 +43,28 @@ class Page extends Model
     public function scopePublished(Builder $query): void
     {
         $query->where('status', ContentStatus::Published);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Page::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Page::class, 'parent_id');
+    }
+
+    //prevent circular references
+    public function isDescendantOf(Page $page): bool {
+        $current = $this->parent;
+        while($current !== null) {
+            if($current->id === $page->id) {
+                return true;
+            }
+            $current = $current->parent;
+        }
+
+        return false;
     }
 }
