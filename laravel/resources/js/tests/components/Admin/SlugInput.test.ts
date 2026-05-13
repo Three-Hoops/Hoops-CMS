@@ -30,15 +30,15 @@ describe('SlugInput', () => {
         expect(emitted[emitted.length - 1][0]).toBe('hello-world')
     })
 
-    it('does not override modelValue when already set', async () => {
-        // Arrange
+    it('does not override modelValue when user has manually edited it', async () => {
+        // Arrange — start with auto-slug matching modelValue (simulates user having typed custom slug)
         const wrapper = mount(SlugInput, { props: { modelValue: 'custom-slug', source: '' } })
 
-        // Act
+        // Act — source changes but slug was never auto-generated (lastAutoSlug is '' initially for empty source)
         await wrapper.setProps({ source: 'Something Else' })
         await nextTick()
 
-        // Assert
+        // Assert — no auto-update because modelValue ('custom-slug') !== lastAutoSlug ('')
         expect(wrapper.emitted('update:modelValue')).toBeFalsy()
     })
 
