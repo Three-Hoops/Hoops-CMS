@@ -298,7 +298,7 @@ class CategoryControllerTest extends TestCase
         $this->actingAs($user)->delete("/admin/categories/{$category->id}");
 
         // Assert
-        $this->assertDatabaseMissing('categories', ['id' => $category->id]);
+        $this->assertSoftDeleted('categories', ['id' => $category->id]);
     }
 
     public function test_editor_can_delete_category(): void
@@ -311,6 +311,8 @@ class CategoryControllerTest extends TestCase
         $this->actingAs($user)
             ->delete("/admin/categories/{$category->id}")
             ->assertRedirect('/admin/categories');
+
+        $this->assertSoftDeleted('categories', ['id' => $category->id]);
     }
 
     public function test_viewer_cannot_delete_category(): void
@@ -321,5 +323,78 @@ class CategoryControllerTest extends TestCase
 
         // Act + Assert
         $this->actingAs($user)->delete("/admin/categories/{$category->id}")->assertForbidden();
+    }
+
+    // ─── restore ──────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_restore_soft_deleted_category(): void
+    {
+        // Arrange
+        $user     = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $category = Category::factory()->create();
+        $category->delete();
+
+        // Act
+        $this->actingAs($user)->post("/admin/categories/{$category->id}/restore");
+
+        // Assert
+        $this->assertNotSoftDeleted('categories', ['id' => $category->id]);
+    }
+
+    public function test_editor_can_restore_soft_deleted_category(): void
+    {
+        // Arrange
+        $user     = User::factory()->create(['role' => UserRole::Editor]);
+        $category = Category::factory()->create();
+        $category->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post("/admin/categories/{$category->id}/restore")
+            ->assertRedirect();
+
+        $this->assertNotSoftDeleted('categories', ['id' => $category->id]);
+    }
+
+    public function test_viewer_cannot_restore_category(): void
+    {
+        // Arrange
+        $user     = User::factory()->create(['role' => UserRole::Viewer]);
+        $category = Category::factory()->create();
+        $category->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post("/admin/categories/{$category->id}/restore")
+            ->assertForbidden();
+    }
+
+    // ─── forceDelete ──────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_force_delete_soft_deleted_category(): void
+    {
+        // Arrange
+        $user     = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $category = Category::factory()->create();
+        $category->delete();
+
+        // Act
+        $this->actingAs($user)->delete("/admin/categories/{$category->id}/force-delete");
+
+        // Assert
+        $this->assertDatabaseMissing('categories', ['id' => $category->id]);
+    }
+
+    public function test_editor_cannot_force_delete_category(): void
+    {
+        // Arrange
+        $user     = User::factory()->create(['role' => UserRole::Editor]);
+        $category = Category::factory()->create();
+        $category->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->delete("/admin/categories/{$category->id}/force-delete")
+            ->assertForbidden();
     }
 }

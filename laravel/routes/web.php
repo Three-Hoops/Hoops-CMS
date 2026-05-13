@@ -34,7 +34,16 @@ Route::middleware(['auth', 'active', 'session.timeout'])->prefix('admin')->name(
     Route::put('/preferences/timezone', [UserPreferenceController::class, 'updateTimeZone'])->name('preferences.timezone');
 
     Route::resource('pages', PageController::class)->except('show');
+    Route::post('pages/{page}/restore', [PageController::class, 'restore'])->name('pages.restore')->withTrashed();
+    Route::delete('pages/{page}/force-delete', [PageController::class, 'forceDelete'])->name('pages.forceDelete')->withTrashed();
+
     Route::resource('posts', PostController::class)->except('show');
+    Route::post('posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore')->withTrashed();
+    Route::delete('posts/{post}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete')->withTrashed();
+
     Route::resource('categories', CategoryController::class)->except('show');
+    Route::post('categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore')->withTrashed();
+    Route::delete('categories/{category}/force-delete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete')->withTrashed();
+
     Route::resource('tags', TagController::class)->only(['index', 'store', 'update', 'destroy']);
 });

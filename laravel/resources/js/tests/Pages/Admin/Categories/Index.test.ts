@@ -11,7 +11,7 @@ vi.mock('@inertiajs/vue3', () => ({
         props: { app: { name: 'Hoops CMS' }, auth: null, flash: { success: null, error: null }, errors: {}, ziggy: { location: 'http://localhost', routes: {} } },
     }),
     useForm: vi.fn(() => ({ processing: false, errors: {}, post: vi.fn() })),
-    router: { delete: mockDelete },
+    router: { delete: mockDelete, post: vi.fn(), get: vi.fn() },
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
@@ -34,11 +34,11 @@ vi.mock('@/components/Admin/ConfirmModal.vue', () => ({
     default: { name: 'ConfirmModal', template: '<div :data-open="open" />', props: ['open', 'title', 'description'], emits: ['confirm', 'cancel'] },
 }))
 
-const parent: Category = { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null }
+const parent: Category = { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: null }
 const categories: Paginated<Category> = {
     data: [
-        { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null },
-        { id: 2, name: 'Child', slug: 'child', description: null, parent_id: 1, parent },
+        { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: null },
+        { id: 2, name: 'Child', slug: 'child', description: null, parent_id: 1, parent, deleted_at: null },
     ],
     links: [],
     meta: { current_page: 1, last_page: 1, per_page: 15, total: 2 },
@@ -55,42 +55,42 @@ const globalConfig = {
 
 describe('Categories/Index', () => {
     it('renders category names', () => {
-        const wrapper = mount(CategoriesIndex, { props: { categories }, ...globalConfig })
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('Root')
         expect(wrapper.text()).toContain('Child')
     })
 
     it('shows "No categories yet" when empty', () => {
         const empty: Paginated<Category> = { ...categories, data: [] }
-        const wrapper = mount(CategoriesIndex, { props: { categories: empty }, ...globalConfig })
+        const wrapper = mount(CategoriesIndex, { props: { categories: empty, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('No categories yet')
     })
 
     it('shows parent name for child categories', () => {
-        const wrapper = mount(CategoriesIndex, { props: { categories }, ...globalConfig })
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('Root')
     })
 
     it('shows em-dash for top-level categories', () => {
-        const wrapper = mount(CategoriesIndex, { props: { categories }, ...globalConfig })
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
         expect(wrapper.text()).toContain('—')
     })
 
     it('opens confirm modal when delete is clicked', async () => {
-        const wrapper = mount(CategoriesIndex, { props: { categories }, ...globalConfig })
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(true)
     })
 
     it('calls router.delete on confirm', async () => {
-        const wrapper = mount(CategoriesIndex, { props: { categories }, ...globalConfig })
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('confirm')
         expect(mockDelete).toHaveBeenCalledWith(expect.stringContaining('1'), expect.any(Object))
     })
 
     it('closes modal on cancel', async () => {
-        const wrapper = mount(CategoriesIndex, { props: { categories }, ...globalConfig })
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('cancel')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(false)

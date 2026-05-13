@@ -1,31 +1,52 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Link, router } from "@inertiajs/vue3";
-import { route } from "ziggy-js";
-import AdminLayout from "@/Layouts/AdminLayout.vue";
-import { Button } from "@/components/ui/button";
-import StatusBadge from "@/components/Admin/StatusBadge.vue";
-import Pagination from "@/components/Admin/Pagination.vue";
-import ConfirmModal from "@/components/Admin/ConfirmModal.vue";
-import type { Page, Paginated } from "@/types/models";
+import { ref } from 'vue'
+import { Link, router } from '@inertiajs/vue3'
+import { route } from 'ziggy-js'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { Button } from '@/components/ui/button'
+import StatusBadge from '@/components/Admin/StatusBadge.vue'
+import Pagination from '@/components/Admin/Pagination.vue'
+import ConfirmModal from '@/components/Admin/ConfirmModal.vue'
+import type { Page, Paginated } from '@/types/models'
 
 defineProps<{
-    pages: Paginated<Page>;
-}>();
+    pages: Paginated<Page>
+    trash: boolean
+}>()
 
-const deletingId = ref<number | null>(null);
+const confirmingId = ref<number | null>(null)
+const confirmingForceDelete = ref(false)
 
 function confirmDelete(id: number) {
-    deletingId.value = id;
+    confirmingId.value = id
+    confirmingForceDelete.value = false
+}
+
+function confirmForceDelete(id: number) {
+    confirmingId.value = id
+    confirmingForceDelete.value = true
 }
 
 function doDelete() {
-    if (deletingId.value === null) return;
-    router.delete(route("admin.pages.destroy", deletingId.value), {
-        onFinish: () => {
-            deletingId.value = null;
-        },
-    });
+    if (confirmingId.value === null) return
+    router.delete(route('admin.pages.destroy', confirmingId.value), {
+        onFinish: () => { confirmingId.value = null },
+    })
+}
+
+function doForceDelete() {
+    if (confirmingId.value === null) return
+    router.delete(route('admin.pages.forceDelete', confirmingId.value), {
+        onFinish: () => { confirmingId.value = null },
+    })
+}
+
+function restore(id: number) {
+    router.post(route('admin.pages.restore', id))
+}
+
+function switchView(toTrash: boolean) {
+    router.get(route('admin.pages.index'), toTrash ? { trash: 1 } : {}, { preserveState: false })
 }
 </script>
 
@@ -36,8 +57,28 @@ function doDelete() {
     </template>
 
     <div class="space-y-4">
-      <div class="flex justify-end">
-        <Button as-child>
+      <div class="flex items-center justify-between">
+        <div class="flex rounded-md border text-sm">
+          <button
+            class="px-4 py-1.5 transition-colors"
+            :class="!trash ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'"
+            @click="switchView(false)"
+          >
+            All
+          </button>
+          <button
+            class="px-4 py-1.5 transition-colors"
+            :class="trash ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'"
+            @click="switchView(true)"
+          >
+            Trash
+          </button>
+        </div>
+
+        <Button
+          v-if="!trash"
+          as-child
+        >
           <Link :href="route('admin.pages.create')">
             New Page
           </Link>
@@ -74,7 +115,7 @@ function doDelete() {
                 colspan="6"
                 class="px-4 py-8 text-center text-muted-foreground"
               >
-                No pages yet.
+                {{ trash ? 'Trash is empty.' : 'No pages yet.' }}
               </td>
             </tr>
             <tr
@@ -89,35 +130,25 @@ function doDelete() {
                 {{ page.slug }}
               </td>
               <td class="px-4 py-3 text-muted-foreground">
-                {{ page.parent ? page.parent.title : "—" }}
+                {{ page.parent ? page.parent.title : '—' }}
               </td>
               <td class="px-4 py-3">
                 <StatusBadge :status="page.status" />
               </td>
               <td class="px-4 py-3 text-muted-foreground">
-                {{
-                  page.published_at
-                    ? new Date(
-                      page.published_at
-                    ).toLocaleDateString()
-                    : "—"
-                }}
+                {{ page.published_at ? new Date(page.published_at).toLocaleDateString() : '—' }}
               </td>
               <td class="px-4 py-3">
-                <div class="flex items-center gap-2">
+                <div
+                  v-if="!trash"
+                  class="flex items-center gap-2"
+                >
                   <Button
                     variant="outline"
                     size="sm"
                     as-child
                   >
-                    <Link
-                      :href="
-                        route(
-                          'admin.pages.edit',
-                          page.id
-                        )
-                      "
-                    >
+                    <Link :href="route('admin.pages.edit', page.id)">
                       Edit
                     </Link>
                   </Button>
@@ -127,6 +158,25 @@ function doDelete() {
                     @click="confirmDelete(page.id)"
                   >
                     Delete
+                  </Button>
+                </div>
+                <div
+                  v-else
+                  class="flex items-center gap-2"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    @click="restore(page.id)"
+                  >
+                    Restore
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    @click="confirmForceDelete(page.id)"
+                  >
+                    Delete permanently
                   </Button>
                 </div>
               </td>
@@ -139,11 +189,19 @@ function doDelete() {
     </div>
 
     <ConfirmModal
-      :open="deletingId !== null"
+      :open="confirmingId !== null && !confirmingForceDelete"
       title="Delete page?"
-      description="This action cannot be undone."
+      description="This will move the page to trash."
       @confirm="doDelete"
-      @cancel="deletingId = null"
+      @cancel="confirmingId = null"
+    />
+
+    <ConfirmModal
+      :open="confirmingId !== null && confirmingForceDelete"
+      title="Permanently delete page?"
+      description="This cannot be undone. The page will be gone forever."
+      @confirm="doForceDelete"
+      @cancel="confirmingId = null"
     />
   </AdminLayout>
 </template>

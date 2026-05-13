@@ -18,12 +18,16 @@ class CategoryController extends Controller
     {
         $this->authorize('viewAny', Category::class);
 
+        $trash = request()->boolean('trash');
+
         $categories = Category::with('parent')
+            ->when($trash, fn ($q) => $q->onlyTrashed())
             ->orderBy('name')
             ->paginate(15);
 
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $categories,
+            'trash'      => $trash,
         ]);
     }
 
@@ -81,5 +85,27 @@ class CategoryController extends Controller
         return redirect()
             ->route('admin.categories.index')
             ->with(FlashType::Success->value, 'Category deleted successfully.');
+    }
+
+    public function restore(Category $category): RedirectResponse
+    {
+        $this->authorize('restore', $category);
+
+        $category->restore();
+
+        return redirect()
+            ->route('admin.categories.index', ['trash' => 1])
+            ->with(FlashType::Success->value, 'Category restored.');
+    }
+
+    public function forceDelete(Category $category): RedirectResponse
+    {
+        $this->authorize('forceDelete', $category);
+
+        $category->forceDelete();
+
+        return redirect()
+            ->route('admin.categories.index', ['trash' => 1])
+            ->with(FlashType::Success->value, 'Category permanently deleted.');
     }
 }

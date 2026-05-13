@@ -5,10 +5,10 @@ import type { Category } from '@/types/models'
 
 const { mockPut } = vi.hoisted(() => ({ mockPut: vi.fn() }))
 
-const category: Category = { id: 3, name: 'Technology', slug: 'technology', description: 'Tech stuff', parent_id: 1, parent: null }
+const category: Category = { id: 3, name: 'Technology', slug: 'technology', description: 'Tech stuff', parent_id: 1, parent: null, deleted_at: null }
 
 const parents: Category[] = [
-    { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null },
+    { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: null },
 ]
 
 vi.mock('@inertiajs/vue3', () => ({

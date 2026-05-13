@@ -22,12 +22,16 @@ class PostController extends Controller
     {
         $this->authorize('viewAny', Post::class);
 
+        $trash = request()->boolean('trash');
+
         $posts = Post::with(['author', 'category', 'tags'])
+            ->when($trash, fn ($q) => $q->onlyTrashed())
             ->latest()
             ->paginate(15);
 
         return Inertia::render('Admin/Posts/Index', [
             'posts' => $posts,
+            'trash' => $trash,
         ]);
     }
 
@@ -106,5 +110,27 @@ class PostController extends Controller
         return redirect()
             ->route('admin.posts.index')
             ->with(FlashType::Success->value, 'Post deleted successfully.');
+    }
+
+    public function restore(Post $post): RedirectResponse
+    {
+        $this->authorize('restore', $post);
+
+        $post->restore();
+
+        return redirect()
+            ->route('admin.posts.index', ['trash' => 1])
+            ->with(FlashType::Success->value, 'Post restored.');
+    }
+
+    public function forceDelete(Post $post): RedirectResponse
+    {
+        $this->authorize('forceDelete', $post);
+
+        $post->forceDelete();
+
+        return redirect()
+            ->route('admin.posts.index', ['trash' => 1])
+            ->with(FlashType::Success->value, 'Post permanently deleted.');
     }
 }

@@ -19,12 +19,16 @@ class PageController extends Controller
     {
         $this->authorize('viewAny', Page::class);
 
+        $trash = request()->boolean('trash');
+
         $pages = Page::with(['author', 'parent'])
+            ->when($trash, fn ($q) => $q->onlyTrashed())
             ->latest()
             ->paginate(15);
 
         return Inertia::render('Admin/Pages/Index', [
             'pages' => $pages,
+            'trash' => $trash,
         ]);
     }
 
@@ -95,5 +99,27 @@ class PageController extends Controller
         return redirect()
             ->route('admin.pages.index')
             ->with(FlashType::Success->value, 'Page deleted successfully.');
+    }
+
+    public function restore(Page $page): RedirectResponse
+    {
+        $this->authorize('restore', $page);
+
+        $page->restore();
+
+        return redirect()
+            ->route('admin.pages.index', ['trash' => 1])
+            ->with(FlashType::Success->value, 'Page restored.');
+    }
+
+    public function forceDelete(Page $page): RedirectResponse
+    {
+        $this->authorize('forceDelete', $page);
+
+        $page->forceDelete();
+
+        return redirect()
+            ->route('admin.pages.index', ['trash' => 1])
+            ->with(FlashType::Success->value, 'Page permanently deleted.');
     }
 }
