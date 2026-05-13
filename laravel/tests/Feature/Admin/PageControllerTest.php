@@ -456,6 +456,80 @@ class PageControllerTest extends TestCase
         $this->actingAs($user)->delete("/admin/pages/{$page->id}")->assertForbidden();
     }
 
+    // ─── restore ──────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_restore_soft_deleted_page(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $page = Page::factory()->create(['user_id' => $user->id]);
+        $page->delete();
+
+        // Act
+        $this->actingAs($user)->post("/admin/pages/{$page->id}/restore");
+
+        // Assert
+        $this->assertNotSoftDeleted('pages', ['id' => $page->id]);
+    }
+
+    public function test_editor_can_restore_own_soft_deleted_page(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $page = Page::factory()->create(['user_id' => $user->id]);
+        $page->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post("/admin/pages/{$page->id}/restore")
+            ->assertRedirect();
+
+        $this->assertNotSoftDeleted('pages', ['id' => $page->id]);
+    }
+
+    public function test_editor_cannot_restore_another_users_soft_deleted_page(): void
+    {
+        // Arrange
+        $editor = User::factory()->create(['role' => UserRole::Editor]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $page   = Page::factory()->create(['user_id' => $owner->id]);
+        $page->delete();
+
+        // Act + Assert
+        $this->actingAs($editor)
+            ->post("/admin/pages/{$page->id}/restore")
+            ->assertForbidden();
+    }
+
+    // ─── forceDelete ──────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_force_delete_soft_deleted_page(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $page = Page::factory()->create(['user_id' => $user->id]);
+        $page->delete();
+
+        // Act
+        $this->actingAs($user)->delete("/admin/pages/{$page->id}/force-delete");
+
+        // Assert
+        $this->assertDatabaseMissing('pages', ['id' => $page->id]);
+    }
+
+    public function test_editor_cannot_force_delete_page(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $page = Page::factory()->create(['user_id' => $user->id]);
+        $page->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->delete("/admin/pages/{$page->id}/force-delete")
+            ->assertForbidden();
+    }
+
     // ─── parent_id validation ─────────────────────────────────────────────────
 
     public function test_store_accepts_valid_parent_id(): void

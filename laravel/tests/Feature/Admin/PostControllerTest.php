@@ -568,4 +568,78 @@ class PostControllerTest extends TestCase
         // Act + Assert
         $this->actingAs($editor)->delete("/admin/posts/{$post->id}")->assertForbidden();
     }
+
+    // ─── restore ──────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_restore_soft_deleted_post(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $post->delete();
+
+        // Act
+        $this->actingAs($user)->post("/admin/posts/{$post->id}/restore");
+
+        // Assert
+        $this->assertNotSoftDeleted('posts', ['id' => $post->id]);
+    }
+
+    public function test_editor_can_restore_own_soft_deleted_post(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $post->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post("/admin/posts/{$post->id}/restore")
+            ->assertRedirect();
+
+        $this->assertNotSoftDeleted('posts', ['id' => $post->id]);
+    }
+
+    public function test_editor_cannot_restore_another_users_soft_deleted_post(): void
+    {
+        // Arrange
+        $editor = User::factory()->create(['role' => UserRole::Editor]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $post   = Post::factory()->create(['user_id' => $owner->id]);
+        $post->delete();
+
+        // Act + Assert
+        $this->actingAs($editor)
+            ->post("/admin/posts/{$post->id}/restore")
+            ->assertForbidden();
+    }
+
+    // ─── forceDelete ──────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_force_delete_soft_deleted_post(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $post->delete();
+
+        // Act
+        $this->actingAs($user)->delete("/admin/posts/{$post->id}/force-delete");
+
+        // Assert
+        $this->assertDatabaseMissing('posts', ['id' => $post->id]);
+    }
+
+    public function test_editor_cannot_force_delete_post(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $post->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->delete("/admin/posts/{$post->id}/force-delete")
+            ->assertForbidden();
+    }
 }
