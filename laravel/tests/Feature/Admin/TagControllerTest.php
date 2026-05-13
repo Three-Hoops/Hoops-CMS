@@ -98,16 +98,19 @@ class TagControllerTest extends TestCase
             ->assertSessionHasErrors('name');
     }
 
-    public function test_store_rejects_duplicate_slug(): void
+    public function test_store_auto_increments_duplicate_slug(): void
     {
         // Arrange
         $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
         Tag::factory()->create(['slug' => 'php']);
 
-        // Act + Assert
+        // Act
         $this->actingAs($user)
             ->post('/admin/tags', ['name' => 'Anything', 'slug' => 'php'])
-            ->assertSessionHasErrors('slug');
+            ->assertRedirect('/admin/tags');
+
+        // Assert
+        $this->assertDatabaseHas('tags', ['slug' => 'php-1']);
     }
 
     // ─── update ───────────────────────────────────────────────────────────────

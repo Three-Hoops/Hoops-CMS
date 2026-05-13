@@ -153,16 +153,19 @@ class CategoryControllerTest extends TestCase
             ->assertSessionHasErrors('parent_id');
     }
 
-    public function test_store_rejects_duplicate_slug(): void
+    public function test_store_auto_increments_duplicate_slug(): void
     {
         // Arrange
         $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
         Category::factory()->create(['slug' => 'existing']);
 
-        // Act + Assert
+        // Act
         $this->actingAs($user)
             ->post('/admin/categories', ['name' => 'Whatever', 'slug' => 'existing'])
-            ->assertSessionHasErrors('slug');
+            ->assertRedirect('/admin/categories');
+
+        // Assert
+        $this->assertDatabaseHas('categories', ['slug' => 'existing-1']);
     }
 
     public function test_store_requires_name(): void
