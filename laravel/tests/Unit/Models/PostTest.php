@@ -97,4 +97,17 @@ class PostTest extends TestCase
         // Assert
         $this->assertNull($post->category_id);
     }
+
+    public function test_content_is_sanitised_on_save(): void
+    {
+        // Arrange
+        $dirty = '<p>Hello</p><script>alert("xss")</script>';
+
+        // Act
+        $post = Post::factory()->create(['content' => $dirty]);
+
+        // Assert
+        $this->assertStringNotContainsString('<script>', $post->content);
+        $this->assertStringContainsString('<p>Hello</p>', $post->content);
+    }
 }

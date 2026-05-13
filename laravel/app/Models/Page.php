@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Traits\SanitisesContent;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, SanitisesContent;
 
     /**
      * Get the attributes that should be cast.
@@ -33,6 +34,11 @@ class Page extends Model
             'status'        => ContentStatus::class,
             'content_json'  => 'array',
         ];
+    }
+
+    public function setContentAttribute(?string $value): void
+    {
+        $this->attributes['content'] = $this->sanitiseHtml($value);
     }
 
     public function author(): BelongsTo

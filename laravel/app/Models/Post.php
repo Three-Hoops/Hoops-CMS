@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\SanitisesContent;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, SanitisesContent;
 
     /**
      * Get the attributes that should be cast.
@@ -52,6 +53,11 @@ class Post extends Model
         return $this->belongsToMany(Tag::class);
     }
     
+    public function setContentAttribute(?string $value): void
+    {
+        $this->attributes['content'] = $this->sanitiseHtml($value);
+    }
+
     public function scopePublished(Builder $query): void
     {
         $query->where('status', ContentStatus::Published);

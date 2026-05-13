@@ -24,6 +24,7 @@ Homestead.json
 
 /public/build
 /storage/pail
+/storage/app/htmlpurifier
 .env.backup
 .env.production
 .phpactor.json

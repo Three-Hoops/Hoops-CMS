@@ -96,4 +96,19 @@ describe('TipTapEditor', () => {
         await wrapper.find('div').trigger('click')
         expect(mockFocus).toHaveBeenCalled()
     })
+
+    it('strips script tags from emitted html', async () => {
+        // Arrange
+        mockGetHTML.mockReturnValue('<p>Hello</p>' + '<script>alert("xss")</script>')
+        const wrapper = mount(TipTapEditor, { props: { modelValue: '' } })
+
+        // Act
+        capturedOnUpdate?.({ editor: mockEditor })
+        await nextTick()
+
+        // Assert
+        const emitted = wrapper.emitted('update:modelValue')?.[0]?.[0] as string
+        expect(emitted).not.toContain('<script>')
+        expect(emitted).toContain('<p>Hello</p>')
+    })
 })

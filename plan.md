@@ -85,7 +85,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ⬜ | [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40) | Add database indexes to content migrations | `performance` |
 | ✅ | [#43](https://github.com/Three-Hoops/Hoops-CMS/issues/43) | Handle slug collisions with auto-increment | `content` |
 | ✅ | [#45](https://github.com/Three-Hoops/Hoops-CMS/issues/45) | Wrap multi-step writes in database transactions | `content` |
-| ⬜ | [#38](https://github.com/Three-Hoops/Hoops-CMS/issues/38) | Sanitise TipTap HTML output to prevent XSS | `security`, `content` |
+| ✅ | [#38](https://github.com/Three-Hoops/Hoops-CMS/issues/38) | Sanitise TipTap HTML output to prevent XSS | `security`, `content` |
 | ⬜ | [#68](https://github.com/Three-Hoops/Hoops-CMS/issues/68) | Add autosave for rich text editor to prevent data loss | `content`, `enhancement` |
 | ⬜ | [#110](https://github.com/Three-Hoops/Hoops-CMS/issues/110) | Warn users about unsaved changes before navigating away | `content`, `enhancement` |
 | ⬜ | [#58](https://github.com/Three-Hoops/Hoops-CMS/issues/58) | Bulk actions on content lists (publish, draft, delete) | `content`, `enhancement` |
