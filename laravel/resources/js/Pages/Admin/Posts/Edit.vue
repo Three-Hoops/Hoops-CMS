@@ -32,6 +32,9 @@ const form = useForm({
     tag_ids: props.post.tags.map((t) => t.id),
     meta_title: props.post.meta_title ?? '',
     meta_description: props.post.meta_description ?? '',
+    meta_keywords: props.post.meta_keywords ?? '',
+    og_title: props.post.og_title ?? '',
+    og_description: props.post.og_description ?? '',
     published_at: props.post.published_at
         ? props.post.published_at.replace(' ', 'T').slice(0, 16)
         : '',
@@ -231,21 +234,71 @@ function submit() {
         />
       </div>
 
-      <div class="space-y-2">
-        <Label for="meta_title">Meta Title</Label>
-        <Input
-          id="meta_title"
-          v-model="form.meta_title"
-        />
-      </div>
+      <div class="rounded-lg border p-4 space-y-4">
+        <h3 class="text-sm font-semibold">
+          SEO &amp; Social
+        </h3>
 
-      <div class="space-y-2">
-        <Label for="meta_description">Meta Description</Label>
-        <Textarea
-          id="meta_description"
-          v-model="form.meta_description"
-          rows="3"
-        />
+        <div class="space-y-4">
+          <p class="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+            SEO
+          </p>
+
+          <div class="space-y-2">
+            <Label for="meta_title">Meta Title</Label>
+            <Input
+              id="meta_title"
+              v-model="form.meta_title"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <Label for="meta_description">Meta Description</Label>
+            <Textarea
+              id="meta_description"
+              v-model="form.meta_description"
+              rows="3"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <Label for="meta_keywords">Meta Keywords</Label>
+            <Input
+              id="meta_keywords"
+              v-model="form.meta_keywords"
+              placeholder="keyword1, keyword2, keyword3"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <p class="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+            Open Graph
+          </p>
+
+          <div class="space-y-2">
+            <Label for="og_title">OG Title</Label>
+            <Input
+              id="og_title"
+              v-model="form.og_title"
+              :placeholder="form.meta_title || 'Defaults to Meta Title'"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <Label for="og_description">OG Description</Label>
+            <Textarea
+              id="og_description"
+              v-model="form.og_description"
+              rows="3"
+              :placeholder="form.meta_description || 'Defaults to Meta Description'"
+            />
+          </div>
+
+          <p class="text-xs text-muted-foreground">
+            og:type and twitter:card are set automatically (posts: article / summary_large_image).
+          </p>
+        </div>
       </div>
 
       <div class="flex items-center justify-end gap-3">

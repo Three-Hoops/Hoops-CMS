@@ -30,7 +30,7 @@ const autosaveState = {
 const page: Page = {
     id: 5, user_id: 1, title: 'My Page', slug: 'my-page', content: '<p>Content</p>', content_json: {},
     excerpt: null, status: 'published', meta_title: 'SEO Title', meta_description: 'SEO desc',
-    meta_keywords: null, published_at: '2025-03-01 09:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
+    meta_keywords: null, og_title: null, og_description: null, published_at: '2025-03-01 09:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
     deleted_at: null,
     author: { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admin', locale: 'en', last_login_at: null, theme_mode: 'system', timezone: 'UTC' },
     parent_id: null, parent: null,
@@ -279,5 +279,27 @@ describe('Pages/Edit', () => {
 
         // Assert
         expect(mockDefaults).toHaveBeenCalledOnce()
+    })
+
+    it('shows default placeholder text for og fields when meta_title and meta_description are null', () => {
+        // Arrange — exercises the falsy (right) branch of: form.meta_title || 'Defaults to Meta Title'
+        const pageNoMeta = { ...page, meta_title: null, meta_description: null }
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page: pageNoMeta, pages, autosaveDraft: null }, ...globalConfig })
+
+        // Assert — fallback strings are used as placeholders (via $attrs fallthrough on the Input stub)
+        expect(wrapper.find('input#og_title').attributes('placeholder')).toBe('Defaults to Meta Title')
+    })
+
+    it('pre-populates og_title, og_description, and meta_keywords from page when set', () => {
+        // Arrange — exercises the non-null (left) branch of: props.page.og_title ?? ''
+        const pageWithOg = { ...page, og_title: 'Custom OG Title', og_description: 'Custom OG desc', meta_keywords: 'cms, laravel' }
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page: pageWithOg, pages, autosaveDraft: null }, ...globalConfig })
+
+        // Assert — og_title value comes from the page prop
+        expect(wrapper.find('input#og_title').attributes('value')).toBe('Custom OG Title')
     })
 })
