@@ -91,6 +91,25 @@ class PostControllerTest extends TestCase
         $this->actingAs($user)->get('/admin/posts')->assertOk();
     }
 
+    public function test_trash_index_shows_only_soft_deleted_posts(): void
+    {
+        // Arrange
+        $user    = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $active  = Post::factory()->create(['user_id' => $user->id]);
+        $deleted = Post::factory()->create(['user_id' => $user->id]);
+        $deleted->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get('/admin/posts?trash=1')
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Posts/Index')
+                ->where('trash', true)
+                ->has('posts.data', 1)
+                ->where('posts.data.0.id', $deleted->id)
+            );
+    }
+
     // ─── create ───────────────────────────────────────────────────────────────
 
     public function test_super_admin_can_view_create_post_form(): void
@@ -819,6 +838,20 @@ class PostControllerTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_viewer_cannot_restore_post(): void
+    {
+        // Arrange
+        $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $post   = Post::factory()->create(['user_id' => $owner->id]);
+        $post->delete();
+
+        // Act + Assert
+        $this->actingAs($viewer)
+            ->post("/admin/posts/{$post->id}/restore")
+            ->assertForbidden();
+    }
+
     // ─── forceDelete ──────────────────────────────────────────────────────────
 
     public function test_super_admin_can_force_delete_soft_deleted_post(): void
@@ -844,6 +877,20 @@ class PostControllerTest extends TestCase
 
         // Act + Assert
         $this->actingAs($user)
+            ->delete("/admin/posts/{$post->id}/force-delete")
+            ->assertForbidden();
+    }
+
+    public function test_viewer_cannot_force_delete_post(): void
+    {
+        // Arrange
+        $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $post   = Post::factory()->create(['user_id' => $owner->id]);
+        $post->delete();
+
+        // Act + Assert
+        $this->actingAs($viewer)
             ->delete("/admin/posts/{$post->id}/force-delete")
             ->assertForbidden();
     }
