@@ -46,6 +46,10 @@ function restore(id: number) {
     router.post(route('admin.posts.restore', id))
 }
 
+function duplicate(id: number) {
+    router.post(route('admin.posts.duplicate', id))
+}
+
 function switchView(toTrash: boolean) {
     router.get(route('admin.posts.index'), toTrash ? { trash: 1 } : {}, { preserveState: false })
 }
@@ -165,6 +169,13 @@ function switchView(toTrash: boolean) {
                     <Link :href="route('admin.posts.edit', post.id)">
                       Edit
                     </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    @click="duplicate(post.id)"
+                  >
+                    Duplicate
                   </Button>
                   <Button
                     variant="destructive"
