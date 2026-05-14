@@ -219,4 +219,32 @@ describe('Pages/Edit', () => {
         expect(wrapper.find('span.text-xs.text-muted-foreground').exists()).toBe(true)
         expect(wrapper.find('span.text-xs.text-muted-foreground').text()).toContain('Draft saved')
     })
+
+    it('calls clearDraft when form is submitted successfully', async () => {
+        // Arrange — make mockPut invoke its onSuccess callback synchronously
+        mockPut.mockImplementationOnce((_url: string, options: { onSuccess: () => void }) => {
+            options.onSuccess()
+        })
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+        await wrapper.find('form').trigger('submit')
+
+        // Assert
+        expect(mockClearDraft).toHaveBeenCalledOnce()
+    })
+
+    it('restoreDraft does nothing to form when draftContent is null', async () => {
+        // Arrange — hasDraft true but no actual draft content (defensive branch)
+        autosaveState.hasDraft = true
+        autosaveState.draftContent = null
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+        const restoreButton = wrapper.findAll('button[type="button"]').find(b => b.text() === 'Restore')
+        await restoreButton!.trigger('click')
+
+        // Assert — dismissDraft still called even when no content to restore
+        expect(mockDismissDraft).toHaveBeenCalledOnce()
+    })
 })
