@@ -34,6 +34,9 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅     | [#102](https://github.com/Three-Hoops/Hoops-CMS/issues/102) | Add Vite bundle analyser                                                                               | `performance`, `developer-experience`    |
 | ⬜     | [#52](https://github.com/Three-Hoops/Hoops-CMS/issues/52)   | Create model factories for all custom models _(deferred — implement alongside each model in phase 1+)_ | `testing`, `developer-experience`        |
 | ⬜     | [#94](https://github.com/Three-Hoops/Hoops-CMS/issues/94)   | Add demo content seeder for new project onboarding _(deferred — needs models from phase 2)_            | `developer-experience`, `testing`        |
+| ⬜     | [#195](https://github.com/Three-Hoops/Hoops-CMS/issues/195) | Add pull request template _(deferred — do before inviting external contributors)_                      | `documentation`                          |
+| ⬜     | [#196](https://github.com/Three-Hoops/Hoops-CMS/issues/196) | Add GitHub issue templates (bug report and feature request) _(deferred — do before going public)_      | `documentation`                          |
+| ⬜     | [#197](https://github.com/Three-Hoops/Hoops-CMS/issues/197) | Add Code of Conduct _(deferred — action when project goes public, see #135)_                           | `documentation`                          |
 | ✅     | [#67](https://github.com/Three-Hoops/Hoops-CMS/issues/67)   | Add Docker Compose for local development (PHP, MySQL, Redis)                                           | `infrastructure`, `developer-experience` |
 | ✅     | [#22](https://github.com/Three-Hoops/Hoops-CMS/issues/22)   | Install Laravel Debugbar for local development                                                         | `infrastructure`, `developer-experience` |
 | ✅     | [#12](https://github.com/Three-Hoops/Hoops-CMS/issues/12)   | Set up local email with Mailtrap                                                                       | `infrastructure`                         |
@@ -83,15 +86,13 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ⬜     | [#85](https://github.com/Three-Hoops/Hoops-CMS/issues/85)   | Add duplicate action for posts and pages                              | `content`, `enhancement` |
 | ⬜     | [#65](https://github.com/Three-Hoops/Hoops-CMS/issues/65)   | Add per-post and per-page Open Graph / social meta fields             | `content`, `enhancement` |
 | ⬜     | [#69](https://github.com/Three-Hoops/Hoops-CMS/issues/69)   | Add featured/pinned flag to posts                                     | `content`, `enhancement` |
-| ⬜     | [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17)   | Add soft deletes to content models                                    | `content`                |
 | ✅     | [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40)   | Add database indexes to content migrations                            | `performance`            |
 | ✅     | [#17](https://github.com/Three-Hoops/Hoops-CMS/issues/17)   | Add soft deletes to content models                                    | `content`                |
-| ⬜     | [#40](https://github.com/Three-Hoops/Hoops-CMS/issues/40)   | Add database indexes to content migrations                            | `performance`            |
 | ✅     | [#43](https://github.com/Three-Hoops/Hoops-CMS/issues/43)   | Handle slug collisions with auto-increment                            | `content`                |
 | ✅     | [#45](https://github.com/Three-Hoops/Hoops-CMS/issues/45)   | Wrap multi-step writes in database transactions                       | `content`                |
 | ✅     | [#38](https://github.com/Three-Hoops/Hoops-CMS/issues/38)   | Sanitise TipTap HTML output to prevent XSS                            | `security`, `content`    |
 | ✅     | [#68](https://github.com/Three-Hoops/Hoops-CMS/issues/68)   | Add autosave for rich text editor to prevent data loss                | `content`, `enhancement` |
-| ⬜     | [#110](https://github.com/Three-Hoops/Hoops-CMS/issues/110) | Warn users about unsaved changes before navigating away               | `content`, `enhancement` |
+| ✅     | [#110](https://github.com/Three-Hoops/Hoops-CMS/issues/110) | Warn users about unsaved changes before navigating away               | `content`, `enhancement` |
 | ⬜     | [#58](https://github.com/Three-Hoops/Hoops-CMS/issues/58)   | Bulk actions on content lists (publish, draft, delete)                | `content`, `enhancement` |
 | ⬜     | [#75](https://github.com/Three-Hoops/Hoops-CMS/issues/75)   | Add trash view and restore for soft-deleted content                   | `content`, `enhancement` |
 | ⬜     | [#32](https://github.com/Three-Hoops/Hoops-CMS/issues/32)   | Add draft preview for posts and pages                                 | `content`, `enhancement` |

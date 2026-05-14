@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useForm, Link } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
+import { useNavigationGuard } from '@/composables/useNavigationGuard'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,6 +29,8 @@ const form = useForm({
     meta_description: '',
     published_at: '',
 })
+
+useNavigationGuard(() => form.isDirty)
 
 function toggleTag(id: number) {
     const idx = form.tag_ids.indexOf(id)

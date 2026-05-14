@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useForm, Link } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
+import { useNavigationGuard } from '@/composables/useNavigationGuard'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,6 +21,8 @@ const form = useForm({
     description: '',
     parent_id: '' as string | number,
 })
+
+useNavigationGuard(() => form.isDirty)
 
 function submit() {
     form.post(route('admin.categories.store'))
