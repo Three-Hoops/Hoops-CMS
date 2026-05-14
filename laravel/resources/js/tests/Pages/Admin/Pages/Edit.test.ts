@@ -231,8 +231,8 @@ describe('Pages/Edit', () => {
 
     it('calls clearDraft when form is submitted successfully', async () => {
         // Arrange — make mockPut invoke its onSuccess callback synchronously
-        mockPut.mockImplementationOnce((_url: string, options: { onSuccess: () => void }) => {
-            options.onSuccess()
+        mockPut.mockImplementationOnce((_url: string, opts?: { onSuccess?: () => void }) => {
+            opts?.onSuccess?.()
         })
 
         // Act
@@ -269,8 +269,8 @@ describe('Pages/Edit', () => {
 
     it('calls form.defaults when form is submitted successfully', async () => {
         // Arrange
-        mockPut.mockImplementationOnce((_url: string, options: { onSuccess: () => void }) => {
-            options.onSuccess()
+        mockPut.mockImplementationOnce((_url: string, opts?: { onSuccess?: () => void }) => {
+            opts?.onSuccess?.()
         })
 
         // Act
