@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
@@ -9,15 +9,17 @@ import StatusBadge from '@/components/Admin/StatusBadge.vue'
 import Pagination from '@/components/Admin/Pagination.vue'
 import ConfirmModal from '@/components/Admin/ConfirmModal.vue'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useBulkSelection } from '@/composables/useBulkSelection'
 import type { Post, Paginated } from '@/types/models'
 
 const authStore = useAuthStore()
 
-defineProps<{
+const props = defineProps<{
     posts: Paginated<Post>
     trash: boolean
 }>()
 
+// Per-row actions
 const confirmingId = ref<number | null>(null)
 const confirmingForceDelete = ref(false)
 
@@ -56,6 +58,43 @@ function duplicate(id: number) {
 function switchView(toTrash: boolean) {
     router.get(route('admin.posts.index'), toTrash ? { trash: 1 } : {}, { preserveState: false })
 }
+
+// Bulk selection
+const { selectedIds, isAllSelected, toggleAll, toggle, clearSelection } = useBulkSelection()
+const pageIds = computed(() => props.posts.data.map(p => p.id))
+const allSelected = computed(() => isAllSelected(pageIds.value))
+
+const pendingAction = ref<string | null>(null)
+const confirmingBulk = ref(false)
+
+const bulkActionLabel = computed(() => {
+    const n = selectedIds.value.length
+    const labels: Record<string, string> = {
+        publish: `Publish ${n} post(s)?`,
+        draft: `Set ${n} post(s) to draft?`,
+        delete: `Move ${n} post(s) to trash?`,
+        restore: `Restore ${n} post(s) from trash?`,
+    }
+    return labels[pendingAction.value ?? ''] ?? ''
+})
+
+function triggerBulk(action: string) {
+    pendingAction.value = action
+    confirmingBulk.value = true
+}
+
+function submitBulkAction() {
+    router.post(route('admin.posts.bulkAction'), {
+        ids: selectedIds.value,
+        action: pendingAction.value,
+    }, {
+        onSuccess: () => clearSelection(),
+        onFinish: () => {
+            confirmingBulk.value = false
+            pendingAction.value = null
+        },
+    })
+}
 </script>
 
 <template>
@@ -93,10 +132,68 @@ function switchView(toTrash: boolean) {
         </Button>
       </div>
 
+      <div
+        v-if="selectedIds.length > 0 && !authStore.hasRole(['viewer'])"
+        class="flex items-center gap-3 rounded-md border bg-background px-4 py-2 shadow-sm"
+      >
+        <span class="text-sm font-medium">{{ selectedIds.length }} selected</span>
+        <div class="flex items-center gap-2">
+          <Button
+            v-if="!trash"
+            size="sm"
+            variant="outline"
+            @click="triggerBulk('publish')"
+          >
+            Publish
+          </Button>
+          <Button
+            v-if="!trash"
+            size="sm"
+            variant="outline"
+            @click="triggerBulk('draft')"
+          >
+            Draft
+          </Button>
+          <Button
+            v-if="!trash"
+            size="sm"
+            variant="destructive"
+            @click="triggerBulk('delete')"
+          >
+            Delete
+          </Button>
+          <Button
+            v-if="trash"
+            size="sm"
+            variant="outline"
+            @click="triggerBulk('restore')"
+          >
+            Restore
+          </Button>
+        </div>
+        <button
+          class="ml-auto text-sm text-muted-foreground hover:text-foreground"
+          @click="clearSelection"
+        >
+          Clear
+        </button>
+      </div>
+
       <div class="rounded-md border">
         <table class="w-full text-sm">
           <thead class="border-b bg-muted/50">
             <tr class="text-left text-xs text-muted-foreground">
+              <th
+                v-if="!authStore.hasRole(['viewer'])"
+                class="w-10 px-4 py-3"
+              >
+                <input
+                  type="checkbox"
+                  :checked="allSelected"
+                  :indeterminate="selectedIds.length > 0 && !allSelected"
+                  @change="toggleAll(pageIds)"
+                >
+              </th>
               <th class="px-4 py-3 font-medium">
                 Title
               </th>
@@ -120,7 +217,7 @@ function switchView(toTrash: boolean) {
           <tbody>
             <tr v-if="posts.data.length === 0">
               <td
-                colspan="6"
+                :colspan="authStore.hasRole(['viewer']) ? 6 : 7"
                 class="px-4 py-8 text-center text-muted-foreground"
               >
                 {{ trash ? 'Trash is empty.' : 'No posts yet.' }}
@@ -131,6 +228,16 @@ function switchView(toTrash: boolean) {
               :key="post.id"
               class="border-b last:border-0 hover:bg-muted/25"
             >
+              <td
+                v-if="!authStore.hasRole(['viewer'])"
+                class="w-10 px-4 py-3"
+              >
+                <input
+                  type="checkbox"
+                  :checked="selectedIds.includes(post.id)"
+                  @change="toggle(post.id)"
+                >
+              </td>
               <td class="px-4 py-3 font-medium">
                 <span
                   v-if="post.is_featured"
@@ -233,6 +340,14 @@ function switchView(toTrash: boolean) {
       description="This cannot be undone. The post will be gone forever."
       @confirm="doForceDelete"
       @cancel="confirmingId = null"
+    />
+
+    <ConfirmModal
+      :open="confirmingBulk"
+      :title="bulkActionLabel"
+      description="This action will be applied to all selected items."
+      @confirm="submitBulkAction"
+      @cancel="confirmingBulk = false; pendingAction = null"
     />
   </AdminLayout>
 </template>
