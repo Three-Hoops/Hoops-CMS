@@ -70,6 +70,25 @@ class PageControllerTest extends TestCase
         $this->get('/admin/pages')->assertRedirect(route('admin.login'));
     }
 
+    public function test_trash_index_shows_only_soft_deleted_pages(): void
+    {
+        // Arrange
+        $user    = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $active  = Page::factory()->create(['user_id' => $user->id]);
+        $deleted = Page::factory()->create(['user_id' => $user->id]);
+        $deleted->delete();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get('/admin/pages?trash=1')
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Pages/Index')
+                ->where('trash', true)
+                ->has('pages.data', 1)
+                ->where('pages.data.0.id', $deleted->id)
+            );
+    }
+
     // ─── create ───────────────────────────────────────────────────────────────
 
     public function test_super_admin_can_view_create_page_form(): void
@@ -612,6 +631,20 @@ class PageControllerTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_viewer_cannot_restore_page(): void
+    {
+        // Arrange
+        $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $page   = Page::factory()->create(['user_id' => $owner->id]);
+        $page->delete();
+
+        // Act + Assert
+        $this->actingAs($viewer)
+            ->post("/admin/pages/{$page->id}/restore")
+            ->assertForbidden();
+    }
+
     // ─── forceDelete ──────────────────────────────────────────────────────────
 
     public function test_super_admin_can_force_delete_soft_deleted_page(): void
@@ -637,6 +670,20 @@ class PageControllerTest extends TestCase
 
         // Act + Assert
         $this->actingAs($user)
+            ->delete("/admin/pages/{$page->id}/force-delete")
+            ->assertForbidden();
+    }
+
+    public function test_viewer_cannot_force_delete_page(): void
+    {
+        // Arrange
+        $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $page   = Page::factory()->create(['user_id' => $owner->id]);
+        $page->delete();
+
+        // Act + Assert
+        $this->actingAs($viewer)
             ->delete("/admin/pages/{$page->id}/force-delete")
             ->assertForbidden();
     }
