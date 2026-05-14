@@ -555,6 +555,100 @@ class PostControllerTest extends TestCase
         ]);
     }
 
+    // ─── autosave ─────────────────────────────────────────────────────────────
+
+    public function test_autosave_stores_draft_without_touching_updated_at(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $post = Post::factory()->create(['user_id' => $user->id, 'updated_at' => now()->subHour()]);
+        $before = $post->updated_at->toIso8601String();
+
+        // Act
+        $this->actingAs($user)
+            ->postJson("/admin/posts/{$post->id}/autosave", ['content' => '<p>Draft content</p>'])
+            ->assertOk()
+            ->assertJsonStructure(['saved_at']);
+
+        // Assert — content stored, timestamp untouched
+        $fresh = $post->fresh();
+        $this->assertEquals('<p>Draft content</p>', $fresh->autosave_json['content']);
+        $this->assertSame($before, $fresh->updated_at->toIso8601String());
+    }
+
+    public function test_autosave_requires_content(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $post = Post::factory()->create(['user_id' => $user->id]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->postJson("/admin/posts/{$post->id}/autosave", [])
+            ->assertUnprocessable();
+    }
+
+    public function test_viewer_cannot_autosave_post(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Viewer]);
+        $post = Post::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->postJson("/admin/posts/{$post->id}/autosave", ['content' => '<p>Draft</p>'])
+            ->assertForbidden();
+    }
+
+    public function test_update_clears_autosave_json(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create();
+        $post->forceFill(['autosave_json' => ['content' => '<p>Draft</p>']])->save();
+
+        // Act
+        $this->actingAs($user)->put("/admin/posts/{$post->id}", [
+            'title'   => 'Updated',
+            'content' => 'Body',
+            'status'  => 'draft',
+        ]);
+
+        // Assert
+        $this->assertNull($post->fresh()->autosave_json);
+    }
+
+    public function test_edit_passes_autosave_draft_prop_when_draft_exists(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create();
+        $post->forceFill(['autosave_json' => ['content' => '<p>Draft</p>']])->save();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get("/admin/posts/{$post->id}/edit")
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Posts/Edit')
+                ->where('autosaveDraft', '<p>Draft</p>')
+            );
+    }
+
+    public function test_edit_passes_null_autosave_draft_prop_when_no_draft(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->get("/admin/posts/{$post->id}/edit")
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Posts/Edit')
+                ->where('autosaveDraft', null)
+            );
+    }
+
     // ─── destroy ──────────────────────────────────────────────────────────────
 
     public function test_super_admin_can_delete_any_post(): void

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useForm, Link } from "@inertiajs/vue3";
 import { route } from "ziggy-js";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
@@ -15,11 +16,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import TipTapEditor from "@/components/Admin/TipTapEditor.vue";
 import SlugInput from "@/components/Admin/SlugInput.vue";
+import { useAutosave } from "@/composables/useAutosave";
 import type { Page } from "@/types/models";
 
 const props = defineProps<{
     page: Page;
     pages: Array<{ id: number; title: string; slug: string }>;
+    autosaveDraft: string | null;
 }>();
 
 const form = useForm({
@@ -35,8 +38,23 @@ const form = useForm({
     parent_id: props.page.parent_id,
 });
 
+const { lastSavedAt, hasDraft, draftContent, clearDraft, dismissDraft } = useAutosave({
+    resource: "page",
+    resourceId: props.page.id,
+    updatedAt: props.page.updated_at,
+    content: computed(() => form.content),
+    serverDraft: props.autosaveDraft,
+});
+
+function restoreDraft() {
+    if (draftContent.value !== null) {
+        form.content = draftContent.value;
+    }
+    dismissDraft();
+}
+
 function submit() {
-    form.put(route("admin.pages.update", props.page.id));
+    form.put(route("admin.pages.update", props.page.id), { onSuccess: clearDraft });
 }
 </script>
 
@@ -45,6 +63,29 @@ function submit() {
     <template #title>
       Edit Page
     </template>
+
+    <div
+      v-if="hasDraft"
+      class="mx-auto mb-4 max-w-3xl flex items-center justify-between rounded-md border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-950 dark:text-yellow-200"
+    >
+      <span>Unsaved draft found. Restore it?</span>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="font-medium underline"
+          @click="restoreDraft"
+        >
+          Restore
+        </button>
+        <button
+          type="button"
+          class="opacity-60 hover:opacity-100"
+          @click="dismissDraft"
+        >
+          Dismiss
+        </button>
+      </div>
+    </div>
 
     <form
       class="mx-auto max-w-3xl space-y-6"
@@ -157,6 +198,12 @@ function submit() {
       </div>
 
       <div class="flex items-center justify-end gap-3">
+        <span
+          v-if="lastSavedAt"
+          class="text-xs text-muted-foreground"
+        >
+          Draft saved {{ lastSavedAt.toLocaleTimeString() }}
+        </span>
         <Button
           variant="outline"
           :as="Link"

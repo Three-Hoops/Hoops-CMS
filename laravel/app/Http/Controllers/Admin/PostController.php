@@ -11,7 +11,9 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Support\UniqueSlug;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -76,9 +78,10 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         return Inertia::render('Admin/Posts/Edit', [
-            'post'       => $post->load(['author', 'category', 'tags']),
-            'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'tags'       => Tag::orderBy('name')->get(['id', 'name']),
+            'post'          => $post->load(['author', 'category', 'tags']),
+            'categories'    => Category::orderBy('name')->get(['id', 'name']),
+            'tags'          => Tag::orderBy('name')->get(['id', 'name']),
+            'autosaveDraft' => data_get($post->autosave_json, 'content'),
         ]);
     }
 
@@ -101,11 +104,25 @@ class PostController extends Controller
         DB::transaction(function () use ($post, $validated, $tagIds) {
             $post->update($validated);
             $post->tags()->sync($tagIds);
+            Post::withoutTimestamps(fn () => $post->forceFill(['autosave_json' => null])->save());
         });
 
         return redirect()
             ->route('admin.posts.index')
             ->with(FlashType::Success->value, 'Post updated successfully.');
+    }
+
+    public function autosave(Request $request, Post $post): JsonResponse
+    {
+        $this->authorize('update', $post);
+
+        $request->validate(['content' => ['required', 'string']]);
+
+        Post::withoutTimestamps(
+            fn () => $post->forceFill(['autosave_json' => ['content' => $request->input('content')]])->save()
+        );
+
+        return response()->json(['saved_at' => now()->toISOString()]);
     }
 
     public function destroy(Post $post): RedirectResponse

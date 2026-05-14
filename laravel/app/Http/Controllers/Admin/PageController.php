@@ -9,7 +9,9 @@ use App\Http\Requests\Admin\StorePage;
 use App\Http\Requests\Admin\UpdatePage;
 use App\Models\Page;
 use App\Support\UniqueSlug;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -64,8 +66,9 @@ class PageController extends Controller
         $this->authorize('update', $page);
 
         return Inertia::render('Admin/Pages/Edit', [
-            'page' => $page->load(['author', 'parent']),
-            'pages' => Page::select('id', 'title', 'slug')->where('id', '!=', $page->id)->orderBy('title')->get(),
+            'page'          => $page->load(['author', 'parent']),
+            'pages'         => Page::select('id', 'title', 'slug')->where('id', '!=', $page->id)->orderBy('title')->get(),
+            'autosaveDraft' => data_get($page->autosave_json, 'content'),
         ]);
     }
 
@@ -84,10 +87,24 @@ class PageController extends Controller
         }
 
         $page->update($validated);
+        Page::withoutTimestamps(fn () => $page->forceFill(['autosave_json' => null])->save());
 
         return redirect()
             ->route('admin.pages.index')
             ->with(FlashType::Success->value, 'Page updated successfully.');
+    }
+
+    public function autosave(Request $request, Page $page): JsonResponse
+    {
+        $this->authorize('update', $page);
+
+        $request->validate(['content' => ['required', 'string']]);
+
+        Page::withoutTimestamps(
+            fn () => $page->forceFill(['autosave_json' => ['content' => $request->input('content')]])->save()
+        );
+
+        return response()->json(['saved_at' => now()->toISOString()]);
     }
 
     public function destroy(Page $page): RedirectResponse

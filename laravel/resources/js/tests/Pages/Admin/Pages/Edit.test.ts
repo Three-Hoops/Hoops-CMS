@@ -1,9 +1,10 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { ref } from 'vue'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import PagesEdit from '@/Pages/Admin/Pages/Edit.vue'
 import type { Page } from '@/types/models'
 
-const { mockPut, mockUseForm } = vi.hoisted(() => {
+const { mockPut, mockUseForm, mockClearDraft, mockDismissDraft } = vi.hoisted(() => {
     const mockPut = vi.fn()
     const mockUseForm = vi.fn((initial: Record<string, unknown>) => ({
         ...initial,
@@ -11,8 +12,16 @@ const { mockPut, mockUseForm } = vi.hoisted(() => {
         errors: {},
         put: mockPut,
     }))
-    return { mockPut, mockUseForm }
+    const mockClearDraft = vi.fn()
+    const mockDismissDraft = vi.fn()
+    return { mockPut, mockUseForm, mockClearDraft, mockDismissDraft }
 })
+
+const autosaveState = {
+    hasDraft: false,
+    draftContent: null as string | null,
+    lastSavedAt: null as Date | null,
+}
 
 const page: Page = {
     id: 5, user_id: 1, title: 'My Page', slug: 'my-page', content: '<p>Content</p>', content_json: {},
@@ -47,6 +56,16 @@ vi.mock('@/composables/useThemeMode', () => ({
     useThemeMode: () => ({ themeMode: { value: 'system' }, setTheme: vi.fn() }),
 }))
 
+vi.mock('@/composables/useAutosave', () => ({
+    useAutosave: () => ({
+        lastSavedAt: ref(autosaveState.lastSavedAt),
+        hasDraft: ref(autosaveState.hasDraft),
+        draftContent: ref(autosaveState.draftContent),
+        clearDraft: mockClearDraft,
+        dismissDraft: mockDismissDraft,
+    }),
+}))
+
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
 const SelectStub = {
@@ -75,33 +94,41 @@ const globalConfig = {
 }
 
 describe('Pages/Edit', () => {
+    beforeEach(() => {
+        autosaveState.hasDraft = false
+        autosaveState.draftContent = null
+        autosaveState.lastSavedAt = null
+        mockClearDraft.mockReset()
+        mockDismissDraft.mockReset()
+    })
+
     it('renders the page title "Edit Page"', () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.text()).toContain('Edit Page')
     })
 
     it('pre-populates the title field', () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         const inputs = wrapper.findAll('input')
         const titleInput = inputs.find(i => i.attributes('value') === 'My Page')
         expect(titleInput).toBeTruthy()
     })
 
     it('pre-populates the slug field', () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         const inputs = wrapper.findAll('input')
         expect(inputs.some(i => i.attributes('value') === 'my-page')).toBe(true)
     })
 
     it('pre-populates the content in TipTap editor', () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.find('.tiptap').attributes('data-value')).toBe('<p>Content</p>')
     })
 
     it('calls form.put on submit', async () => {
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
         await wrapper.find('form').trigger('submit')
-        expect(mockPut).toHaveBeenCalledWith('/admin.pages.update/5')
+        expect(mockPut).toHaveBeenCalledWith('/admin.pages.update/5', expect.objectContaining({ onSuccess: expect.any(Function) }))
     })
 
     it('passes parent_id as string modelValue to parent selector when set', () => {
@@ -109,7 +136,7 @@ describe('Pages/Edit', () => {
         const pageWithParent = { ...page, parent_id: 2, parent: { id: 2, title: 'About', slug: 'about' } }
 
         // Act
-        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages, autosaveDraft: null }, ...globalConfig })
 
         // Assert — first Select stub is the parent page selector
         const parentSelect = wrapper.findAllComponents(SelectStub)[0]
@@ -121,7 +148,7 @@ describe('Pages/Edit', () => {
         const pageWithParent = { ...page, parent_id: 2, parent: { id: 2, title: 'About', slug: 'about' } }
         const form = { ...pageWithParent, processing: false, errors: {}, put: mockPut }
         mockUseForm.mockReturnValueOnce(form)
-        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages, autosaveDraft: null }, ...globalConfig })
 
         // Act
         await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', 'none')
@@ -134,12 +161,90 @@ describe('Pages/Edit', () => {
         // Arrange
         const form = { ...page, processing: false, errors: {}, put: mockPut }
         mockUseForm.mockReturnValueOnce(form)
-        const wrapper = mount(PagesEdit, { props: { page, pages }, ...globalConfig })
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
 
         // Act
         await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', '1')
 
         // Assert
         expect(form.parent_id).toBe(1)
+    })
+
+    it('shows draft banner when hasDraft is true', () => {
+        // Arrange
+        autosaveState.hasDraft = true
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).toContain('Unsaved draft found. Restore it?')
+    })
+
+    it('calls dismissDraft when Restore button is clicked', async () => {
+        // Arrange
+        autosaveState.hasDraft = true
+        autosaveState.draftContent = '<p>Restored draft</p>'
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+        const restoreButton = wrapper.findAll('button[type="button"]').find(b => b.text() === 'Restore')
+        await restoreButton!.trigger('click')
+
+        // Assert
+        expect(mockDismissDraft).toHaveBeenCalledOnce()
+    })
+
+    it('calls dismissDraft when Dismiss button is clicked', async () => {
+        // Arrange
+        autosaveState.hasDraft = true
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+        const dismissButton = wrapper.findAll('button[type="button"]').find(b => b.text() === 'Dismiss')
+        await dismissButton!.trigger('click')
+
+        // Assert
+        expect(mockDismissDraft).toHaveBeenCalledOnce()
+    })
+
+    it('shows the last saved timestamp when lastSavedAt is set', () => {
+        // Arrange
+        autosaveState.lastSavedAt = new Date('2025-06-01T12:30:00.000Z')
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.find('span.text-xs.text-muted-foreground').exists()).toBe(true)
+        expect(wrapper.find('span.text-xs.text-muted-foreground').text()).toContain('Draft saved')
+    })
+
+    it('calls clearDraft when form is submitted successfully', async () => {
+        // Arrange — make mockPut invoke its onSuccess callback synchronously
+        mockPut.mockImplementationOnce((_url: string, options: { onSuccess: () => void }) => {
+            options.onSuccess()
+        })
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+        await wrapper.find('form').trigger('submit')
+
+        // Assert
+        expect(mockClearDraft).toHaveBeenCalledOnce()
+    })
+
+    it('restoreDraft does nothing to form when draftContent is null', async () => {
+        // Arrange — hasDraft true but no actual draft content (defensive branch)
+        autosaveState.hasDraft = true
+        autosaveState.draftContent = null
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+        const restoreButton = wrapper.findAll('button[type="button"]').find(b => b.text() === 'Restore')
+        await restoreButton!.trigger('click')
+
+        // Assert — dismissDraft still called even when no content to restore
+        expect(mockDismissDraft).toHaveBeenCalledOnce()
     })
 })

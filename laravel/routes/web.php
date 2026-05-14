@@ -36,10 +36,12 @@ Route::middleware(['auth', 'active', 'session.timeout'])->prefix('admin')->name(
     Route::resource('pages', PageController::class)->except('show');
     Route::post('pages/{page}/restore', [PageController::class, 'restore'])->name('pages.restore')->withTrashed();
     Route::delete('pages/{page}/force-delete', [PageController::class, 'forceDelete'])->name('pages.forceDelete')->withTrashed();
+    Route::post('pages/{page}/autosave', [PageController::class, 'autosave'])->name('pages.autosave');
 
     Route::resource('posts', PostController::class)->except('show');
     Route::post('posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore')->withTrashed();
     Route::delete('posts/{post}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete')->withTrashed();
+    Route::post('posts/{post}/autosave', [PostController::class, 'autosave'])->name('posts.autosave');
 
     Route::resource('categories', CategoryController::class)->except('show');
     Route::post('categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore')->withTrashed();
