@@ -9,7 +9,10 @@ import { Label } from '@/components/ui/label'
 import Pagination from '@/components/Admin/Pagination.vue'
 import SlugInput from '@/components/Admin/SlugInput.vue'
 import ConfirmModal from '@/components/Admin/ConfirmModal.vue'
+import { useAuthStore } from '@/stores/useAuthStore'
 import type { Tag, Paginated } from '@/types/models'
+
+const authStore = useAuthStore()
 
 defineProps<{
     tags: Paginated<Tag>
@@ -60,7 +63,10 @@ function doDelete() {
 
     <div class="space-y-6">
       <!-- Add tag form -->
-      <div class="rounded-md border p-4">
+      <div
+        v-if="!authStore.hasRole(['viewer'])"
+        class="rounded-md border p-4"
+      >
         <h2 class="mb-4 text-sm font-semibold">
           Add Tag
         </h2>
@@ -178,7 +184,10 @@ function doDelete() {
                   {{ tag.slug }}
                 </td>
                 <td class="px-4 py-3">
-                  <div class="flex items-center gap-2">
+                  <div
+                    v-if="!authStore.hasRole(['viewer'])"
+                    class="flex items-center gap-2"
+                  >
                     <Button
                       variant="outline"
                       size="sm"

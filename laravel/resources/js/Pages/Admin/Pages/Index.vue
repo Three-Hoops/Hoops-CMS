@@ -7,7 +7,10 @@ import { Button } from '@/components/ui/button'
 import StatusBadge from '@/components/Admin/StatusBadge.vue'
 import Pagination from '@/components/Admin/Pagination.vue'
 import ConfirmModal from '@/components/Admin/ConfirmModal.vue'
+import { useAuthStore } from '@/stores/useAuthStore'
 import type { Page, Paginated } from '@/types/models'
+
+const authStore = useAuthStore()
 
 defineProps<{
     pages: Paginated<Page>
@@ -80,7 +83,7 @@ function switchView(toTrash: boolean) {
         </div>
 
         <Button
-          v-if="!trash"
+          v-if="!trash && !authStore.hasRole(['viewer'])"
           as-child
         >
           <Link :href="route('admin.pages.create')">
@@ -144,7 +147,7 @@ function switchView(toTrash: boolean) {
               </td>
               <td class="px-4 py-3">
                 <div
-                  v-if="!trash"
+                  v-if="!trash && !authStore.hasRole(['viewer'])"
                   class="flex items-center gap-2"
                 >
                   <Button
@@ -172,7 +175,7 @@ function switchView(toTrash: boolean) {
                   </Button>
                 </div>
                 <div
-                  v-else
+                  v-else-if="trash && !authStore.hasRole(['viewer'])"
                   class="flex items-center gap-2"
                 >
                   <Button

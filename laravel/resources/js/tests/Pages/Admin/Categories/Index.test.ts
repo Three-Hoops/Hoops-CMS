@@ -1,9 +1,12 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import CategoriesIndex from '@/Pages/Admin/Categories/Index.vue'
 import type { Category, Paginated } from '@/types/models'
 
-const { mockDelete } = vi.hoisted(() => ({ mockDelete: vi.fn() }))
+const { mockDelete, authRole } = vi.hoisted(() => ({
+    mockDelete: vi.fn(),
+    authRole: { current: 'super_admin' as string },
+}))
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
@@ -21,7 +24,10 @@ vi.mock('ziggy-js', () => ({
 }))
 
 vi.mock('@/stores/useAuthStore', () => ({
-    useAuthStore: () => ({ user: { name: 'Admin', role: 'super_admin', last_login_at: null } }),
+    useAuthStore: () => ({
+        user: { name: 'Admin', role: authRole.current, last_login_at: null },
+        hasRole: (roles: string[]) => roles.includes(authRole.current),
+    }),
 }))
 
 vi.mock('@/composables/useThemeMode', () => ({
@@ -94,5 +100,62 @@ describe('Categories/Index', () => {
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('cancel')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(false)
+    })
+
+    it('shows Restore and Delete permanently buttons in trash view for non-viewer', () => {
+        // Arrange
+        const trashCategories: Paginated<Category> = {
+            ...categories,
+            data: [{ id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: '2025-01-02 10:00:00' }],
+        }
+
+        // Act
+        const wrapper = mount(CategoriesIndex, { props: { categories: trashCategories, trash: true }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(1)
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(1)
+    })
+})
+
+describe('Categories/Index — viewer role', () => {
+    beforeEach(() => { authRole.current = 'viewer' })
+    afterEach(() => { authRole.current = 'super_admin' })
+
+    it('hides New Category button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).not.toContain('New Category')
+    })
+
+    it('hides Edit button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Edit')).toHaveLength(0)
+    })
+
+    it('hides Delete button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete')).toHaveLength(0)
+    })
+
+    it('hides Restore and Delete permanently buttons for viewers in trash view', () => {
+        // Arrange + Act
+        const trashCategories: Paginated<Category> = {
+            ...categories,
+            data: [{ id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: '2025-01-02 10:00:00' }],
+        }
+        const wrapper = mount(CategoriesIndex, { props: { categories: trashCategories, trash: true }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(0)
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(0)
     })
 })

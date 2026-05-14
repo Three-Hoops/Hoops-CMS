@@ -50,6 +50,20 @@ class PageControllerTest extends TestCase
         $this->actingAs($user)->get('/admin/pages')->assertOk();
     }
 
+    public function test_viewer_only_sees_published_pages_in_index(): void
+    {
+        // Arrange
+        $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+        $author = User::factory()->create(['role' => UserRole::Editor]);
+        Page::factory()->create(['user_id' => $author->id, 'status' => ContentStatus::Published]);
+        Page::factory()->create(['user_id' => $author->id, 'status' => ContentStatus::Draft]);
+
+        // Act + Assert
+        $this->actingAs($viewer)
+            ->get('/admin/pages')
+            ->assertInertia(fn ($page) => $page->has('pages.data', 1));
+    }
+
     public function test_guest_is_redirected_from_pages_index(): void
     {
         // Act + Assert

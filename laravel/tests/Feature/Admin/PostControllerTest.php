@@ -58,6 +58,20 @@ class PostControllerTest extends TestCase
         $this->actingAs($user)->get('/admin/posts')->assertOk();
     }
 
+    public function test_viewer_only_sees_published_posts_in_index(): void
+    {
+        // Arrange
+        $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+        $author = User::factory()->create(['role' => UserRole::Editor]);
+        Post::factory()->create(['user_id' => $author->id, 'status' => ContentStatus::Published]);
+        Post::factory()->create(['user_id' => $author->id, 'status' => ContentStatus::Draft]);
+
+        // Act + Assert
+        $this->actingAs($viewer)
+            ->get('/admin/posts')
+            ->assertInertia(fn ($page) => $page->has('posts.data', 1));
+    }
+
     public function test_guest_is_redirected_from_posts_index(): void
     {
         // Act + Assert

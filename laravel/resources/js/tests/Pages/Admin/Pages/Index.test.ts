@@ -1,9 +1,13 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import PagesIndex from '@/Pages/Admin/Pages/Index.vue'
 import type { Page, Paginated } from '@/types/models'
 
-const { mockDelete, mockPost } = vi.hoisted(() => ({ mockDelete: vi.fn(), mockPost: vi.fn() }))
+const { mockDelete, mockPost, authRole } = vi.hoisted(() => ({
+    mockDelete: vi.fn(),
+    mockPost: vi.fn(),
+    authRole: { current: 'super_admin' as string },
+}))
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
@@ -21,7 +25,10 @@ vi.mock('ziggy-js', () => ({
 }))
 
 vi.mock('@/stores/useAuthStore', () => ({
-    useAuthStore: () => ({ user: { name: 'Admin', role: 'super_admin', last_login_at: null } }),
+    useAuthStore: () => ({
+        user: { name: 'Admin', role: authRole.current, last_login_at: null },
+        hasRole: (roles: string[]) => roles.includes(authRole.current),
+    }),
 }))
 
 vi.mock('@/composables/useThemeMode', () => ({
@@ -144,6 +151,18 @@ describe('Pages/Index', () => {
         expect(duplicateButtons).toHaveLength(0)
     })
 
+    it('shows Restore and Delete permanently buttons in trash view for non-viewer', () => {
+        // Arrange
+        const trashPages: Paginated<Page> = { ...pages, data: [makePage({ id: 1, deleted_at: '2025-01-02 10:00:00' })] }
+
+        // Act
+        const wrapper = mount(PagesIndex, { props: { pages: trashPages, trash: true }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(1)
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(1)
+    })
+
     it('calls router.post with duplicate route when Duplicate is clicked', async () => {
         // Arrange
         const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
@@ -153,5 +172,52 @@ describe('Pages/Index', () => {
 
         // Assert
         expect(mockPost).toHaveBeenCalledWith(expect.stringContaining('1'))
+    })
+})
+
+describe('Pages/Index — viewer role', () => {
+    beforeEach(() => { authRole.current = 'viewer' })
+    afterEach(() => { authRole.current = 'super_admin' })
+
+    it('hides New Page button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'New Page')).toHaveLength(0)
+    })
+
+    it('hides Edit button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Edit')).toHaveLength(0)
+    })
+
+    it('hides Duplicate button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Duplicate')).toHaveLength(0)
+    })
+
+    it('hides Delete button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete')).toHaveLength(0)
+    })
+
+    it('hides Restore and Delete permanently buttons for viewers in trash view', () => {
+        // Arrange + Act
+        const trashPages: Paginated<Page> = { ...pages, data: [makePage({ id: 1, deleted_at: '2025-01-02 10:00:00' })] }
+        const wrapper = mount(PagesIndex, { props: { pages: trashPages, trash: true }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(0)
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(0)
     })
 })

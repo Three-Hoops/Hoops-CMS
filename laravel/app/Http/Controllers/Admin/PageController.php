@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ContentStatus;
 use App\Enums\FlashType;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StorePage;
 use App\Http\Requests\Admin\UpdatePage;
@@ -22,9 +23,11 @@ class PageController extends Controller
         $this->authorize('viewAny', Page::class);
 
         $trash = request()->boolean('trash');
+        $user  = request()->user();
 
         $pages = Page::with(['author', 'parent'])
             ->when($trash, fn ($q) => $q->onlyTrashed())
+            ->when($user->role === UserRole::Viewer, fn ($q) => $q->where('status', ContentStatus::Published))
             ->latest()
             ->paginate(15);
 

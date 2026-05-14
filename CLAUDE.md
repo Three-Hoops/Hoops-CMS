@@ -85,6 +85,22 @@ Browser → Laravel `routes/web.php` → Controller calls `Inertia::render('Fold
 - **Vite manifest in PHP tests**: The CI PHP test job has no built frontend assets. Any feature test that hits an Inertia route must call `$this->withoutVite()`, otherwise CI will fail with `Vite manifest not found`. This includes tests that expect **403/404 responses** — Laravel renders those as Inertia error pages too. The cleanest approach is to add `$this->withoutVite()` in the `setUp()` method of every feature test class, so it applies to all tests automatically.
 - **Vue SFC order**: always `<script setup lang="ts">` first, then `<template>`, then `<style>` (if needed). Never use Options API.
 
+### Role Capability Matrix
+
+Three roles are stored as an enum on `users.role`: `super_admin`, `editor`, `viewer`.
+
+| Action | super_admin | editor | viewer |
+|--------|-------------|--------|--------|
+| View admin dashboard | ✅ | ✅ | ✅ |
+| View published posts/pages | ✅ | ✅ | ✅ |
+| View draft posts/pages | ✅ | Own only | ❌ |
+| Create/edit content | ✅ | ✅ | ❌ |
+| Delete content | ✅ | Own only | ❌ |
+| Manage users | ✅ | ❌ | ❌ |
+| Manage settings | ✅ | ❌ | ❌ |
+
+Helpers live in `app/Enums/UserRole.php`: `canEdit()`, `canManageUsers()`, `canManageSettings()`. All Policies use these helpers. The viewer role gives read-only admin access; draft content is filtered server-side in `PostController::index()` and `PageController::index()`. Frontend action buttons are hidden via `useAuthStore().hasRole(['viewer'])`.
+
 ## Testing Rules
 
 Every PR that adds or changes behaviour must ship with tests. No exceptions.

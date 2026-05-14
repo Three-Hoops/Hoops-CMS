@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ContentStatus;
 use App\Enums\FlashType;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StorePost;
 use App\Http\Requests\Admin\UpdatePost;
@@ -26,9 +27,11 @@ class PostController extends Controller
         $this->authorize('viewAny', Post::class);
 
         $trash = request()->boolean('trash');
+        $user  = request()->user();
 
         $posts = Post::with(['author', 'category', 'tags'])
             ->when($trash, fn ($q) => $q->onlyTrashed())
+            ->when($user->role === UserRole::Viewer, fn ($q) => $q->where('status', ContentStatus::Published))
             ->latest()
             ->paginate(15);
 

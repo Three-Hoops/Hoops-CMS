@@ -54,7 +54,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅     | [#103](https://github.com/Three-Hoops/Hoops-CMS/issues/103) | Add timezone preference to users for correct scheduled publishing | `auth`, `enhancement`    |
 | ✅     | [#77](https://github.com/Three-Hoops/Hoops-CMS/issues/77)   | Track last_login_at on users                                      | `auth`, `security`       |
 | ✅     | [#86](https://github.com/Three-Hoops/Hoops-CMS/issues/86)   | Add is_active flag to users for account suspension                | `auth`, `security`       |
-| ⬜     | [#106](https://github.com/Three-Hoops/Hoops-CMS/issues/106) | Define and enforce viewer role capabilities                       | `auth`, `security`       |
+| ✅     | [#105](https://github.com/Three-Hoops/Hoops-CMS/issues/105) | Define and enforce viewer role capabilities                       | `auth`, `security`       |
 | ✅     | [#84](https://github.com/Three-Hoops/Hoops-CMS/issues/84)   | Add remember me to login form                                     | `auth`, `enhancement`    |
 | ⬜     | [#109](https://github.com/Three-Hoops/Hoops-CMS/issues/109) | Add branded transactional email templates                         | `auth`, `enhancement`    |
 | ⬜     | [#89](https://github.com/Three-Hoops/Hoops-CMS/issues/89)   | Implement Content Security Policy (CSP) for admin panel           | `security`               |
