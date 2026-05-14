@@ -30,7 +30,7 @@ const autosaveState = {
 const page: Page = {
     id: 5, user_id: 1, title: 'My Page', slug: 'my-page', content: '<p>Content</p>', content_json: {},
     excerpt: null, status: 'published', meta_title: 'SEO Title', meta_description: 'SEO desc',
-    meta_keywords: null, published_at: '2025-03-01 09:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
+    meta_keywords: null, og_title: null, og_description: null, published_at: '2025-03-01 09:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
     deleted_at: null,
     author: { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admin', locale: 'en', last_login_at: null, theme_mode: 'system', timezone: 'UTC' },
     parent_id: null, parent: null,

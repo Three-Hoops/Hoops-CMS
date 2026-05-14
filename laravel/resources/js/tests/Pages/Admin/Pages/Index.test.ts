@@ -46,7 +46,7 @@ vi.mock('@/components/Admin/ConfirmModal.vue', () => ({
 
 const makePage = (overrides: Partial<Page> = {}): Page => ({
     id: 1, user_id: 1, title: 'About Us', slug: 'about-us', content: '<p>Hello</p>', content_json: {},
-    excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null,
+    excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null, og_title: null, og_description: null,
     published_at: '2025-01-01 10:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
     deleted_at: null,
     author: { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admin', locale: 'en', last_login_at: null, theme_mode: 'system', timezone: 'UTC' },

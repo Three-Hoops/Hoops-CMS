@@ -48,7 +48,7 @@ const author = { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admi
 
 const makePost = (overrides: Partial<Post> = {}): Post => ({
     id: 1, user_id: 1, title: 'Hello World', slug: 'hello-world', content: '<p>Hi</p>', content_json: {},
-    excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null,
+    excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null, og_title: null, og_description: null,
     published_at: '2025-01-01 10:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
     deleted_at: null, featured_image: null, is_featured: false, category_id: null, category: null, tags: [], author, parent_id: null, parent: null,
     ...overrides,

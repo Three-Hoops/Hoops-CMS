@@ -22,7 +22,7 @@ const author = { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admi
 
 const post: Post = {
     id: 3, user_id: 1, title: 'My Post', slug: 'my-post', content: '<p>Body</p>', content_json: {},
-    excerpt: null, status: 'draft', meta_title: null, meta_description: null, meta_keywords: null,
+    excerpt: null, status: 'draft', meta_title: null, meta_description: null, meta_keywords: null, og_title: null, og_description: null,
     published_at: null, created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
     deleted_at: null, featured_image: 'https://example.com/img.jpg', is_featured: false, category_id: 2, category: null,
     tags: [{ id: 1, name: 'Laravel', slug: 'laravel' }], author, parent_id: null, parent: null,
