@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useForm, Link } from "@inertiajs/vue3";
 import { route } from "ziggy-js";
+import { useNavigationGuard } from "@/composables/useNavigationGuard";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,8 @@ const form = useForm({
     published_at: "",
     parent_id: null as number | null,
 });
+
+useNavigationGuard(() => form.isDirty)
 
 function submit() {
     form.post(route("admin.pages.store"));

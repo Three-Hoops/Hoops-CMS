@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useForm, Link } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
+import { useNavigationGuard } from '@/composables/useNavigationGuard'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,8 +23,12 @@ const form = useForm({
     parent_id: props.category.parent_id ? String(props.category.parent_id) : '' as string,
 })
 
+useNavigationGuard(() => form.isDirty)
+
 function submit() {
-    form.put(route('admin.categories.update', props.category.id))
+    form.put(route('admin.categories.update', props.category.id), {
+        onSuccess: () => form.setDefaults(),
+    })
 }
 </script>
 

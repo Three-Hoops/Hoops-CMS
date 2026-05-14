@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import TipTapEditor from '@/components/Admin/TipTapEditor.vue'
 import SlugInput from '@/components/Admin/SlugInput.vue'
 import { useAutosave } from '@/composables/useAutosave'
+import { useNavigationGuard } from '@/composables/useNavigationGuard'
 import type { Category, Post, Tag } from '@/types/models'
 
 const props = defineProps<{
@@ -35,6 +36,8 @@ const form = useForm({
         : '',
 })
 
+useNavigationGuard(() => form.isDirty)
+
 const { lastSavedAt, hasDraft, draftContent, clearDraft, dismissDraft } = useAutosave({
     resource: 'post',
     resourceId: props.post.id,
@@ -57,7 +60,12 @@ function toggleTag(id: number) {
 }
 
 function submit() {
-    form.put(route('admin.posts.update', props.post.id), { onSuccess: clearDraft })
+    form.put(route('admin.posts.update', props.post.id), {
+        onSuccess: () => {
+            clearDraft()
+            form.setDefaults()
+        },
+    })
 }
 </script>
 

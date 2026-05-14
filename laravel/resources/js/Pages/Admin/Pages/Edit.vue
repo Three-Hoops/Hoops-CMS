@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import TipTapEditor from "@/components/Admin/TipTapEditor.vue";
 import SlugInput from "@/components/Admin/SlugInput.vue";
 import { useAutosave } from "@/composables/useAutosave";
+import { useNavigationGuard } from "@/composables/useNavigationGuard";
 import type { Page } from "@/types/models";
 
 const props = defineProps<{
@@ -38,6 +39,8 @@ const form = useForm({
     parent_id: props.page.parent_id,
 });
 
+useNavigationGuard(() => form.isDirty)
+
 const { lastSavedAt, hasDraft, draftContent, clearDraft, dismissDraft } = useAutosave({
     resource: "page",
     resourceId: props.page.id,
@@ -54,7 +57,12 @@ function restoreDraft() {
 }
 
 function submit() {
-    form.put(route("admin.pages.update", props.page.id), { onSuccess: clearDraft });
+    form.put(route("admin.pages.update", props.page.id), {
+        onSuccess: () => {
+            clearDraft()
+            form.setDefaults()
+        },
+    });
 }
 </script>
 
