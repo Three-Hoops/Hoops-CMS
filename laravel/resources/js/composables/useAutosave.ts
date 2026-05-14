@@ -5,7 +5,7 @@ export interface AutosaveOptions {
     resource: 'post' | 'page'
     resourceId: number
     updatedAt: string
-    content: Ref<string>
+    content: Readonly<Ref<string>>
     serverDraft: string | null
 }
 

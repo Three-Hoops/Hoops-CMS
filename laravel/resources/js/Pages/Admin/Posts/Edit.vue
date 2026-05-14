@@ -39,10 +39,7 @@ const { lastSavedAt, hasDraft, draftContent, clearDraft, dismissDraft } = useAut
     resource: 'post',
     resourceId: props.post.id,
     updatedAt: props.post.updated_at,
-    content: computed({
-        get: () => form.content,
-        set: (val) => { form.content = val },
-    }),
+    content: computed(() => form.content),
     serverDraft: props.autosaveDraft,
 })
 
