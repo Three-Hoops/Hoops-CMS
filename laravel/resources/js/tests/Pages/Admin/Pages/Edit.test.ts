@@ -4,18 +4,21 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import PagesEdit from '@/Pages/Admin/Pages/Edit.vue'
 import type { Page } from '@/types/models'
 
-const { mockPut, mockUseForm, mockClearDraft, mockDismissDraft } = vi.hoisted(() => {
+const { mockPut, mockUseForm, mockClearDraft, mockDismissDraft, mockDefaults, mockUseNavigationGuard } = vi.hoisted(() => {
     const mockPut = vi.fn()
+    const mockDefaults = vi.fn()
+    const mockUseNavigationGuard = vi.fn()
     const mockUseForm = vi.fn((initial: Record<string, unknown>) => ({
         ...initial,
+        isDirty: false,
         processing: false,
         errors: {},
         put: mockPut,
-        defaults: vi.fn(),
+        defaults: mockDefaults,
     }))
     const mockClearDraft = vi.fn()
     const mockDismissDraft = vi.fn()
-    return { mockPut, mockUseForm, mockClearDraft, mockDismissDraft }
+    return { mockPut, mockUseForm, mockClearDraft, mockDismissDraft, mockDefaults, mockUseNavigationGuard }
 })
 
 const autosaveState = {
@@ -69,7 +72,7 @@ vi.mock('@/composables/useAutosave', () => ({
 
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
-vi.mock('@/composables/useNavigationGuard', () => ({ useNavigationGuard: vi.fn() }))
+vi.mock('@/composables/useNavigationGuard', () => ({ useNavigationGuard: mockUseNavigationGuard }))
 
 const SelectStub = {
     template: '<div :data-model="modelValue"><slot /></div>',
@@ -103,6 +106,8 @@ describe('Pages/Edit', () => {
         autosaveState.lastSavedAt = null
         mockClearDraft.mockReset()
         mockDismissDraft.mockReset()
+        mockDefaults.mockReset()
+        mockUseNavigationGuard.mockReset()
     })
 
     it('renders the page title "Edit Page"', () => {
@@ -249,5 +254,29 @@ describe('Pages/Edit', () => {
 
         // Assert — dismissDraft still called even when no content to restore
         expect(mockDismissDraft).toHaveBeenCalledOnce()
+    })
+
+    it('passes a getter that reads form.isDirty to useNavigationGuard', () => {
+        // Arrange & Act
+        mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+
+        // Assert — guard is wired with a function that proxies form.isDirty
+        expect(mockUseNavigationGuard).toHaveBeenCalledWith(expect.any(Function))
+        const isDirtyGetter = mockUseNavigationGuard.mock.calls[0][0] as () => boolean
+        expect(isDirtyGetter()).toBe(false)
+    })
+
+    it('calls form.defaults when form is submitted successfully', async () => {
+        // Arrange
+        mockPut.mockImplementationOnce((_url: string, options: { onSuccess: () => void }) => {
+            options.onSuccess()
+        })
+
+        // Act
+        const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
+        await wrapper.find('form').trigger('submit')
+
+        // Assert
+        expect(mockDefaults).toHaveBeenCalledOnce()
     })
 })
