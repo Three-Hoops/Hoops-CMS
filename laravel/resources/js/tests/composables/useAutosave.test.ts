@@ -289,6 +289,61 @@ describe('useAutosave', () => {
         unmount()
     })
 
+    it('resets the debounce timer when content changes again before the timer fires', async () => {
+        // Arrange
+        const content = ref('<p>First</p>')
+        const [, unmount] = withSetup(() =>
+            useAutosave({
+                resource: 'post',
+                resourceId: 1,
+                updatedAt: '2020-01-01T00:00:00.000Z',
+                content,
+                serverDraft: null,
+            }),
+        )
+
+        // Act — first change starts the debounce timer
+        content.value = '<p>First change</p>'
+        await nextTick()
+        vi.advanceTimersByTime(1500) // timer still pending
+
+        // Second change resets the timer (exercises the `if (debounceTimer)` truthy branch)
+        content.value = '<p>Second change</p>'
+        await nextTick()
+        vi.advanceTimersByTime(2000) // now the reset timer fires
+
+        // Assert — only the latest content persisted
+        const stored = localStorage.getItem('autosave:post:1')
+        expect(JSON.parse(stored!).content).toBe('<p>Second change</p>')
+
+        unmount()
+    })
+
+    it('silently ignores server save errors', async () => {
+        // Arrange
+        vi.mocked(axios.post).mockRejectedValueOnce(new Error('Network error'))
+        const content = ref('<p>Content</p>')
+        const [, unmount] = withSetup(() =>
+            useAutosave({
+                resource: 'post',
+                resourceId: 1,
+                updatedAt: '2020-01-01T00:00:00.000Z',
+                content,
+                serverDraft: null,
+            }),
+        )
+
+        // Act — trigger the server sync interval; the rejection should be swallowed
+        vi.advanceTimersByTime(30_000)
+        await nextTick()
+        await Promise.resolve() // flush the rejected promise microtask
+
+        // Assert — axios was called and no error propagated
+        expect(axios.post).toHaveBeenCalledOnce()
+
+        unmount()
+    })
+
     it('removes corrupt localStorage entry and keeps hasDraft false on invalid JSON', async () => {
         // Arrange
         localStorage.setItem('autosave:post:7', 'not-valid-json{{{')
