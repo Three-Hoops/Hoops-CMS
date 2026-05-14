@@ -762,4 +762,102 @@ class PostControllerTest extends TestCase
             ->delete("/admin/posts/{$post->id}/force-delete")
             ->assertForbidden();
     }
+
+    // ─── duplicate ────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_duplicate_any_post(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create(['title' => 'Original Post', 'status' => ContentStatus::Published]);
+
+        // Act
+        $response = $this->actingAs($user)->post("/admin/posts/{$post->id}/duplicate");
+
+        // Assert
+        $copy = Post::where('title', 'Original Post (Copy)')->first();
+        $this->assertNotNull($copy);
+        $this->assertEquals(ContentStatus::Draft, $copy->status);
+        $this->assertNull($copy->published_at);
+        $this->assertEquals($user->id, $copy->user_id);
+        $response->assertRedirect("/admin/posts/{$copy->id}/edit");
+    }
+
+    public function test_editor_can_duplicate_own_post(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $post = Post::factory()->create(['user_id' => $user->id, 'title' => 'My Post']);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post("/admin/posts/{$post->id}/duplicate")
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('posts', ['title' => 'My Post (Copy)', 'user_id' => $user->id]);
+    }
+
+    public function test_editor_can_duplicate_another_editors_post(): void
+    {
+        // Arrange
+        $editor = User::factory()->create(['role' => UserRole::Editor]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $post   = Post::factory()->create(['user_id' => $owner->id, 'title' => 'Shared Post']);
+
+        // Act + Assert — duplicate uses create permission, not ownership
+        $this->actingAs($editor)
+            ->post("/admin/posts/{$post->id}/duplicate")
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('posts', ['title' => 'Shared Post (Copy)', 'user_id' => $editor->id]);
+    }
+
+    public function test_viewer_cannot_duplicate_post(): void
+    {
+        // Arrange
+        $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+        $post   = Post::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($viewer)
+            ->post("/admin/posts/{$post->id}/duplicate")
+            ->assertForbidden();
+    }
+
+    public function test_duplicate_copies_tags(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $tags = Tag::factory()->count(2)->create();
+        $post = Post::factory()->create(['title' => 'Tagged Post']);
+        $post->tags()->sync($tags->pluck('id'));
+
+        // Act
+        $this->actingAs($user)->post("/admin/posts/{$post->id}/duplicate");
+
+        // Assert
+        $copy = Post::where('title', 'Tagged Post (Copy)')->with('tags')->first();
+        $this->assertNotNull($copy);
+        $this->assertEqualsCanonicalizing($tags->pluck('id')->toArray(), $copy->tags->pluck('id')->toArray());
+    }
+
+    public function test_duplicate_sets_draft_status_even_when_original_is_published(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create([
+            'title'        => 'Live Post',
+            'status'       => ContentStatus::Published,
+            'published_at' => now(),
+        ]);
+
+        // Act
+        $this->actingAs($user)->post("/admin/posts/{$post->id}/duplicate");
+
+        // Assert
+        $copy = Post::where('title', 'Live Post (Copy)')->first();
+        $this->assertNotNull($copy);
+        $this->assertEquals(ContentStatus::Draft, $copy->status);
+        $this->assertNull($copy->published_at);
+    }
 }
