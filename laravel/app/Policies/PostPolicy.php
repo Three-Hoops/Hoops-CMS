@@ -23,6 +23,11 @@ class PostPolicy
         return $user->role->canEdit();
     }
 
+    public function duplicate(User $user, Post $post): bool
+    {
+        return $user->role->canEdit();
+    }
+
     public function update(User $user, Post $post): bool
     {
         return $user->role === UserRole::SuperAdmin

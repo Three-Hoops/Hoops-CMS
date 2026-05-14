@@ -107,6 +107,30 @@ class PageController extends Controller
         return response()->json(['saved_at' => now()->toISOString()]);
     }
 
+    public function duplicate(Page $page): RedirectResponse
+    {
+        $this->authorize('duplicate', $page);
+
+        $new = Page::create([
+            'title'            => $page->title . ' (Copy)',
+            'slug'             => UniqueSlug::generate($page->title . ' Copy', 'pages'),
+            'content'          => $page->content,
+            'content_json'     => $page->content_json ?? [],
+            'excerpt'          => $page->excerpt,
+            'status'           => ContentStatus::Draft,
+            'meta_title'       => $page->meta_title,
+            'meta_description' => $page->meta_description,
+            'meta_keywords'    => $page->meta_keywords,
+            'parent_id'        => $page->parent_id,
+            'user_id'          => auth()->id(),
+            'published_at'     => null,
+        ]);
+
+        return redirect()
+            ->route('admin.pages.edit', $new)
+            ->with(FlashType::Success->value, 'Page duplicated successfully.');
+    }
+
     public function destroy(Page $page): RedirectResponse
     {
         $this->authorize('delete', $page);

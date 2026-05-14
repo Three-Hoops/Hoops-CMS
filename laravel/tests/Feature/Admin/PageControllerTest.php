@@ -719,4 +719,101 @@ class PageControllerTest extends TestCase
             ])
             ->assertSessionHasErrors('parent_id');
     }
+
+    // ─── duplicate ────────────────────────────────────────────────────────────
+
+    public function test_super_admin_can_duplicate_any_page(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $page = Page::factory()->create(['title' => 'Original Page', 'status' => ContentStatus::Published]);
+
+        // Act
+        $response = $this->actingAs($user)->post("/admin/pages/{$page->id}/duplicate");
+
+        // Assert
+        $copy = Page::where('title', 'Original Page (Copy)')->first();
+        $this->assertNotNull($copy);
+        $this->assertEquals(ContentStatus::Draft, $copy->status);
+        $this->assertNull($copy->published_at);
+        $this->assertEquals($user->id, $copy->user_id);
+        $response->assertRedirect("/admin/pages/{$copy->id}/edit");
+    }
+
+    public function test_editor_can_duplicate_own_page(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::Editor]);
+        $page = Page::factory()->create(['user_id' => $user->id, 'title' => 'My Page']);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post("/admin/pages/{$page->id}/duplicate")
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('pages', ['title' => 'My Page (Copy)', 'user_id' => $user->id]);
+    }
+
+    public function test_editor_can_duplicate_another_editors_page(): void
+    {
+        // Arrange
+        $editor = User::factory()->create(['role' => UserRole::Editor]);
+        $owner  = User::factory()->create(['role' => UserRole::Editor]);
+        $page   = Page::factory()->create(['user_id' => $owner->id, 'title' => 'Shared Page']);
+
+        // Act + Assert — duplicate uses create permission, not ownership
+        $this->actingAs($editor)
+            ->post("/admin/pages/{$page->id}/duplicate")
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('pages', ['title' => 'Shared Page (Copy)', 'user_id' => $editor->id]);
+    }
+
+    public function test_viewer_cannot_duplicate_page(): void
+    {
+        // Arrange
+        $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+        $page   = Page::factory()->create();
+
+        // Act + Assert
+        $this->actingAs($viewer)
+            ->post("/admin/pages/{$page->id}/duplicate")
+            ->assertForbidden();
+    }
+
+    public function test_duplicate_preserves_parent_id(): void
+    {
+        // Arrange
+        $user   = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $parent = Page::factory()->create(['title' => 'Parent Page']);
+        $page   = Page::factory()->create(['title' => 'Child Page', 'parent_id' => $parent->id]);
+
+        // Act
+        $this->actingAs($user)->post("/admin/pages/{$page->id}/duplicate");
+
+        // Assert
+        $copy = Page::where('title', 'Child Page (Copy)')->first();
+        $this->assertNotNull($copy);
+        $this->assertEquals($parent->id, $copy->parent_id);
+    }
+
+    public function test_duplicate_sets_draft_status_even_when_original_is_published(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $page = Page::factory()->create([
+            'title'        => 'Live Page',
+            'status'       => ContentStatus::Published,
+            'published_at' => now(),
+        ]);
+
+        // Act
+        $this->actingAs($user)->post("/admin/pages/{$page->id}/duplicate");
+
+        // Assert
+        $copy = Page::where('title', 'Live Page (Copy)')->first();
+        $this->assertNotNull($copy);
+        $this->assertEquals(ContentStatus::Draft, $copy->status);
+        $this->assertNull($copy->published_at);
+    }
 }

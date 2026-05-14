@@ -37,11 +37,13 @@ Route::middleware(['auth', 'active', 'session.timeout'])->prefix('admin')->name(
     Route::post('pages/{page}/restore', [PageController::class, 'restore'])->name('pages.restore')->withTrashed();
     Route::delete('pages/{page}/force-delete', [PageController::class, 'forceDelete'])->name('pages.forceDelete')->withTrashed();
     Route::post('pages/{page}/autosave', [PageController::class, 'autosave'])->name('pages.autosave');
+    Route::post('pages/{page}/duplicate', [PageController::class, 'duplicate'])->name('pages.duplicate');
 
     Route::resource('posts', PostController::class)->except('show');
     Route::post('posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore')->withTrashed();
     Route::delete('posts/{post}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete')->withTrashed();
     Route::post('posts/{post}/autosave', [PostController::class, 'autosave'])->name('posts.autosave');
+    Route::post('posts/{post}/duplicate', [PostController::class, 'duplicate'])->name('posts.duplicate');
 
     Route::resource('categories', CategoryController::class)->except('show');
     Route::post('categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore')->withTrashed();

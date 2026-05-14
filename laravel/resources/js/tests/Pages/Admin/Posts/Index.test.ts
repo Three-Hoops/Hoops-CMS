@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest'
 import PostsIndex from '@/Pages/Admin/Posts/Index.vue'
 import type { Post, Paginated } from '@/types/models'
 
-const { mockDelete } = vi.hoisted(() => ({ mockDelete: vi.fn() }))
+const { mockDelete, mockPost } = vi.hoisted(() => ({ mockDelete: vi.fn(), mockPost: vi.fn() }))
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
@@ -11,7 +11,7 @@ vi.mock('@inertiajs/vue3', () => ({
         props: { app: { name: 'Hoops CMS' }, auth: null, flash: { success: null, error: null }, errors: {}, ziggy: { location: 'http://localhost', routes: {} } },
     }),
     useForm: vi.fn(() => ({ processing: false, errors: {}, post: vi.fn() })),
-    router: { delete: mockDelete, post: vi.fn(), get: vi.fn() },
+    router: { delete: mockDelete, post: mockPost, get: vi.fn() },
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
@@ -110,5 +110,34 @@ describe('Posts/Index', () => {
         await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('confirm')
         expect(mockDelete).toHaveBeenCalledWith(expect.stringContaining('1'), expect.any(Object))
+    })
+
+    it('renders a Duplicate button for each post in non-trash view', () => {
+        // Arrange
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Assert
+        const duplicateButtons = wrapper.findAll('button').filter(b => b.text() === 'Duplicate')
+        expect(duplicateButtons).toHaveLength(posts.data.length)
+    })
+
+    it('does not render Duplicate button in trash view', () => {
+        // Arrange
+        const wrapper = mount(PostsIndex, { props: { posts, trash: true }, ...globalConfig })
+
+        // Assert
+        const duplicateButtons = wrapper.findAll('button').filter(b => b.text() === 'Duplicate')
+        expect(duplicateButtons).toHaveLength(0)
+    })
+
+    it('calls router.post with duplicate route when Duplicate is clicked', async () => {
+        // Arrange
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Act
+        await wrapper.findAll('button').filter(b => b.text() === 'Duplicate')[0].trigger('click')
+
+        // Assert
+        expect(mockPost).toHaveBeenCalledWith(expect.stringContaining('1'))
     })
 })
