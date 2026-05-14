@@ -3,8 +3,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import CategoriesIndex from '@/Pages/Admin/Categories/Index.vue'
 import type { Category, Paginated } from '@/types/models'
 
-const { mockDelete, authRole } = vi.hoisted(() => ({
+const { mockDelete, mockPost, authRole } = vi.hoisted(() => ({
     mockDelete: vi.fn(),
+    mockPost: vi.fn(),
     authRole: { current: 'super_admin' as string },
 }))
 
@@ -14,7 +15,7 @@ vi.mock('@inertiajs/vue3', () => ({
         props: { app: { name: 'Hoops CMS' }, auth: null, flash: { success: null, error: null }, errors: {}, ziggy: { location: 'http://localhost', routes: {} } },
     }),
     useForm: vi.fn(() => ({ processing: false, errors: {}, post: vi.fn() })),
-    router: { delete: mockDelete, post: vi.fn(), get: vi.fn() },
+    router: { delete: mockDelete, post: mockPost, get: vi.fn() },
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
 }))
@@ -37,7 +38,7 @@ vi.mock('@/composables/useThemeMode', () => ({
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 vi.mock('@/components/Admin/Pagination.vue', () => ({ default: { template: '<div />' } }))
 vi.mock('@/components/Admin/ConfirmModal.vue', () => ({
-    default: { name: 'ConfirmModal', template: '<div :data-open="open" />', props: ['open', 'title', 'description'], emits: ['confirm', 'cancel'] },
+    default: { name: 'ConfirmModal', template: '<div :data-open="open" />', props: ['open', 'title', 'description'], emits: ['confirm', 'cancel'], },
 }))
 
 const parent: Category = { id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: null }
@@ -115,6 +116,68 @@ describe('Categories/Index', () => {
         // Assert
         expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(1)
         expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(1)
+    })
+})
+
+describe('Categories/Index — bulk selection', () => {
+    it('renders a checkbox in each row for non-viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
+
+        // Assert — one per row + one in header
+        expect(wrapper.findAll('input[type="checkbox"]').length).toBe(categories.data.length + 1)
+    })
+
+    it('does not render checkboxes for viewers', () => {
+        // Arrange
+        authRole.current = 'viewer'
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
+        authRole.current = 'super_admin'
+
+        // Assert
+        expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(0)
+    })
+
+    it('bulk toolbar is hidden when nothing selected', () => {
+        // Arrange + Act
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
+
+        // Assert — Delete button only appears in rows normally, not in a floating toolbar
+        const allText = wrapper.text()
+        expect(allText).not.toContain('selected')
+    })
+
+    it('bulk toolbar appears after selecting a row', async () => {
+        // Arrange
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
+
+        // Act
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+
+        // Assert — selection count label appears
+        expect(wrapper.text()).toContain('1 selected')
+    })
+
+    it('confirming bulk delete calls router.post with correct payload', async () => {
+        // Arrange
+        const wrapper = mount(CategoriesIndex, { props: { categories, trash: false }, ...globalConfig })
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+
+        // find the Delete button inside the bulk toolbar (not a row action)
+        const deleteButtons = wrapper.findAll('button').filter(b => b.text() === 'Delete')
+        await deleteButtons[0].trigger('click')
+
+        // Act
+        const modals = wrapper.findAllComponents({ name: 'ConfirmModal' })
+        const openModal = modals.find(m => m.props('open') === true)
+        await openModal!.vm.$emit('confirm')
+
+        // Assert
+        expect(mockPost).toHaveBeenCalledWith(
+            expect.stringContaining('bulk'),
+            expect.objectContaining({ action: 'delete', ids: expect.arrayContaining([expect.any(Number)]) }),
+            expect.any(Object),
+        )
     })
 })
 

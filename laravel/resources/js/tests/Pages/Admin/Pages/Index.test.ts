@@ -175,6 +175,79 @@ describe('Pages/Index', () => {
     })
 })
 
+describe('Pages/Index — bulk selection', () => {
+    it('renders a checkbox in each row for non-viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+
+        // Assert — one per row + one in header
+        const checkboxes = wrapper.findAll('input[type="checkbox"]')
+        expect(checkboxes.length).toBe(pages.data.length + 1)
+    })
+
+    it('does not render checkboxes for viewers', () => {
+        // Arrange
+        authRole.current = 'viewer'
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+        authRole.current = 'super_admin'
+
+        // Assert
+        expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(0)
+    })
+
+    it('bulk toolbar is hidden when nothing selected', () => {
+        // Arrange + Act
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').some(b => b.text() === 'Publish')).toBe(false)
+    })
+
+    it('bulk toolbar appears after selecting a row', async () => {
+        // Arrange
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+
+        // Act
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+
+        // Assert
+        expect(wrapper.findAll('button').some(b => b.text() === 'Publish')).toBe(true)
+        expect(wrapper.findAll('button').some(b => b.text() === 'Draft')).toBe(true)
+        expect(wrapper.findAll('button').some(b => b.text() === 'Delete')).toBe(true)
+    })
+
+    it('shows Restore bulk action in trash view', async () => {
+        // Arrange
+        const trashPages: Paginated<Page> = { ...pages, data: [makePage({ id: 1, deleted_at: '2025-01-02' })] }
+        const wrapper = mount(PagesIndex, { props: { pages: trashPages, trash: true }, ...globalConfig })
+
+        // Act
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+
+        // Assert
+        expect(wrapper.findAll('button').some(b => b.text() === 'Restore')).toBe(true)
+    })
+
+    it('confirming bulk publish calls router.post with correct payload', async () => {
+        // Arrange
+        const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+        await wrapper.findAll('button').filter(b => b.text() === 'Publish')[0].trigger('click')
+
+        // Act
+        const modals = wrapper.findAllComponents({ name: 'ConfirmModal' })
+        const openModal = modals.find(m => m.props('open') === true)
+        await openModal!.vm.$emit('confirm')
+
+        // Assert
+        expect(mockPost).toHaveBeenCalledWith(
+            expect.stringContaining('bulk'),
+            expect.objectContaining({ action: 'publish', ids: expect.arrayContaining([expect.any(Number)]) }),
+            expect.any(Object),
+        )
+    })
+})
+
 describe('Pages/Index — viewer role', () => {
     beforeEach(() => { authRole.current = 'viewer' })
     afterEach(() => { authRole.current = 'super_admin' })
