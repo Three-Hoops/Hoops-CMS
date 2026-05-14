@@ -82,7 +82,7 @@ const globalConfig = {
         stubs: {
             AdminLayout: { template: '<div><slot name="title" /><slot /></div>' },
             Button: { template: '<button type="submit" :disabled="disabled"><slot /></button>', props: ['disabled', 'variant', 'size', 'asChild', 'as', 'href'] },
-            Input: { template: '<input :id="id" :value="modelValue" />', props: ['id', 'modelValue', 'type', 'placeholder', 'class'] },
+            Input: { template: '<input :id="id" :value="modelValue" :placeholder="placeholder" />', props: ['id', 'modelValue', 'type', 'placeholder', 'class'] },
             Label: { template: '<label><slot /></label>', props: ['for'] },
             Textarea: { template: '<textarea />', props: ['id', 'modelValue', 'rows'] },
             Select: { template: '<div><slot /></div>', props: ['modelValue'] },
@@ -267,5 +267,27 @@ describe('Posts/Edit', () => {
 
         // Assert
         expect(mockDefaults).toHaveBeenCalledOnce()
+    })
+
+    it('uses meta_title and meta_description as og placeholder text when both are set', () => {
+        // Arrange — exercises the truthy (left) branch of: form.meta_title || 'Defaults to Meta Title'
+        const postWithMeta = { ...post, meta_title: 'My SEO Title', meta_description: 'My SEO Desc' }
+
+        // Act
+        const wrapper = mount(PostsEdit, { props: { post: postWithMeta, categories, tags, autosaveDraft: null }, ...globalConfig })
+
+        // Assert — meta_title is used as the og_title placeholder
+        expect(wrapper.find('input#og_title').attributes('placeholder')).toBe('My SEO Title')
+    })
+
+    it('pre-populates og_title, og_description, and meta_keywords from post when set', () => {
+        // Arrange — exercises the non-null (left) branch of: props.post.og_title ?? ''
+        const postWithOg = { ...post, og_title: 'Custom OG Title', og_description: 'Custom OG desc', meta_keywords: 'vue, laravel' }
+
+        // Act
+        const wrapper = mount(PostsEdit, { props: { post: postWithOg, categories, tags, autosaveDraft: null }, ...globalConfig })
+
+        // Assert — og_title value comes from the post prop
+        expect(wrapper.find('input#og_title').attributes('value')).toBe('Custom OG Title')
     })
 })
