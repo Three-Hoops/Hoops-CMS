@@ -59,6 +59,8 @@ export interface Page {
     meta_title: string | null;
     meta_description: string | null;
     meta_keywords: string | null;
+    og_title: string | null;
+    og_description: string | null;
     published_at: string | null;
     created_at: string;
     updated_at: string;
