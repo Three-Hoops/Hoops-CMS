@@ -18,7 +18,7 @@ vi.mock('@inertiajs/vue3', () => ({
     }),
     useForm: vi.fn((initial: Record<string, unknown>) => ({
         ...initial,
-        processing: false, errors: {}, put: mockPut, setDefaults: vi.fn(),
+        processing: false, errors: {}, put: mockPut, defaults: vi.fn(),
     })),
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },

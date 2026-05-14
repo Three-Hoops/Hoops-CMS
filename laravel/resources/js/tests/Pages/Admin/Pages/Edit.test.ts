@@ -11,7 +11,7 @@ const { mockPut, mockUseForm, mockClearDraft, mockDismissDraft } = vi.hoisted(()
         processing: false,
         errors: {},
         put: mockPut,
-        setDefaults: vi.fn(),
+        defaults: vi.fn(),
     }))
     const mockClearDraft = vi.fn()
     const mockDismissDraft = vi.fn()
@@ -149,7 +149,7 @@ describe('Pages/Edit', () => {
     it('sets parent_id to null when "none" is selected in parent dropdown', async () => {
         // Arrange
         const pageWithParent = { ...page, parent_id: 2, parent: { id: 2, title: 'About', slug: 'about' } }
-        const form = { ...pageWithParent, processing: false, errors: {}, put: mockPut }
+        const form = { ...pageWithParent, processing: false, errors: {}, put: mockPut, defaults: vi.fn() }
         mockUseForm.mockReturnValueOnce(form)
         const wrapper = mount(PagesEdit, { props: { page: pageWithParent, pages, autosaveDraft: null }, ...globalConfig })
 
@@ -162,7 +162,7 @@ describe('Pages/Edit', () => {
 
     it('sets parent_id to a number when a page is selected in parent dropdown', async () => {
         // Arrange
-        const form = { ...page, processing: false, errors: {}, put: mockPut }
+        const form = { ...page, processing: false, errors: {}, put: mockPut, defaults: vi.fn() }
         mockUseForm.mockReturnValueOnce(form)
         const wrapper = mount(PagesEdit, { props: { page, pages, autosaveDraft: null }, ...globalConfig })
 

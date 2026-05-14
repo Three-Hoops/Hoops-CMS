@@ -101,7 +101,7 @@ describe('useNavigationGuard', () => {
         mountGuard(true)
         const event = new Event('beforeunload') as BeforeUnloadEvent
         vi.spyOn(event, 'preventDefault')
-        const [, handler] = (window.addEventListener as ReturnType<typeof vi.spyOn>).mock.calls.find(
+        const [, handler] = vi.mocked(window.addEventListener).mock.calls.find(
             ([type]) => type === 'beforeunload',
         )! as [string, EventListener]
 
@@ -117,7 +117,7 @@ describe('useNavigationGuard', () => {
         mountGuard(false)
         const event = new Event('beforeunload') as BeforeUnloadEvent
         vi.spyOn(event, 'preventDefault')
-        const [, handler] = (window.addEventListener as ReturnType<typeof vi.spyOn>).mock.calls.find(
+        const [, handler] = vi.mocked(window.addEventListener).mock.calls.find(
             ([type]) => type === 'beforeunload',
         )! as [string, EventListener]
 

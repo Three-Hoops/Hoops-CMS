@@ -63,7 +63,7 @@ function submit() {
     form.put(route('admin.posts.update', props.post.id), {
         onSuccess: () => {
             clearDraft()
-            form.setDefaults()
+            form.defaults()
         },
     })
 }

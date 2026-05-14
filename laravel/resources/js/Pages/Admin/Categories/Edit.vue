@@ -27,7 +27,7 @@ useNavigationGuard(() => form.isDirty)
 
 function submit() {
     form.put(route('admin.categories.update', props.category.id), {
-        onSuccess: () => form.setDefaults(),
+        onSuccess: () => form.defaults(),
     })
 }
 </script>
