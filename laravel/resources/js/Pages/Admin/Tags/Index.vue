@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
@@ -10,11 +10,12 @@ import Pagination from '@/components/Admin/Pagination.vue'
 import SlugInput from '@/components/Admin/SlugInput.vue'
 import ConfirmModal from '@/components/Admin/ConfirmModal.vue'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useBulkSelection } from '@/composables/useBulkSelection'
 import type { Tag, Paginated } from '@/types/models'
 
 const authStore = useAuthStore()
 
-defineProps<{
+const props = defineProps<{
     tags: Paginated<Tag>
 }>()
 
@@ -51,6 +52,22 @@ function doDelete() {
     if (deletingId.value === null) return
     router.delete(route('admin.tags.destroy', deletingId.value), {
         onFinish: () => { deletingId.value = null },
+    })
+}
+
+// Bulk selection
+const { selectedIds, isAllSelected, toggleAll, toggle, clearSelection } = useBulkSelection()
+const pageIds = computed(() => props.tags.data.map(t => t.id))
+const allSelected = computed(() => isAllSelected(pageIds.value))
+const confirmingBulk = ref(false)
+
+function submitBulkDelete() {
+    router.post(route('admin.tags.bulkAction'), {
+        ids: selectedIds.value,
+        action: 'delete',
+    }, {
+        onSuccess: () => clearSelection(),
+        onFinish: () => { confirmingBulk.value = false },
     })
 }
 </script>
@@ -110,11 +127,42 @@ function doDelete() {
         </form>
       </div>
 
+      <div
+        v-if="selectedIds.length > 0 && !authStore.hasRole(['viewer'])"
+        class="flex items-center gap-3 rounded-md border bg-background px-4 py-2 shadow-sm"
+      >
+        <span class="text-sm font-medium">{{ selectedIds.length }} selected</span>
+        <Button
+          size="sm"
+          variant="destructive"
+          @click="confirmingBulk = true"
+        >
+          Delete
+        </Button>
+        <button
+          class="ml-auto text-sm text-muted-foreground hover:text-foreground"
+          @click="clearSelection"
+        >
+          Clear
+        </button>
+      </div>
+
       <!-- Tags table -->
       <div class="rounded-md border">
         <table class="w-full text-sm">
           <thead class="border-b bg-muted/50">
             <tr class="text-left text-xs text-muted-foreground">
+              <th
+                v-if="!authStore.hasRole(['viewer'])"
+                class="w-10 px-4 py-3"
+              >
+                <input
+                  type="checkbox"
+                  :checked="allSelected"
+                  :indeterminate="selectedIds.length > 0 && !allSelected"
+                  @change="toggleAll(pageIds)"
+                >
+              </th>
               <th class="px-4 py-3 font-medium">
                 Name
               </th>
@@ -129,7 +177,7 @@ function doDelete() {
           <tbody>
             <tr v-if="tags.data.length === 0">
               <td
-                colspan="3"
+                :colspan="authStore.hasRole(['viewer']) ? 3 : 4"
                 class="px-4 py-8 text-center text-muted-foreground"
               >
                 No tags yet.
@@ -141,6 +189,10 @@ function doDelete() {
               class="border-b last:border-0"
             >
               <template v-if="editingId === tag.id">
+                <td
+                  v-if="!authStore.hasRole(['viewer'])"
+                  class="w-10 px-4 py-3"
+                />
                 <td
                   colspan="2"
                   class="px-4 py-2"
@@ -177,6 +229,16 @@ function doDelete() {
                 <td class="px-4 py-2" />
               </template>
               <template v-else>
+                <td
+                  v-if="!authStore.hasRole(['viewer'])"
+                  class="w-10 px-4 py-3"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="selectedIds.includes(tag.id)"
+                    @change="toggle(tag.id)"
+                  >
+                </td>
                 <td class="px-4 py-3 font-medium">
                   {{ tag.name }}
                 </td>
@@ -219,6 +281,14 @@ function doDelete() {
       description="Posts using this tag will have it removed."
       @confirm="doDelete"
       @cancel="deletingId = null"
+    />
+
+    <ConfirmModal
+      :open="confirmingBulk"
+      :title="`Delete ${selectedIds.length} tag(s)?`"
+      description="Posts using these tags will have them removed."
+      @confirm="submitBulkDelete"
+      @cancel="confirmingBulk = false"
     />
   </AdminLayout>
 </template>
