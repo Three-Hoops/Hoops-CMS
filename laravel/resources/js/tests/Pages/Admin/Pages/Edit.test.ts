@@ -5,9 +5,9 @@ import PagesEdit from '@/Pages/Admin/Pages/Edit.vue'
 import type { Page } from '@/types/models'
 
 const { mockPut, mockUseForm, mockClearDraft, mockDismissDraft, mockDefaults, mockUseNavigationGuard } = vi.hoisted(() => {
-    const mockPut = vi.fn()
+    const mockPut = vi.fn((_url: string, opts?: { onSuccess?: () => void }) => { opts?.onSuccess?.() })
     const mockDefaults = vi.fn()
-    const mockUseNavigationGuard = vi.fn()
+    const mockUseNavigationGuard = vi.fn((getter: () => boolean) => { getter() })
     const mockUseForm = vi.fn((initial: Record<string, unknown>) => ({
         ...initial,
         isDirty: false,
@@ -104,10 +104,11 @@ describe('Pages/Edit', () => {
         autosaveState.hasDraft = false
         autosaveState.draftContent = null
         autosaveState.lastSavedAt = null
+        mockPut.mockClear()
         mockClearDraft.mockReset()
         mockDismissDraft.mockReset()
         mockDefaults.mockReset()
-        mockUseNavigationGuard.mockReset()
+        mockUseNavigationGuard.mockClear()
     })
 
     it('renders the page title "Edit Page"', () => {

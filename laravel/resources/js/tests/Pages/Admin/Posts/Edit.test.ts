@@ -5,11 +5,11 @@ import PostsEdit from '@/Pages/Admin/Posts/Edit.vue'
 import type { Category, Post, Tag } from '@/types/models'
 
 const { mockPut, mockClearDraft, mockDismissDraft, mockDefaults, mockUseNavigationGuard } = vi.hoisted(() => ({
-    mockPut: vi.fn(),
+    mockPut: vi.fn((_url: string, opts?: { onSuccess?: () => void }) => { opts?.onSuccess?.() }),
     mockClearDraft: vi.fn(),
     mockDismissDraft: vi.fn(),
     mockDefaults: vi.fn(),
-    mockUseNavigationGuard: vi.fn(),
+    mockUseNavigationGuard: vi.fn((getter: () => boolean) => { getter() }),
 }))
 
 const autosaveState = {
@@ -101,10 +101,11 @@ describe('Posts/Edit', () => {
         autosaveState.hasDraft = false
         autosaveState.draftContent = null
         autosaveState.lastSavedAt = null
+        mockPut.mockClear()
         mockClearDraft.mockReset()
         mockDismissDraft.mockReset()
         mockDefaults.mockReset()
-        mockUseNavigationGuard.mockReset()
+        mockUseNavigationGuard.mockClear()
     })
 
     it('renders the page title "Edit Post"', () => {
