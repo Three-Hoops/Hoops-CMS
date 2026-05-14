@@ -16,21 +16,12 @@ function makeBeforeEvent(method: string) {
     return { detail: { visit: { method } } } as unknown as CustomEvent
 }
 
-function mountGuard(isDirtyValue: boolean) {
-    const isDirty = ref(isDirtyValue)
-    const wrapper = mount(
-        defineComponent({
-            setup() {
-                useNavigationGuard(() => isDirty.value)
-            },
-            template: '<div />',
-        }),
-    )
-    const beforeCallback = mockRouterOn.mock.calls[0]?.[1] as (e: CustomEvent) => boolean | void
-    return { wrapper, isDirty, beforeCallback }
-}
-
 describe('useNavigationGuard', () => {
+    let isDirty: ReturnType<typeof ref<boolean>>
+    let beforeCallback: (e: CustomEvent) => boolean | void
+    let beforeunloadHandler: EventListener
+    let wrapper: ReturnType<typeof mount>
+
     beforeEach(() => {
         mockRouterOn.mockReset()
         mockRouterUnsubscribe.mockReset()
@@ -38,6 +29,22 @@ describe('useNavigationGuard', () => {
         vi.spyOn(window, 'confirm').mockReturnValue(true)
         vi.spyOn(window, 'addEventListener')
         vi.spyOn(window, 'removeEventListener')
+
+        isDirty = ref(false)
+        wrapper = mount(
+            defineComponent({
+                setup() {
+                    useNavigationGuard(() => isDirty.value)
+                },
+                template: '<div />',
+            }),
+        )
+
+        beforeCallback = mockRouterOn.mock.calls[0]![1] as (e: CustomEvent) => boolean | void
+        const listenerCall = vi.mocked(window.addEventListener).mock.calls.find(
+            ([type]) => type === 'beforeunload',
+        )!
+        beforeunloadHandler = listenerCall[1] as EventListener
     })
 
     afterEach(() => {
@@ -45,8 +52,7 @@ describe('useNavigationGuard', () => {
     })
 
     it('allows GET navigation when form is not dirty', () => {
-        // Arrange
-        const { beforeCallback } = mountGuard(false)
+        // Arrange — isDirty is false by default
 
         // Act
         const result = beforeCallback(makeBeforeEvent('get'))
@@ -58,8 +64,8 @@ describe('useNavigationGuard', () => {
 
     it('shows confirm for GET visits when dirty and allows navigation if user confirms', () => {
         // Arrange
-        vi.spyOn(window, 'confirm').mockReturnValue(true)
-        const { beforeCallback } = mountGuard(true)
+        isDirty.value = true
+        vi.mocked(window.confirm).mockReturnValue(true)
 
         // Act
         const result = beforeCallback(makeBeforeEvent('get'))
@@ -73,8 +79,8 @@ describe('useNavigationGuard', () => {
 
     it('cancels GET navigation when dirty and user declines', () => {
         // Arrange
-        vi.spyOn(window, 'confirm').mockReturnValue(false)
-        const { beforeCallback } = mountGuard(true)
+        isDirty.value = true
+        vi.mocked(window.confirm).mockReturnValue(false)
 
         // Act
         const result = beforeCallback(makeBeforeEvent('get'))
@@ -86,7 +92,7 @@ describe('useNavigationGuard', () => {
 
     it('does not block PUT visits even when dirty', () => {
         // Arrange
-        const { beforeCallback } = mountGuard(true)
+        isDirty.value = true
 
         // Act
         const result = beforeCallback(makeBeforeEvent('put'))
@@ -98,107 +104,35 @@ describe('useNavigationGuard', () => {
 
     it('calls event.preventDefault on beforeunload when dirty', () => {
         // Arrange
-        mountGuard(true)
+        isDirty.value = true
         const event = new Event('beforeunload') as BeforeUnloadEvent
         vi.spyOn(event, 'preventDefault')
-        const [, handler] = vi.mocked(window.addEventListener).mock.calls.find(
-            ([type]) => type === 'beforeunload',
-        )! as [string, EventListener]
 
         // Act
-        handler(event)
+        beforeunloadHandler(event)
 
         // Assert
         expect(event.preventDefault).toHaveBeenCalled()
     })
 
     it('does not call event.preventDefault on beforeunload when not dirty', () => {
-        // Arrange
-        mountGuard(false)
+        // Arrange — isDirty is false by default
         const event = new Event('beforeunload') as BeforeUnloadEvent
         vi.spyOn(event, 'preventDefault')
-        const [, handler] = vi.mocked(window.addEventListener).mock.calls.find(
-            ([type]) => type === 'beforeunload',
-        )! as [string, EventListener]
 
         // Act
-        handler(event)
+        beforeunloadHandler(event)
 
         // Assert
         expect(event.preventDefault).not.toHaveBeenCalled()
     })
 
     it('unsubscribes from router and removes beforeunload listener on unmount', () => {
-        // Arrange
-        const { wrapper } = mountGuard(true)
-
         // Act
         wrapper.unmount()
 
         // Assert
         expect(mockRouterUnsubscribe).toHaveBeenCalledOnce()
         expect(window.removeEventListener).toHaveBeenCalledWith('beforeunload', expect.any(Function))
-    })
-
-    it('covers all before-callback branches within a single composable instance', () => {
-        // Arrange — one instance, isDirty toggled mid-test so V8 sees all branches in scope
-        const isDirty = ref(false)
-        const wrapper = mount(
-            defineComponent({
-                setup() {
-                    useNavigationGuard(() => isDirty.value)
-                },
-                template: '<div />',
-            }),
-        )
-        const cb = mockRouterOn.mock.calls[0]![1] as (e: CustomEvent) => boolean | void
-
-        // Not dirty + GET: allowed, no confirm
-        expect(cb(makeBeforeEvent('get'))).toBeUndefined()
-        expect(window.confirm).not.toHaveBeenCalled()
-
-        // Dirty + PUT: never blocked
-        isDirty.value = true
-        expect(cb(makeBeforeEvent('put'))).toBeUndefined()
-        expect(window.confirm).not.toHaveBeenCalled()
-
-        // Dirty + GET + user confirms: allowed
-        vi.mocked(window.confirm).mockReturnValue(true)
-        expect(cb(makeBeforeEvent('get'))).toBeUndefined()
-
-        // Dirty + GET + user cancels: blocked
-        vi.mocked(window.confirm).mockReturnValue(false)
-        expect(cb(makeBeforeEvent('get'))).toBe(false)
-
-        wrapper.unmount()
-    })
-
-    it('covers both beforeunload branches within a single composable instance', () => {
-        // Arrange — same instance, isDirty toggled so both branches execute in one scope
-        const isDirty = ref(false)
-        mount(
-            defineComponent({
-                setup() {
-                    useNavigationGuard(() => isDirty.value)
-                },
-                template: '<div />',
-            }),
-        )
-        const [, handler] = vi.mocked(window.addEventListener).mock.calls.find(
-            ([type]) => type === 'beforeunload',
-        )! as [string, EventListener]
-
-        // Not dirty: no prevention
-        const cleanEvent = new Event('beforeunload') as BeforeUnloadEvent
-        vi.spyOn(cleanEvent, 'preventDefault')
-        handler(cleanEvent)
-        expect(cleanEvent.preventDefault).not.toHaveBeenCalled()
-
-        // Now dirty: prevents unload
-        isDirty.value = true
-        const dirtyEvent = new Event('beforeunload') as BeforeUnloadEvent
-        vi.spyOn(dirtyEvent, 'preventDefault')
-        handler(dirtyEvent)
-        expect(dirtyEvent.preventDefault).toHaveBeenCalled()
     })
 })
