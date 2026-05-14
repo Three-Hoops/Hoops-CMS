@@ -26,6 +26,7 @@ const form = useForm({
     slug: props.post.slug,
     content: props.post.content,
     status: props.post.status,
+    is_featured: props.post.is_featured,
     featured_image: props.post.featured_image ?? '',
     category_id: props.post.category_id ? String(props.post.category_id) : '' as string,
     tag_ids: props.post.tags.map((t) => t.id),
@@ -200,6 +201,16 @@ function submit() {
             {{ tag.name }}
           </label>
         </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <input
+          id="is_featured"
+          v-model="form.is_featured"
+          type="checkbox"
+          class="h-4 w-4"
+        >
+        <Label for="is_featured">Featured post</Label>
       </div>
 
       <div class="space-y-2">

@@ -129,7 +129,10 @@ function switchView(toTrash: boolean) {
               class="border-b last:border-0 hover:bg-muted/25"
             >
               <td class="px-4 py-3 font-medium">
-                {{ post.title }}
+                <span
+                  v-if="post.is_featured"
+                  class="mr-1 text-amber-500"
+                >★</span>{{ post.title }}
               </td>
               <td class="px-4 py-3 text-muted-foreground">
                 {{ post.category?.name ?? '—' }}
