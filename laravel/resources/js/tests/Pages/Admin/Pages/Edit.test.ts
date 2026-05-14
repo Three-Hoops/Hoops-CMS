@@ -11,6 +11,7 @@ const { mockPut, mockUseForm, mockClearDraft, mockDismissDraft } = vi.hoisted(()
         processing: false,
         errors: {},
         put: mockPut,
+        setDefaults: vi.fn(),
     }))
     const mockClearDraft = vi.fn()
     const mockDismissDraft = vi.fn()
@@ -67,6 +68,8 @@ vi.mock('@/composables/useAutosave', () => ({
 }))
 
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
+
+vi.mock('@/composables/useNavigationGuard', () => ({ useNavigationGuard: vi.fn() }))
 
 const SelectStub = {
     template: '<div :data-model="modelValue"><slot /></div>',

@@ -18,7 +18,7 @@ vi.mock('@inertiajs/vue3', () => ({
     }),
     useForm: vi.fn((initial: Record<string, unknown>) => ({
         ...initial,
-        processing: false, errors: {}, put: mockPut,
+        processing: false, errors: {}, put: mockPut, setDefaults: vi.fn(),
     })),
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
@@ -37,6 +37,8 @@ vi.mock('@/composables/useThemeMode', () => ({
 }))
 
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
+
+vi.mock('@/composables/useNavigationGuard', () => ({ useNavigationGuard: vi.fn() }))
 
 const globalConfig = {
     global: {
@@ -80,6 +82,6 @@ describe('Categories/Edit', () => {
     it('calls form.put on submit', async () => {
         const wrapper = mount(CategoriesEdit, { props: { category, parents }, ...globalConfig })
         await wrapper.find('form').trigger('submit')
-        expect(mockPut).toHaveBeenCalledWith('/admin.categories.update/3')
+        expect(mockPut).toHaveBeenCalledWith('/admin.categories.update/3', expect.objectContaining({ onSuccess: expect.any(Function) }))
     })
 })

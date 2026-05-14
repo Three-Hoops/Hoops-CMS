@@ -43,7 +43,7 @@ vi.mock('@inertiajs/vue3', () => ({
     }),
     useForm: vi.fn((initial: Record<string, unknown>) => ({
         ...initial,
-        processing: false, errors: {}, put: mockPut,
+        processing: false, errors: {}, put: mockPut, setDefaults: vi.fn(),
     })),
     Head: { template: '<div />' },
     Link: { template: '<a :href="href"><slot /></a>', props: ['href'] },
@@ -72,6 +72,8 @@ vi.mock('@/composables/useAutosave', () => ({
 }))
 
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
+
+vi.mock('@/composables/useNavigationGuard', () => ({ useNavigationGuard: vi.fn() }))
 
 const globalConfig = {
     global: {

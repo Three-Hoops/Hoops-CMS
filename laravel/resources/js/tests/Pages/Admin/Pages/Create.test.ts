@@ -35,6 +35,8 @@ vi.mock('@/composables/useThemeMode', () => ({
 
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
+vi.mock('@/composables/useNavigationGuard', () => ({ useNavigationGuard: vi.fn() }))
+
 const SelectStub = {
     template: '<div :data-model="modelValue"><slot /></div>',
     props: ['modelValue'],
