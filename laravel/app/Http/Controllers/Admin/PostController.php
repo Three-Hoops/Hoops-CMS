@@ -125,6 +125,37 @@ class PostController extends Controller
         return response()->json(['saved_at' => now()->toISOString()]);
     }
 
+    public function duplicate(Post $post): RedirectResponse
+    {
+        $this->authorize('duplicate', $post);
+
+        $copy = DB::transaction(function () use ($post) {
+            $new = Post::create([
+                'title'            => $post->title . ' (Copy)',
+                'slug'             => UniqueSlug::generate($post->title . ' Copy', 'posts'),
+                'content'          => $post->content,
+                'content_json'     => $post->content_json ?? [],
+                'excerpt'          => $post->excerpt,
+                'status'           => ContentStatus::Draft,
+                'meta_title'       => $post->meta_title,
+                'meta_description' => $post->meta_description,
+                'meta_keywords'    => $post->meta_keywords,
+                'featured_image'   => $post->featured_image,
+                'category_id'      => $post->category_id,
+                'user_id'          => auth()->id(),
+                'published_at'     => null,
+            ]);
+
+            $new->tags()->sync($post->tags->pluck('id'));
+
+            return $new;
+        });
+
+        return redirect()
+            ->route('admin.posts.edit', $copy)
+            ->with(FlashType::Success->value, 'Post duplicated successfully.');
+    }
+
     public function destroy(Post $post): RedirectResponse
     {
         $this->authorize('delete', $post);
