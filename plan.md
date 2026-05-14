@@ -89,7 +89,7 @@ Issues are ordered by implementation sequence. Complete each stage before moving
 | ✅     | [#45](https://github.com/Three-Hoops/Hoops-CMS/issues/45)   | Wrap multi-step writes in database transactions                       | `content`                |
 | ✅     | [#38](https://github.com/Three-Hoops/Hoops-CMS/issues/38)   | Sanitise TipTap HTML output to prevent XSS                            | `security`, `content`    |
 | ✅     | [#68](https://github.com/Three-Hoops/Hoops-CMS/issues/68)   | Add autosave for rich text editor to prevent data loss                | `content`, `enhancement` |
-| ⬜     | [#110](https://github.com/Three-Hoops/Hoops-CMS/issues/110) | Warn users about unsaved changes before navigating away               | `content`, `enhancement` |
+| ✅     | [#110](https://github.com/Three-Hoops/Hoops-CMS/issues/110) | Warn users about unsaved changes before navigating away               | `content`, `enhancement` |
 | ⬜     | [#58](https://github.com/Three-Hoops/Hoops-CMS/issues/58)   | Bulk actions on content lists (publish, draft, delete)                | `content`, `enhancement` |
 | ⬜     | [#75](https://github.com/Three-Hoops/Hoops-CMS/issues/75)   | Add trash view and restore for soft-deleted content                   | `content`, `enhancement` |
 | ⬜     | [#32](https://github.com/Three-Hoops/Hoops-CMS/issues/32)   | Add draft preview for posts and pages                                 | `content`, `enhancement` |
