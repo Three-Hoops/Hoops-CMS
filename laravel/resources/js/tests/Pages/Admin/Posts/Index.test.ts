@@ -1,9 +1,13 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import PostsIndex from '@/Pages/Admin/Posts/Index.vue'
 import type { Post, Paginated } from '@/types/models'
 
-const { mockDelete, mockPost } = vi.hoisted(() => ({ mockDelete: vi.fn(), mockPost: vi.fn() }))
+const { mockDelete, mockPost, authRole } = vi.hoisted(() => ({
+    mockDelete: vi.fn(),
+    mockPost: vi.fn(),
+    authRole: { current: 'super_admin' as string },
+}))
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
@@ -21,7 +25,10 @@ vi.mock('ziggy-js', () => ({
 }))
 
 vi.mock('@/stores/useAuthStore', () => ({
-    useAuthStore: () => ({ user: { name: 'Admin', role: 'super_admin', last_login_at: null } }),
+    useAuthStore: () => ({
+        user: { name: 'Admin', role: authRole.current, last_login_at: null },
+        hasRole: (roles: string[]) => roles.includes(authRole.current),
+    }),
 }))
 
 vi.mock('@/composables/useThemeMode', () => ({
@@ -167,5 +174,42 @@ describe('Posts/Index', () => {
 
         // Assert
         expect(wrapper.text()).not.toContain('★')
+    })
+})
+
+describe('Posts/Index — viewer role', () => {
+    beforeEach(() => { authRole.current = 'viewer' })
+    afterEach(() => { authRole.current = 'super_admin' })
+
+    it('hides New Post button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'New Post')).toHaveLength(0)
+    })
+
+    it('hides Edit button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Edit')).toHaveLength(0)
+    })
+
+    it('hides Duplicate button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Duplicate')).toHaveLength(0)
+    })
+
+    it('hides Delete button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete')).toHaveLength(0)
     })
 })

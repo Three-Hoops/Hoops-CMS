@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import TagsIndex from '@/Pages/Admin/Tags/Index.vue'
 import type { Paginated, Tag } from '@/types/models'
+
+const { authRole } = vi.hoisted(() => ({ authRole: { current: 'super_admin' as string } }))
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
@@ -33,7 +35,10 @@ vi.mock('ziggy-js', () => ({
 }))
 
 vi.mock('@/stores/useAuthStore', () => ({
-    useAuthStore: () => ({ user: { name: 'Admin', role: 'super_admin', last_login_at: null } }),
+    useAuthStore: () => ({
+        user: { name: 'Admin', role: authRole.current, last_login_at: null },
+        hasRole: (roles: string[]) => roles.includes(authRole.current),
+    }),
 }))
 
 vi.mock('@/composables/useThemeMode', () => ({
@@ -113,5 +118,34 @@ describe('Tags/Index', () => {
         // Assert — Save button appears in inline edit row
         const saveButtons = wrapper.findAll('button').filter(b => b.text() === 'Save')
         expect(saveButtons.length).toBeGreaterThan(0)
+    })
+})
+
+describe('Tags/Index — viewer role', () => {
+    beforeEach(() => { authRole.current = 'viewer' })
+    afterEach(() => { authRole.current = 'super_admin' })
+
+    it('hides Add Tag form for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).not.toContain('Add Tag')
+    })
+
+    it('hides Edit button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Edit')).toHaveLength(0)
+    })
+
+    it('hides Delete button for viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete')).toHaveLength(0)
     })
 })
