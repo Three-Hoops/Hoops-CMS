@@ -23,6 +23,11 @@ class PagePolicy
         return $user->role->canEdit();
     }
 
+    public function duplicate(User $user, Page $page): bool
+    {
+        return $user->role->canEdit();
+    }
+
     public function update(User $user, Page $page): bool
     {
         return $user->role === UserRole::SuperAdmin
