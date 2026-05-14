@@ -346,6 +346,77 @@ class PostControllerTest extends TestCase
             ->assertSessionHasErrors('tag_ids.0');
     }
 
+    // ─── is_featured ─────────────────────────────────────────────────────────
+
+    public function test_store_saves_is_featured_when_true(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act
+        $this->actingAs($user)->post('/admin/posts', [
+            'title'       => 'Featured Post',
+            'content'     => 'Body',
+            'status'      => 'draft',
+            'is_featured' => true,
+        ]);
+
+        // Assert
+        $this->assertDatabaseHas('posts', ['title' => 'Featured Post', 'is_featured' => true]);
+    }
+
+    public function test_store_defaults_is_featured_to_false_when_omitted(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act
+        $this->actingAs($user)->post('/admin/posts', [
+            'title'   => 'Regular Post',
+            'content' => 'Body',
+            'status'  => 'draft',
+        ]);
+
+        // Assert
+        $this->assertDatabaseHas('posts', ['title' => 'Regular Post', 'is_featured' => false]);
+    }
+
+    public function test_update_can_toggle_is_featured_on(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create(['user_id' => $user->id, 'is_featured' => false]);
+
+        // Act
+        $this->actingAs($user)->put("/admin/posts/{$post->id}", [
+            'title'       => $post->title,
+            'content'     => $post->content,
+            'status'      => 'draft',
+            'is_featured' => true,
+        ]);
+
+        // Assert
+        $this->assertDatabaseHas('posts', ['id' => $post->id, 'is_featured' => true]);
+    }
+
+    public function test_update_can_toggle_is_featured_off(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $post = Post::factory()->create(['user_id' => $user->id, 'is_featured' => true]);
+
+        // Act
+        $this->actingAs($user)->put("/admin/posts/{$post->id}", [
+            'title'       => $post->title,
+            'content'     => $post->content,
+            'status'      => 'draft',
+            'is_featured' => false,
+        ]);
+
+        // Assert
+        $this->assertDatabaseHas('posts', ['id' => $post->id, 'is_featured' => false]);
+    }
+
     // ─── edit ─────────────────────────────────────────────────────────────────
 
     public function test_super_admin_can_view_post_edit_form(): void
