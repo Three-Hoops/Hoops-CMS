@@ -81,7 +81,7 @@ class PostController extends Controller
             'post'          => $post->load(['author', 'category', 'tags']),
             'categories'    => Category::orderBy('name')->get(['id', 'name']),
             'tags'          => Tag::orderBy('name')->get(['id', 'name']),
-            'autosaveDraft' => $post->autosave_json['content'] ?? null,
+            'autosaveDraft' => data_get($post->autosave_json, 'content'),
         ]);
     }
 

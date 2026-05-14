@@ -68,7 +68,7 @@ class PageController extends Controller
         return Inertia::render('Admin/Pages/Edit', [
             'page'          => $page->load(['author', 'parent']),
             'pages'         => Page::select('id', 'title', 'slug')->where('id', '!=', $page->id)->orderBy('title')->get(),
-            'autosaveDraft' => $page->autosave_json['content'] ?? null,
+            'autosaveDraft' => data_get($page->autosave_json, 'content'),
         ]);
     }
 
