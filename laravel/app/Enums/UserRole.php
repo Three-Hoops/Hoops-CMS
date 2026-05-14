@@ -17,6 +17,11 @@ enum UserRole: string
     {
         return $this === self::SuperAdmin;
     }
+
+    public function canManageSettings(): bool
+    {
+        return $this === self::SuperAdmin;
+    }
 }
 
 ?>
