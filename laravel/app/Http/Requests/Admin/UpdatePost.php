@@ -25,6 +25,8 @@ class UpdatePost extends FormRequest
             'meta_title'       => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:255'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
+            'og_title'         => ['nullable', 'string', 'max:255'],
+            'og_description'   => ['nullable', 'string', 'max:500'],
             'published_at'     => ['nullable', 'date'],
             'featured_image'   => ['nullable', 'string', 'max:255'],
             'category_id'      => ['nullable', 'integer', Rule::exists('categories', 'id')],
