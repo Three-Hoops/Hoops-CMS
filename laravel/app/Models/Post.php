@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  */
-#[Fillable(['title', 'slug', 'content', 'content_json', 'excerpt', 'status', 'meta_title', 'meta_description', 'meta_keywords', 'user_id', 'published_at', 'featured_image', 'category_id'])]
+#[Fillable(['title', 'slug', 'content', 'content_json', 'excerpt', 'status', 'meta_title', 'meta_description', 'meta_keywords', 'user_id', 'published_at', 'featured_image', 'category_id', 'is_featured'])]
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
@@ -38,6 +38,7 @@ class Post extends Model
             'status'        => ContentStatus::class,
             'content_json'  => 'array',
             'autosave_json' => 'array',
+            'is_featured'   => 'boolean',
         ];
     }
 
