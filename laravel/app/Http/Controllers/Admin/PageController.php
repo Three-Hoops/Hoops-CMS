@@ -6,6 +6,7 @@ use App\Enums\ContentStatus;
 use App\Enums\FlashType;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\StorePage;
 use App\Http\Requests\Admin\UpdatePage;
 use App\Models\Page;
@@ -13,6 +14,8 @@ use App\Support\UniqueSlug;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -165,5 +168,45 @@ class PageController extends Controller
         return redirect()
             ->route('admin.pages.index', ['trash' => 1])
             ->with(FlashType::Success->value, 'Page permanently deleted.');
+    }
+
+    public function bulkAction(BulkActionRequest $request): RedirectResponse
+    {
+        $request->validate(['action' => ['required', Rule::in(['publish', 'draft', 'delete', 'restore'])]]);
+
+        $action = $request->input('action');
+        $ids    = $request->input('ids');
+
+        $query = $action === 'restore'
+            ? Page::withTrashed()->whereIn('id', $ids)
+            : Page::whereIn('id', $ids);
+
+        $policyMethod = match ($action) {
+            'publish', 'draft' => 'update',
+            'delete'           => 'delete',
+            'restore'          => 'restore',
+        };
+
+        $pages = $query->get()->filter(fn ($page) => Gate::allows($policyMethod, $page));
+        $count = $pages->count();
+
+        match ($action) {
+            'publish' => $pages->each(fn ($p) => $p->update([
+                'status'       => ContentStatus::Published,
+                'published_at' => $p->published_at ?? now(),
+            ])),
+            'draft'   => $pages->each(fn ($p) => $p->update(['status' => ContentStatus::Draft])),
+            'delete'  => $pages->each(fn ($p) => $p->delete()),
+            'restore' => $pages->each(fn ($p) => $p->restore()),
+        };
+
+        $label = match ($action) {
+            'publish' => "Published {$count} page(s).",
+            'draft'   => "Set {$count} page(s) to draft.",
+            'delete'  => "Moved {$count} page(s) to trash.",
+            'restore' => "Restored {$count} page(s).",
+        };
+
+        return redirect()->back()->with(FlashType::Success->value, $label);
     }
 }
