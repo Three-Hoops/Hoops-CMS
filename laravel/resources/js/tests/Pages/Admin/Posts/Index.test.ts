@@ -189,6 +189,104 @@ describe('Posts/Index', () => {
     })
 })
 
+describe('Posts/Index — bulk selection', () => {
+    it('renders a checkbox in each row for non-viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Assert — one per row + one in header
+        const checkboxes = wrapper.findAll('input[type="checkbox"]')
+        expect(checkboxes.length).toBe(posts.data.length + 1)
+    })
+
+    it('does not render checkboxes for viewers', () => {
+        // Arrange
+        authRole.current = 'viewer'
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+        authRole.current = 'super_admin'
+
+        // Assert
+        expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(0)
+    })
+
+    it('bulk toolbar is hidden when nothing selected', () => {
+        // Arrange + Act
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').some(b => b.text() === 'Publish')).toBe(false)
+    })
+
+    it('bulk toolbar appears after selecting a row', async () => {
+        // Arrange
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+
+        // Act
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+
+        // Assert
+        expect(wrapper.findAll('button').some(b => b.text() === 'Publish')).toBe(true)
+        expect(wrapper.findAll('button').some(b => b.text() === 'Draft')).toBe(true)
+        expect(wrapper.findAll('button').some(b => b.text() === 'Delete')).toBe(true)
+    })
+
+    it('shows Restore bulk action in trash view', async () => {
+        // Arrange
+        const trashPosts: Paginated<Post> = { ...posts, data: [makePost({ id: 1, deleted_at: '2025-01-02' })] }
+        const wrapper = mount(PostsIndex, { props: { posts: trashPosts, trash: true }, ...globalConfig })
+
+        // Act
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+
+        // Assert
+        expect(wrapper.findAll('button').some(b => b.text() === 'Restore')).toBe(true)
+    })
+
+    it('selecting all via header checkbox marks all rows', async () => {
+        // Arrange
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+        const checkboxes = wrapper.findAll('input[type="checkbox"]')
+
+        // Act — click the header checkbox (index 0)
+        await checkboxes[0].trigger('change')
+
+        // Assert — count label shows total
+        expect(wrapper.text()).toContain(`${posts.data.length} selected`)
+    })
+
+    it('bulk delete opens a confirmation modal', async () => {
+        // Arrange
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+
+        // Act
+        await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
+
+        // Assert — multiple confirm modals; at least one is open
+        const openModals = wrapper.findAll('[data-open="true"]')
+        expect(openModals.length).toBeGreaterThan(0)
+    })
+
+    it('confirming bulk delete calls router.post with correct payload', async () => {
+        // Arrange
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+        await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
+
+        // Act
+        const modals = wrapper.findAllComponents({ name: 'ConfirmModal' })
+        const openModal = modals.find(m => m.props('open') === true)
+        await openModal!.vm.$emit('confirm')
+
+        // Assert
+        expect(mockPost).toHaveBeenCalledWith(
+            expect.stringContaining('bulk'),
+            expect.objectContaining({ action: 'delete', ids: expect.arrayContaining([expect.any(Number)]) }),
+            expect.any(Object),
+        )
+    })
+})
+
 describe('Posts/Index — viewer role', () => {
     beforeEach(() => { authRole.current = 'viewer' })
     afterEach(() => { authRole.current = 'super_admin' })
