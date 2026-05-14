@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, type Ref } from 'vue'
 import { useNavigationGuard } from '@/composables/useNavigationGuard'
 
 const { mockRouterOn, mockRouterUnsubscribe } = vi.hoisted(() => ({
@@ -17,7 +17,7 @@ function makeBeforeEvent(method: string) {
 }
 
 describe('useNavigationGuard', () => {
-    let isDirty: ReturnType<typeof ref<boolean>>
+    let isDirty: Ref<boolean>
     let beforeCallback: (e: CustomEvent) => boolean | void
     let beforeunloadHandler: EventListener
     let wrapper: ReturnType<typeof mount>
