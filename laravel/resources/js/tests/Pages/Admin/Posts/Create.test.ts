@@ -10,7 +10,7 @@ const { mockPost, mockUseForm } = vi.hoisted(() => ({
 }))
 
 const makeForm = (overrides = {}) => ({
-    title: '', slug: '', content: '', status: 'draft', featured_image: '', category_id: '',
+    title: '', slug: '', content: '', status: 'draft', is_featured: false, featured_image: '', category_id: '',
     tag_ids: [] as number[], meta_title: '', meta_description: '', published_at: '',
     processing: false, errors: {} as Record<string, string>, post: mockPost,
     ...overrides,
@@ -138,6 +138,14 @@ describe('Posts/Create', () => {
 
         // Assert
         expect(wrapper.text()).toContain('The content field is required.')
+    })
+
+    it('renders the Featured post checkbox', () => {
+        // Arrange & Act
+        const wrapper = mount(PostsCreate, { props: { categories, tags }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.find('input[type="checkbox"]#is_featured').exists()).toBe(true)
     })
 
     it('adds tag id to form.tag_ids when checkbox is changed', async () => {
