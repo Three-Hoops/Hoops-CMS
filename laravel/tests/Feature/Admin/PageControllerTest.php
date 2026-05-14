@@ -877,4 +877,99 @@ class PageControllerTest extends TestCase
         $this->assertEquals(ContentStatus::Draft, $copy->status);
         $this->assertNull($copy->published_at);
     }
+
+    // ─── og fields ────────────────────────────────────────────────────────────
+
+    public function test_store_saves_og_fields(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act
+        $this->actingAs($user)->post('/admin/pages', [
+            'title'          => 'OG Page',
+            'content'        => 'Body',
+            'status'         => 'draft',
+            'og_title'       => 'Custom OG Title',
+            'og_description' => 'Custom OG description for social sharing.',
+        ]);
+
+        // Assert
+        $this->assertDatabaseHas('pages', [
+            'og_title'       => 'Custom OG Title',
+            'og_description' => 'Custom OG description for social sharing.',
+        ]);
+    }
+
+    public function test_store_accepts_null_og_fields(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert — OG fields are optional
+        $this->actingAs($user)
+            ->post('/admin/pages', [
+                'title'   => 'No OG Page',
+                'content' => 'Body',
+                'status'  => 'draft',
+            ])
+            ->assertRedirect('/admin/pages');
+
+        $this->assertDatabaseHas('pages', ['og_title' => null, 'og_description' => null]);
+    }
+
+    public function test_store_rejects_og_title_exceeding_max_length(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/pages', [
+                'title'    => 'Page',
+                'content'  => 'Body',
+                'status'   => 'draft',
+                'og_title' => str_repeat('a', 256),
+            ])
+            ->assertSessionHasErrors('og_title');
+    }
+
+    public function test_store_rejects_og_description_exceeding_max_length(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+
+        // Act + Assert
+        $this->actingAs($user)
+            ->post('/admin/pages', [
+                'title'          => 'Page',
+                'content'        => 'Body',
+                'status'         => 'draft',
+                'og_description' => str_repeat('a', 501),
+            ])
+            ->assertSessionHasErrors('og_description');
+    }
+
+    public function test_update_saves_og_fields(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => UserRole::SuperAdmin]);
+        $page = Page::factory()->create();
+
+        // Act
+        $this->actingAs($user)->put("/admin/pages/{$page->id}", [
+            'title'          => 'Updated',
+            'content'        => 'Body',
+            'status'         => 'draft',
+            'og_title'       => 'Updated OG Title',
+            'og_description' => 'Updated OG description.',
+        ]);
+
+        // Assert
+        $this->assertDatabaseHas('pages', [
+            'id'             => $page->id,
+            'og_title'       => 'Updated OG Title',
+            'og_description' => 'Updated OG description.',
+        ]);
+    }
 }
