@@ -262,4 +262,54 @@ describe('useAutosave', () => {
 
         unmount()
     })
+
+    it('skips the server save when the document is hidden', async () => {
+        // Arrange
+        Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' })
+        const content = ref('<p>Content</p>')
+        const [, unmount] = withSetup(() =>
+            useAutosave({
+                resource: 'post',
+                resourceId: 99,
+                updatedAt: '2020-01-01T00:00:00.000Z',
+                content,
+                serverDraft: null,
+            }),
+        )
+
+        // Act
+        vi.advanceTimersByTime(30_000)
+        await nextTick()
+
+        // Assert
+        expect(axios.post).not.toHaveBeenCalled()
+
+        // Cleanup
+        Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' })
+        unmount()
+    })
+
+    it('removes corrupt localStorage entry and keeps hasDraft false on invalid JSON', async () => {
+        // Arrange
+        localStorage.setItem('autosave:post:7', 'not-valid-json{{{')
+        const content = ref('<p>Saved</p>')
+        const [{ hasDraft }, unmount] = withSetup(() =>
+            useAutosave({
+                resource: 'post',
+                resourceId: 7,
+                updatedAt: '2020-01-01T00:00:00.000Z',
+                content,
+                serverDraft: null,
+            }),
+        )
+
+        // Act
+        await nextTick()
+
+        // Assert
+        expect(hasDraft.value).toBe(false)
+        expect(localStorage.getItem('autosave:post:7')).toBeNull()
+
+        unmount()
+    })
 })

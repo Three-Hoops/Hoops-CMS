@@ -1,9 +1,20 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { ref } from 'vue'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import PostsEdit from '@/Pages/Admin/Posts/Edit.vue'
 import type { Category, Post, Tag } from '@/types/models'
 
-const { mockPut } = vi.hoisted(() => ({ mockPut: vi.fn() }))
+const { mockPut, mockClearDraft, mockDismissDraft } = vi.hoisted(() => ({
+    mockPut: vi.fn(),
+    mockClearDraft: vi.fn(),
+    mockDismissDraft: vi.fn(),
+}))
+
+const autosaveState = {
+    hasDraft: false,
+    draftContent: null as string | null,
+    lastSavedAt: null as Date | null,
+}
 
 const author = { id: 1, name: 'Alice', email: 'a@example.com', role: 'super_admin' as const, locale: 'en', last_login_at: null, theme_mode: 'system' as const, timezone: 'UTC' }
 
@@ -50,18 +61,15 @@ vi.mock('@/composables/useThemeMode', () => ({
     useThemeMode: () => ({ themeMode: { value: 'system' }, setTheme: vi.fn() }),
 }))
 
-vi.mock('@/composables/useAutosave', async () => {
-    const { ref } = await import('vue')
-    return {
-        useAutosave: () => ({
-            lastSavedAt: ref(null),
-            hasDraft: ref(false),
-            draftContent: ref(null),
-            clearDraft: vi.fn(),
-            dismissDraft: vi.fn(),
-        }),
-    }
-})
+vi.mock('@/composables/useAutosave', () => ({
+    useAutosave: () => ({
+        lastSavedAt: ref(autosaveState.lastSavedAt),
+        hasDraft: ref(autosaveState.hasDraft),
+        draftContent: ref(autosaveState.draftContent),
+        clearDraft: mockClearDraft,
+        dismissDraft: mockDismissDraft,
+    }),
+}))
 
 vi.mock('@/components/Admin/FlashBanner.vue', () => ({ default: { template: '<div />' } }))
 
@@ -85,6 +93,14 @@ const globalConfig = {
 }
 
 describe('Posts/Edit', () => {
+    beforeEach(() => {
+        autosaveState.hasDraft = false
+        autosaveState.draftContent = null
+        autosaveState.lastSavedAt = null
+        mockClearDraft.mockReset()
+        mockDismissDraft.mockReset()
+    })
+
     it('renders the page title "Edit Post"', () => {
         const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         expect(wrapper.text()).toContain('Edit Post')
@@ -121,5 +137,55 @@ describe('Posts/Edit', () => {
         const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
         await wrapper.find('form').trigger('submit')
         expect(mockPut).toHaveBeenCalledWith('/admin.posts.update/3', expect.objectContaining({ onSuccess: expect.any(Function) }))
+    })
+
+    it('shows draft banner when hasDraft is true', () => {
+        // Arrange
+        autosaveState.hasDraft = true
+
+        // Act
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).toContain('Unsaved draft found. Restore it?')
+    })
+
+    it('calls dismissDraft when Restore button is clicked', async () => {
+        // Arrange
+        autosaveState.hasDraft = true
+        autosaveState.draftContent = '<p>Draft content</p>'
+
+        // Act
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
+        const restoreButton = wrapper.findAll('button[type="button"]').find(b => b.text() === 'Restore')
+        await restoreButton!.trigger('click')
+
+        // Assert
+        expect(mockDismissDraft).toHaveBeenCalledOnce()
+    })
+
+    it('calls dismissDraft when Dismiss button is clicked', async () => {
+        // Arrange
+        autosaveState.hasDraft = true
+
+        // Act
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
+        const dismissButton = wrapper.findAll('button[type="button"]').find(b => b.text() === 'Dismiss')
+        await dismissButton!.trigger('click')
+
+        // Assert
+        expect(mockDismissDraft).toHaveBeenCalledOnce()
+    })
+
+    it('shows the last saved timestamp when lastSavedAt is set', () => {
+        // Arrange
+        autosaveState.lastSavedAt = new Date('2025-06-01T12:30:00.000Z')
+
+        // Act
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.find('span.text-xs.text-muted-foreground').exists()).toBe(true)
+        expect(wrapper.find('span.text-xs.text-muted-foreground').text()).toContain('Draft saved')
     })
 })
