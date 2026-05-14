@@ -70,6 +70,7 @@ export interface Page {
 
 export interface Post extends Page {
     featured_image: string | null;
+    is_featured: boolean;
     category_id: number | null;
     category: Category | null;
     tags: Tag[];
