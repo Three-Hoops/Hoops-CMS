@@ -43,7 +43,7 @@ const makePost = (overrides: Partial<Post> = {}): Post => ({
     id: 1, user_id: 1, title: 'Hello World', slug: 'hello-world', content: '<p>Hi</p>', content_json: {},
     excerpt: null, status: 'published', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: '2025-01-01 10:00:00', created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
-    deleted_at: null, featured_image: null, category_id: null, category: null, tags: [], author, parent_id: null, parent: null,
+    deleted_at: null, featured_image: null, is_featured: false, category_id: null, category: null, tags: [], author, parent_id: null, parent: null,
     ...overrides,
 })
 
@@ -139,5 +139,33 @@ describe('Posts/Index', () => {
 
         // Assert
         expect(mockPost).toHaveBeenCalledWith(expect.stringContaining('1'))
+    })
+
+    it('shows a star icon when post is featured', () => {
+        // Arrange
+        const featuredPosts: Paginated<Post> = {
+            ...posts,
+            data: [makePost({ id: 1, title: 'Featured Post', is_featured: true })],
+        }
+
+        // Act
+        const wrapper = mount(PostsIndex, { props: { posts: featuredPosts, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).toContain('★')
+    })
+
+    it('does not show a star icon when post is not featured', () => {
+        // Arrange
+        const nonFeaturedPosts: Paginated<Post> = {
+            ...posts,
+            data: [makePost({ id: 1, title: 'Normal Post', is_featured: false })],
+        }
+
+        // Act
+        const wrapper = mount(PostsIndex, { props: { posts: nonFeaturedPosts, trash: false }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).not.toContain('★')
     })
 })

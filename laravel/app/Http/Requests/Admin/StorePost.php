@@ -31,6 +31,7 @@ class StorePost extends FormRequest
             'category_id'      => ['nullable', 'integer', Rule::exists('categories', 'id')],
             'tag_ids'          => ['nullable', 'array'],
             'tag_ids.*'        => ['integer', Rule::exists('tags', 'id')],
+            'is_featured'      => ['boolean'],
         ];
     }
 }

@@ -24,7 +24,7 @@ const post: Post = {
     id: 3, user_id: 1, title: 'My Post', slug: 'my-post', content: '<p>Body</p>', content_json: {},
     excerpt: null, status: 'draft', meta_title: null, meta_description: null, meta_keywords: null,
     published_at: null, created_at: '2025-01-01 10:00:00', updated_at: '2025-01-01 10:00:00',
-    deleted_at: null, featured_image: 'https://example.com/img.jpg', category_id: 2, category: null,
+    deleted_at: null, featured_image: 'https://example.com/img.jpg', is_featured: false, category_id: 2, category: null,
     tags: [{ id: 1, name: 'Laravel', slug: 'laravel' }], author, parent_id: null, parent: null,
 }
 
@@ -232,6 +232,27 @@ describe('Posts/Edit', () => {
         expect(mockUseNavigationGuard).toHaveBeenCalledWith(expect.any(Function))
         const isDirtyGetter = mockUseNavigationGuard.mock.calls[0][0] as () => boolean
         expect(isDirtyGetter()).toBe(false)
+    })
+
+    it('renders the Featured post checkbox', () => {
+        // Arrange & Act
+        const wrapper = mount(PostsEdit, { props: { post, categories, tags, autosaveDraft: null }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.find('input[type="checkbox"]#is_featured').exists()).toBe(true)
+    })
+
+    it('initialises is_featured checkbox as checked when post.is_featured is true', () => {
+        // Arrange
+        const featuredPost: Post = { ...post, is_featured: true }
+
+        // Act
+        const wrapper = mount(PostsEdit, { props: { post: featuredPost, categories, tags, autosaveDraft: null }, ...globalConfig })
+
+        // Assert — v-model sets the checked property from form.is_featured
+        const checkbox = wrapper.find('input[type="checkbox"]#is_featured')
+        expect(checkbox.exists()).toBe(true)
+        expect((checkbox.element as HTMLInputElement).checked).toBe(true)
     })
 
     it('calls form.defaults when form is submitted successfully', async () => {

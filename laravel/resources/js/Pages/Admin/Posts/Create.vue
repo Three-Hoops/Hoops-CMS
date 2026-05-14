@@ -22,6 +22,7 @@ const form = useForm({
     slug: '',
     content: '',
     status: 'draft' as 'draft' | 'published',
+    is_featured: false,
     featured_image: '',
     category_id: '' as string | number,
     tag_ids: [] as number[],
@@ -166,6 +167,16 @@ function submit() {
         >
           {{ form.errors.tag_ids }}
         </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <input
+          id="is_featured"
+          v-model="form.is_featured"
+          type="checkbox"
+          class="h-4 w-4"
+        >
+        <Label for="is_featured">Featured post</Label>
       </div>
 
       <div class="space-y-2">
