@@ -151,6 +151,18 @@ describe('Pages/Index', () => {
         expect(duplicateButtons).toHaveLength(0)
     })
 
+    it('shows Restore and Delete permanently buttons in trash view for non-viewer', () => {
+        // Arrange
+        const trashPages: Paginated<Page> = { ...pages, data: [makePage({ id: 1, deleted_at: '2025-01-02 10:00:00' })] }
+
+        // Act
+        const wrapper = mount(PagesIndex, { props: { pages: trashPages, trash: true }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(1)
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(1)
+    })
+
     it('calls router.post with duplicate route when Duplicate is clicked', async () => {
         // Arrange
         const wrapper = mount(PagesIndex, { props: { pages, trash: false }, ...globalConfig })
@@ -197,5 +209,15 @@ describe('Pages/Index — viewer role', () => {
 
         // Assert
         expect(wrapper.findAll('button').filter(b => b.text() === 'Delete')).toHaveLength(0)
+    })
+
+    it('hides Restore and Delete permanently buttons for viewers in trash view', () => {
+        // Arrange + Act
+        const trashPages: Paginated<Page> = { ...pages, data: [makePage({ id: 1, deleted_at: '2025-01-02 10:00:00' })] }
+        const wrapper = mount(PagesIndex, { props: { pages: trashPages, trash: true }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(0)
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(0)
     })
 })

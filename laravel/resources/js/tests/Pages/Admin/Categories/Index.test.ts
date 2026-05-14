@@ -101,6 +101,21 @@ describe('Categories/Index', () => {
         await wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('cancel')
         expect(wrapper.find('[data-open="true"]').exists()).toBe(false)
     })
+
+    it('shows Restore and Delete permanently buttons in trash view for non-viewer', () => {
+        // Arrange
+        const trashCategories: Paginated<Category> = {
+            ...categories,
+            data: [{ id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: '2025-01-02 10:00:00' }],
+        }
+
+        // Act
+        const wrapper = mount(CategoriesIndex, { props: { categories: trashCategories, trash: true }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(1)
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(1)
+    })
 })
 
 describe('Categories/Index — viewer role', () => {
@@ -129,5 +144,18 @@ describe('Categories/Index — viewer role', () => {
 
         // Assert
         expect(wrapper.findAll('button').filter(b => b.text() === 'Delete')).toHaveLength(0)
+    })
+
+    it('hides Restore and Delete permanently buttons for viewers in trash view', () => {
+        // Arrange + Act
+        const trashCategories: Paginated<Category> = {
+            ...categories,
+            data: [{ id: 1, name: 'Root', slug: 'root', description: null, parent_id: null, parent: null, deleted_at: '2025-01-02 10:00:00' }],
+        }
+        const wrapper = mount(CategoriesIndex, { props: { categories: trashCategories, trash: true }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Restore')).toHaveLength(0)
+        expect(wrapper.findAll('button').filter(b => b.text() === 'Delete permanently')).toHaveLength(0)
     })
 })
