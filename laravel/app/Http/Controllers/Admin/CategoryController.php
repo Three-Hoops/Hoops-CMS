@@ -116,7 +116,8 @@ class CategoryController extends Controller
     {
         $request->validate(['action' => ['required', Rule::in(['delete', 'restore'])]]);
 
-        $action     = $request->input('action');
+        /** @var 'delete'|'restore' $action */
+        $action     = (string) $request->input('action');
         $ids        = $request->input('ids');
         $policy     = $action === 'restore' ? 'restore' : 'delete';
 

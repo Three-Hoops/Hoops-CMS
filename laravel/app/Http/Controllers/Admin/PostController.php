@@ -199,7 +199,8 @@ class PostController extends Controller
     {
         $request->validate(['action' => ['required', Rule::in(['publish', 'draft', 'delete', 'restore'])]]);
 
-        $action = $request->input('action');
+        /** @var 'publish'|'draft'|'delete'|'restore' $action */
+        $action = (string) $request->input('action');
         $ids    = $request->input('ids');
 
         $query = $action === 'restore'
