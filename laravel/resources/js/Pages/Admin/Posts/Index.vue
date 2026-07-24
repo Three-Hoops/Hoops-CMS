@@ -88,6 +88,7 @@ function submitBulkAction() {
         ids: selectedIds.value,
         action: pendingAction.value,
     }, {
+        only: ['posts'],
         onSuccess: () => clearSelection(),
         onFinish: () => {
             confirmingBulk.value = false

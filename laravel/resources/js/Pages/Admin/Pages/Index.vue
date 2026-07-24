@@ -87,6 +87,7 @@ function submitBulkAction() {
         ids: selectedIds.value,
         action: pendingAction.value,
     }, {
+        only: ['pages'],
         onSuccess: () => clearSelection(),
         onFinish: () => {
             confirmingBulk.value = false

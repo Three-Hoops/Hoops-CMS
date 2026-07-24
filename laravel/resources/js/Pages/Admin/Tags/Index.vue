@@ -66,6 +66,7 @@ function submitBulkDelete() {
         ids: selectedIds.value,
         action: 'delete',
     }, {
+        only: ['tags'],
         onSuccess: () => clearSelection(),
         onFinish: () => { confirmingBulk.value = false },
     })
