@@ -282,8 +282,28 @@ describe('Posts/Index — bulk selection', () => {
         expect(mockPost).toHaveBeenCalledWith(
             expect.stringContaining('bulk'),
             expect.objectContaining({ action: 'delete', ids: expect.arrayContaining([expect.any(Number)]) }),
-            expect.any(Object),
+            expect.objectContaining({ only: ['posts'] }),
         )
+    })
+
+    it('clears selection and closes the modal once the bulk request finishes', async () => {
+        // Arrange
+        const wrapper = mount(PostsIndex, { props: { posts, trash: false }, ...globalConfig })
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+        await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
+        const modals = wrapper.findAllComponents({ name: 'ConfirmModal' })
+        const openModal = modals.find(m => m.props('open') === true)
+        await openModal!.vm.$emit('confirm')
+
+        // Act — simulate Inertia invoking the request lifecycle callbacks
+        const options = mockPost.mock.calls.at(-1)![2]
+        options.onSuccess()
+        options.onFinish()
+        await wrapper.vm.$nextTick()
+
+        // Assert
+        expect(wrapper.text()).not.toContain('selected')
+        expect(wrapper.findAllComponents({ name: 'ConfirmModal' }).some(m => m.props('open') === true)).toBe(false)
     })
 })
 
