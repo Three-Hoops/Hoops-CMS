@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\FlashType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\StoreCategory;
 use App\Http\Requests\Admin\UpdateCategory;
 use App\Models\Category;
 use App\Support\UniqueSlug;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -107,5 +110,34 @@ class CategoryController extends Controller
         return redirect()
             ->route('admin.categories.index', ['trash' => 1])
             ->with(FlashType::Success->value, 'Category permanently deleted.');
+    }
+
+    public function bulkAction(BulkActionRequest $request): RedirectResponse
+    {
+        $request->validate(['action' => ['required', Rule::in(['delete', 'restore'])]]);
+
+        /** @var 'delete'|'restore' $action */
+        $action     = (string) $request->input('action');
+        $ids        = $request->input('ids');
+        $policy     = $action === 'restore' ? 'restore' : 'delete';
+
+        $categories = $action === 'restore'
+            ? Category::withTrashed()->whereIn('id', $ids)->get()
+            : Category::whereIn('id', $ids)->get();
+
+        $categories = $categories->filter(fn ($c) => Gate::allows($policy, $c));
+        $count      = $categories->count();
+
+        match ($action) {
+            'delete'  => $categories->each(fn ($c) => $c->delete()),
+            'restore' => $categories->each(fn ($c) => $c->restore()),
+        };
+
+        $label = match ($action) {
+            'delete'  => "Moved {$count} category(s) to trash.",
+            'restore' => "Restored {$count} category(s).",
+        };
+
+        return redirect()->back()->with(FlashType::Success->value, $label);
     }
 }

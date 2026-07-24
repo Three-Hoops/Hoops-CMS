@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\FlashType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\StoreTag;
 use App\Http\Requests\Admin\UpdateTag;
 use App\Models\Tag;
 use App\Support\UniqueSlug;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -58,5 +61,18 @@ class TagController extends Controller
         return redirect()
             ->route('admin.tags.index')
             ->with(FlashType::Success->value, 'Tag deleted successfully.');
+    }
+
+    public function bulkAction(BulkActionRequest $request): RedirectResponse
+    {
+        $request->validate(['action' => ['required', Rule::in(['delete'])]]);
+
+        $tags  = Tag::whereIn('id', $request->input('ids'))->get()
+            ->filter(fn ($tag) => Gate::allows('delete', $tag));
+        $count = $tags->count();
+
+        $tags->each(fn ($tag) => $tag->delete());
+
+        return redirect()->back()->with(FlashType::Success->value, "Deleted {$count} tag(s).");
     }
 }

@@ -3,7 +3,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import TagsIndex from '@/Pages/Admin/Tags/Index.vue'
 import type { Paginated, Tag } from '@/types/models'
 
-const { authRole } = vi.hoisted(() => ({ authRole: { current: 'super_admin' as string } }))
+const { mockPost, authRole } = vi.hoisted(() => ({
+    mockPost: vi.fn(),
+    authRole: { current: 'super_admin' as string },
+}))
 
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
@@ -25,7 +28,7 @@ vi.mock('@inertiajs/vue3', () => ({
         put: vi.fn(),
         reset: vi.fn(),
     }),
-    router: { delete: vi.fn() },
+    router: { delete: vi.fn(), post: mockPost, get: vi.fn() },
     Head: { template: '<div />' },
     Link: { template: '<a><slot /></a>' },
 }))
@@ -58,7 +61,7 @@ vi.mock('@/components/Admin/Pagination.vue', () => ({
 }))
 
 vi.mock('@/components/Admin/ConfirmModal.vue', () => ({
-    default: { template: '<div />', props: ['open', 'title', 'description'] },
+    default: { name: 'ConfirmModal', template: '<div :data-open="open" />', props: ['open', 'title', 'description'], emits: ['confirm', 'cancel'] },
 }))
 
 const tags: Paginated<Tag> = {
@@ -118,6 +121,84 @@ describe('Tags/Index', () => {
         // Assert — Save button appears in inline edit row
         const saveButtons = wrapper.findAll('button').filter(b => b.text() === 'Save')
         expect(saveButtons.length).toBeGreaterThan(0)
+    })
+})
+
+describe('Tags/Index — bulk selection', () => {
+    it('renders a checkbox in each row for non-viewers', () => {
+        // Arrange + Act
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+
+        // Assert — one per row + one in header
+        expect(wrapper.findAll('input[type="checkbox"]').length).toBe(tags.data.length + 1)
+    })
+
+    it('does not render checkboxes for viewers', () => {
+        // Arrange
+        authRole.current = 'viewer'
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+        authRole.current = 'super_admin'
+
+        // Assert
+        expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(0)
+    })
+
+    it('bulk toolbar is hidden when nothing selected', () => {
+        // Arrange + Act
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+
+        // Assert
+        expect(wrapper.text()).not.toContain('selected')
+    })
+
+    it('bulk toolbar appears after selecting a row', async () => {
+        // Arrange
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+
+        // Act
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+
+        // Assert
+        expect(wrapper.text()).toContain('1 selected')
+    })
+
+    it('confirming bulk delete calls router.post with correct payload', async () => {
+        // Arrange
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+        await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
+
+        // Act
+        const modals = wrapper.findAllComponents({ name: 'ConfirmModal' })
+        const openModal = modals.find(m => m.props('open') === true)
+        await openModal!.vm.$emit('confirm')
+
+        // Assert
+        expect(mockPost).toHaveBeenCalledWith(
+            expect.stringContaining('bulk'),
+            expect.objectContaining({ action: 'delete', ids: expect.arrayContaining([expect.any(Number)]) }),
+            expect.objectContaining({ only: ['tags'] }),
+        )
+    })
+
+    it('clears selection and closes the modal once the bulk request finishes', async () => {
+        // Arrange
+        const wrapper = mount(TagsIndex, { props: { tags }, ...globalConfig })
+        await wrapper.findAll('input[type="checkbox"]')[1].trigger('change')
+        await wrapper.findAll('button').filter(b => b.text() === 'Delete')[0].trigger('click')
+        const modals = wrapper.findAllComponents({ name: 'ConfirmModal' })
+        const openModal = modals.find(m => m.props('open') === true)
+        await openModal!.vm.$emit('confirm')
+
+        // Act — simulate Inertia invoking the request lifecycle callbacks
+        const options = mockPost.mock.calls.at(-1)![2]
+        options.onSuccess()
+        options.onFinish()
+        await wrapper.vm.$nextTick()
+
+        // Assert
+        expect(wrapper.text()).not.toContain('selected')
+        expect(wrapper.findAllComponents({ name: 'ConfirmModal' }).some(m => m.props('open') === true)).toBe(false)
     })
 })
 
