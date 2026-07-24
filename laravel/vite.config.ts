@@ -37,7 +37,7 @@ export default defineConfig({
         include: ['resources/js/**/*.test.{ts,js}'],
         coverage: {
             provider: 'v8',
-            reporter: ['clover', 'text'],
+            reporter: ['lcov', 'text'],
             include: ['resources/js/**/*.{ts,vue}'],
             exclude: [
                 'resources/js/components/ui/**',
