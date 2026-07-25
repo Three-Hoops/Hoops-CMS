@@ -5,3 +5,11 @@ allowBuilds:
   cypress: true
   esbuild: true
   vue-demi: true
+
+auditConfig:
+  ignoreGhsas:
+    # brace-expansion DoS: no non-breaking fix available for the minimatch@9
+    # chain pulled in by @vue/test-utils/js-beautify and
+    # @vitest/coverage-v8/test-exclude — dev-only tooling, never passed
+    # untrusted input. Revisit when those packages bump to minimatch@10.
+    - GHSA-mh99-v99m-4gvg

@@ -33,6 +33,8 @@ jobs:
         run: pnpm install
 
       - name: JS dependency audit
+        # Ignored advisories (with rationale) are configured in pnpm-workspace.yaml
+        # under auditConfig.ignoreGhsas.
         run: pnpm audit --audit-level=high
 
       - name: Lint
