@@ -23,7 +23,7 @@
   "dependencies": {
     "@inertiajs/vue3": "^3.6.1",
     "@phosphor-icons/vue": "^2.2.1",
-    "@tiptap/extension-link": "^3.28.0",
+    "@tiptap/extension-link": "^3.29.1",
     "@tiptap/extension-placeholder": "^3.28.0",
     "@tiptap/extension-underline": "^3.28.0",
     "@tiptap/pm": "^3.28.0",
